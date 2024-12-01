@@ -1,0 +1,7 @@
+zsh/conf-*.zsh
+
+tmux/plugins/*
+gcloud
+github-copilot
+jgit
+raycast
