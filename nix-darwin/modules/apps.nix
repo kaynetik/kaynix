@@ -38,6 +38,7 @@
       "zoxide"
       "fzf"
       "ripgrep"
+      "croc"
 
       "bazelisk"
       "openjdk"
