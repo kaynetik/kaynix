@@ -16,4 +16,3 @@ alias p="pnpm"
 alias rd="rmdir"
 
 alias tf=terraform
-

@@ -16,13 +16,6 @@
     ];
     builders-use-substitutes = true;
 
-    # TODO: Migrate to host-users
-    trusted-users = [
-      "root"
-      "@admin"
-      "kaynetik"
-    ];
-
     # gets rid of duplicate store files
     # turned off due to
     # https://github.com/NixOS/nix/issues/7273#issuecomment-1325073957
