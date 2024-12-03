@@ -25,6 +25,7 @@
       "homebrew/services"
     ];
 
+    # FIXME: Everything that's not GUI should be moved to systemPackages!
     brews = [
       "zinit"
       "neovim"
