@@ -68,6 +68,7 @@
       "google-cloud-sdk"
       "docker"
       "lens"
+      "openvpn-connect"
     ];
   };
 }
