@@ -65,6 +65,7 @@
       "slack"
       "telegram"
       "zed"
+      "nikitabobko/tap/aerospace"
       "postman"
       "jetbrains-toolbox"
       "google-cloud-sdk"
