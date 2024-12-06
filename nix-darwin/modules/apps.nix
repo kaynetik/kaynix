@@ -71,6 +71,7 @@
       "docker"
       "lens"
       "openvpn-connect"
+      "viber"
     ];
   };
 }
