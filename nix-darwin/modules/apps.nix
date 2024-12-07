@@ -23,9 +23,9 @@
 
     taps = [
       "homebrew/services"
+      "nikitabobko/tap"
     ];
 
-    # FIXME: Everything that's not GUI should be moved to systemPackages!
     brews = [
       "zinit"
       "neovim"
@@ -73,6 +73,7 @@
       "lens"
       "openvpn-connect"
       "viber"
+      "spotify"
     ];
   };
 }
