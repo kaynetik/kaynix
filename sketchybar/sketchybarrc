@@ -1,0 +1,16 @@
+#!/opt/homebrew/Cellar/lua/5.4.7/bin/lua
+
+-- Load the sketchybar-package and prepare the helper binaries
+require("helpers")
+require("init")
+
+--NOTE:
+-- In case initial install causes sketchybar to seem like it's empty, trigger helpers again
+--
+-- (git clone https://github.com/FelixKratz/SbarLua.git /tmp/SbarLua && cd /tmp/SbarLua/ && make install && rm -rf /tmp/SbarLua/)
+--
+-- Previous errors:
+-- opt/homebrew/Cellar/lua/5.4.7/bin/lua: ./init.lua:2: module 'sketchybar' not found:
+--        no field package.preload['sketchybar']
+--        no file '/opt/homebrew/share/lua/5.4/sketchybar.lua' ...
+

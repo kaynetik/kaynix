@@ -32,6 +32,10 @@
         largesize = 96;
       };
 
+      NSGlobalDomain = {
+        _HIHideMenuBar = true;
+      };
+
       screencapture.location = "~/Pictures/screenshots";
       screensaver.askForPasswordDelay = 15;
 

@@ -24,6 +24,7 @@
     taps = [
       "homebrew/services"
       "nikitabobko/tap"
+      "FelixKratz/formulae"
     ];
 
     brews = [
@@ -53,6 +54,12 @@
       "tflint"
       "checkov"
       "trivy"
+
+      "lua"
+      "sketchybar"
+      "borders"
+      "switchaudio-osx"
+      "nowplaying-cli"
     ];
 
     casks = [
@@ -66,6 +73,9 @@
       "telegram"
       "zed"
       "nikitabobko/tap/aerospace"
+      "sf-symbols"
+      "font-sf-pro"
+      "font-sf-mono"
       "postman"
       "jetbrains-toolbox"
       "google-cloud-sdk"
