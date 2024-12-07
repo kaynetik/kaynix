@@ -44,17 +44,8 @@ return {
   },
   { "folke/zen-mode.nvim" },
 
-
   -- add gruvbox
   { "ellisonleao/gruvbox.nvim" },
-
-  -- Configure LazyVim to load gruvbox
-  {
-    "LazyVim/LazyVim",
-    opts = {
-      colorscheme = "gruvbox",
-    },
-  },
 
   -- change trouble config
   {
@@ -108,6 +99,7 @@ return {
       servers = {
         -- pyright will be automatically installed with mason and loaded with lspconfig
         pyright = {},
+        "terraform",
       },
     },
   },
