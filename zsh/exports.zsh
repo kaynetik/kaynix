@@ -4,3 +4,5 @@ paths=(
 )
 
 export PATH="${(j.:.)paths}:$PATH"
+
+export EDITOR=nvim
