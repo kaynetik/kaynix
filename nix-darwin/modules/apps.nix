@@ -9,6 +9,7 @@
     bat
     bun
     nodejs
+    wget
   ];
 
   fonts.packages = with pkgs; [ nerdfonts ];
@@ -57,6 +58,8 @@
       "trivy"
 
       "lua"
+      "luarocks"
+      "fd"
       "sketchybar"
       "borders"
       "switchaudio-osx"
