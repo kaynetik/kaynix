@@ -8,6 +8,7 @@
     jq
     bat
     bun
+    nodejs
   ];
 
   fonts.packages = with pkgs; [ nerdfonts ];

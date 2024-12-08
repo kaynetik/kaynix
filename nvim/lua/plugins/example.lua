@@ -9,7 +9,7 @@ if true then return {} end
 -- * disable/enabled LazyVim plugins
 -- * override the configuration of LazyVim plugins
 return {
-  { "catppuccin/nvim", as = "catppuccin" },
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   {
     "lewis6991/gitsigns.nvim",
     config = function()
@@ -33,15 +33,6 @@ return {
     end,
   },
 
-  {
-    "epwalsh/obsidian.nvim",
-    version = "*",
-    lazy = true,
-    ft = "markdown",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-  },
   { "folke/zen-mode.nvim" },
 
   -- add gruvbox
@@ -161,6 +152,9 @@ return {
         "typescript",
         "vim",
         "yaml",
+        "terraform",
+        "hcl",
+        "go",
       },
     },
   },
@@ -218,6 +212,7 @@ return {
         "shellcheck",
         "shfmt",
         "flake8",
+        "tflint",
       },
     },
   },
