@@ -5,3 +5,5 @@ gcloud
 github-copilot
 jgit
 raycast
+zed/conversations/*
+zed/prompts/*
