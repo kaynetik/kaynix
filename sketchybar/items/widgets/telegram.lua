@@ -1,4 +1,3 @@
-local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
 
@@ -29,8 +28,9 @@ telegram:subscribe({ "routine", "workspace_change" }, function()
 			label = label_match
 
 			-- Determine icon color and state based on Telegram notifications
-			if label == "" then
+			if label == "" or label == nil or label == "NULL" or label == "kCFNULL" then
 				icon_color = colors.green -- No notifications
+				label = ""
 			elseif label == "•" then
 				icon_color = colors.yellow -- Unread messages
 			elseif label:match("^%d+$") then
