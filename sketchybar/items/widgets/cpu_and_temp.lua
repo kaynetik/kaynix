@@ -9,9 +9,6 @@ sbar.exec("killall cpu_load >/dev/null; $CONFIG_DIR/helpers/event_providers/cpu_
 -- To get the SOC temperature, the command is
 -- /Applications/Stats.app/Contents/Resources/smc list -t | grep "Tp2a" | awk '{print $2}'
 
---While the average (it seems wrong) is:
--- /Applications/Stats.app/Contents/Resources/smc list -t | grep "Tp.a" | awk '{sum += $2; count++} END {print sum/count}'
-
 local temp = sbar.add("graph", "widgets.temp", 42, {
 	position = "right",
 	graph = { color = colors.blue },
@@ -67,7 +64,7 @@ local cpu = sbar.add("graph", "widgets.cpu", 42, {
 })
 
 local function updateTemperature()
-	sbar.exec("/Users/xbunax/.local/bin/smctemp -c", function(output)
+	sbar.exec("/usr/local/bin/smctemp -c", function(output)
 		local temperature = tonumber(output)
 		temp:push({ temperature / 130. })
 
@@ -90,7 +87,6 @@ local function updateTemperature()
 end
 
 cpu:subscribe("cpu_update", function(env)
-	--   -- Also available: env.user_load, env.sys_load
 	local load = tonumber(env.total_load)
 	cpu:push({ load / 100. })
 
