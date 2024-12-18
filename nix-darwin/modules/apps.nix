@@ -10,6 +10,7 @@
     bun
     nodejs
     wget
+    kubectl
   ];
 
   fonts.packages = with pkgs; [ nerdfonts ];
@@ -22,6 +23,12 @@
       cleanup = "zap";
       # 'zap': uninstalls all formulae(and related files) not listed here.
     };
+
+    # FIXME: Redownload not available...
+    # masApps = {
+    #   "Bitwarden" = 1352778147;
+    #   "Windows App" = 1295203466;
+    # };
 
     taps = [
       "homebrew/services"
@@ -88,6 +95,7 @@
       "openvpn-connect"
       "viber"
       "spotify"
+      "vlc"
     ];
   };
 }
