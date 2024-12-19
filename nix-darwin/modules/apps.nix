@@ -11,6 +11,7 @@
     nodejs
     wget
     kubectl
+    tree
   ];
 
   fonts.packages = with pkgs; [ nerdfonts ];
@@ -96,6 +97,7 @@
       "viber"
       "spotify"
       "vlc"
+      "shottr"
     ];
   };
 }
