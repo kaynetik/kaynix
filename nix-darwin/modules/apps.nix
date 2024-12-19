@@ -65,6 +65,8 @@
       "checkov"
       "trivy"
 
+      "posting"
+
       "lua"
       "luarocks"
       "fd"
