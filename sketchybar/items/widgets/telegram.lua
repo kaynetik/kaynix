@@ -25,29 +25,35 @@ telegram:subscribe({ "routine", "workspace_change" }, function()
 		local label_match = status_info:match('"label"="([^"]*)"')
 
 		if label_match then
-			label = label_match
+			-- Normalize the label for consistency
+			label_match = label_match:match("^%s*(.-)%s*$") -- Trim whitespace
 
-			-- Determine icon color and state based on Telegram notifications
-			if label == "" or label == nil or label == "NULL" or label == "kCFNULL" then
+			-- Handle specific label states
+			if label_match == "" or label_match == nil or label_match == "NULL" or label_match == "kCFNULL" then
 				icon_color = colors.green -- No notifications
 				label = ""
-			elseif label == "•" then
+			elseif label_match == "•" then
 				icon_color = colors.yellow -- Unread messages
-			elseif label:match("^%d+$") then
+			elseif label_match:match("^%d+$") then
 				icon_color = colors.red -- Specific number of unread chats/messages
-				if tonumber(label) > 10 then
-					-- Limit display to prevent overflow
-					label = "10+"
+				if tonumber(label_match) > 10 then
+					label = "10+" -- Limit display to prevent overflow
+				else
+					label = label_match
 				end
 			else
-				-- Unexpected status, don't update
+				-- Unexpected status
+				print("Unexpected label value: " .. label_match)
 				return
 			end
 		else
-			-- No valid status found
-			return
+			-- No valid label found, assume no notifications
+			print("No valid status info found")
+			icon_color = colors.green
+			label = ""
 		end
 
+		-- Update the Telegram widget
 		telegram:set({
 			icon = {
 				string = icon,
