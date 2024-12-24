@@ -12,6 +12,7 @@
     wget
     kubectl
     tree
+    infracost
   ];
 
   fonts.packages = with pkgs; [ nerdfonts ];
