@@ -101,6 +101,7 @@
       "spotify"
       "vlc"
       "shottr"
+      "gimp"
     ];
   };
 }
