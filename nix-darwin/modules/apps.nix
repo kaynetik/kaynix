@@ -4,7 +4,6 @@
     git
     git-lfs
     lazygit
-    nerdfonts
     jq
     bat
     bun
@@ -15,7 +14,9 @@
     infracost
   ];
 
-  fonts.packages = with pkgs; [ nerdfonts ];
+  fonts.packages =
+    builtins.filter pkgs.lib.attrsets.isDerivation
+      (builtins.attrValues pkgs.nerd-fonts);
 
   homebrew = {
     enable = true;
@@ -23,7 +24,6 @@
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
-      # 'zap': uninstalls all formulae(and related files) not listed here.
     };
 
     # FIXME: Redownload not available...
@@ -100,6 +100,7 @@
       "viber"
       "spotify"
       "vlc"
+      "calibre"
       "shottr"
       "gimp"
     ];
