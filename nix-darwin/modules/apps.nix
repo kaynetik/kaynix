@@ -82,6 +82,7 @@
 	    "alacritty"
       "keepassxc"
       "gpg-suite"
+      "protonvpn"
       "raycast"
       "obsidian"
       "slack"
@@ -103,6 +104,7 @@
       "calibre"
       "shottr"
       "gimp"
+      "qbittorrent"
     ];
   };
 }
