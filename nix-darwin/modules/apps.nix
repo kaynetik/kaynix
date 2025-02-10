@@ -53,6 +53,7 @@
       "fzf"
       "ripgrep"
       "croc"
+      "ntfs-3g"
 
       "bazelisk"
       "openjdk"
