@@ -89,6 +89,7 @@
       "slack"
       "telegram"
       "zed"
+      "cursor"
       "nikitabobko/tap/aerospace"
       "sf-symbols"
       "font-sf-pro"
