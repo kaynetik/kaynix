@@ -102,6 +102,7 @@
       "openvpn-connect"
       "viber"
       "spotify"
+      "audacity"
       "vlc"
       "calibre"
       "shottr"
