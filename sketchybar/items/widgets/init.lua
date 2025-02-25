@@ -1,6 +1,7 @@
 require("items.widgets.battery")
 -- require("items.widgets.qq")
 -- require("items.widgets.wechat_and_qq")
+require("items.widgets.language")
 require("items.widgets.volume")
 require("items.widgets.wifi")
 -- require("items.widgets.weather")
