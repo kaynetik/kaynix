@@ -76,6 +76,8 @@
       "borders"
       "switchaudio-osx"
       "nowplaying-cli"
+      "swiftlint"
+      "swiftgen"
     ];
 
     casks = [
