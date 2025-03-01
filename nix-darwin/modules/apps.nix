@@ -78,6 +78,7 @@
       "nowplaying-cli"
       "swiftlint"
       "swiftgen"
+
       "pandoc"
     ];
 
@@ -111,6 +112,7 @@
       "shottr"
       "gimp"
       "qbittorrent"
+      "mactex"
     ];
   };
 }
