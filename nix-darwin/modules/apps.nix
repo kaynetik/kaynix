@@ -78,6 +78,7 @@
       "nowplaying-cli"
       "swiftlint"
       "swiftgen"
+      "pandoc"
     ];
 
     casks = [
