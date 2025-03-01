@@ -96,7 +96,11 @@ alt-b = 'workspace B'
 alt-g = 'workspace G'
 alt-s = 'workspace S'
 alt-t = 'workspace T'
+alt-x = 'workspace X'
 alt-w = 'workspace W'
+
+# Direct shortcut to apply Xcode/Simulator layout
+alt-shift-0 = 'exec-and-forget /bin/bash -c "aerospace focus app-id:com.apple.dt.Xcode && aerospace resize width 80 && aerospace focus app-id:com.apple.iphonesimulator && aerospace resize width 20"'
 
 alt-shift-f = 'fullscreen'
 
@@ -111,8 +115,11 @@ alt-shift-b = 'move-node-to-workspace B'
 alt-shift-g = 'move-node-to-workspace G'
 alt-shift-s = 'move-node-to-workspace S'
 alt-shift-t = 'move-node-to-workspace T'
+alt-shift-x = 'move-node-to-workspace X'
 alt-shift-w = 'move-node-to-workspace W'
 
+# Custom binding for X workspace layout management - using proper key format
+alt-shift-9 = 'mode layout-x'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
@@ -143,6 +150,7 @@ up = 'volume up'
 shift-down = ['volume set 0', 'mode main']
 
 [workspace-to-monitor-force-assignment]
+'X' = ['secondary', 'main']
 'B' = 'secondary'
 'S' = 'secondary'
 'T' = 'main'
@@ -150,3 +158,19 @@ shift-down = ['volume set 0', 'mode main']
 3 = ['main']
 # 4 = 'built-in'                   # Case insensitive regex substring
 # 5 = '^built-in retina display$'  # Case insensitive regex match
+
+# App-specific workspace assignments
+[[on-window-detected]]
+    if.app-id = 'com.apple.dt.Xcode'
+    run = 'move-node-to-workspace X'
+
+[[on-window-detected]]
+    if.app-id = 'com.apple.iphonesimulator'
+    run = 'move-node-to-workspace X'
+
+# New mode for managing workspace X layout
+[mode.layout-x.binding]
+esc = 'mode main'
+r = ['flatten-workspace-tree', 'exec-and-forget /bin/bash -c "aerospace focus app-id:com.apple.dt.Xcode && aerospace resize width 80 && aerospace focus app-id:com.apple.iphonesimulator && aerospace resize width 20"', 'mode main']
+# Add a key to automatically apply the layout when entering workspace X
+a = ['exec-and-forget /bin/bash -c "aerospace focus app-id:com.apple.dt.Xcode && aerospace resize width 80 && aerospace focus app-id:com.apple.iphonesimulator && aerospace resize width 20"', 'mode main']
