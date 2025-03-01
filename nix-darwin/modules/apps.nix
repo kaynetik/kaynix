@@ -86,6 +86,7 @@
 	    "alacritty"
       "keepassxc"
       "gpg-suite"
+      "lulu"
       "protonvpn"
       "raycast"
       "obsidian"
@@ -103,6 +104,7 @@
       "docker"
       "lens"
       "openvpn-connect"
+
       "viber"
       "spotify"
       "audacity"
