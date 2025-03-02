@@ -20,6 +20,9 @@
 
   homebrew = {
     enable = true;
+    # FIXME: Research how to disable ANALYTICS by default
+    # I've caught by accident an outgoing request to InfluxDB for analytics
+    # brew analytics off
 
     onActivation = {
       autoUpdate = true;
