@@ -68,6 +68,8 @@
       "tflint"
       "checkov"
       "trivy"
+      
+      "helm"
 
       "posting"
 
