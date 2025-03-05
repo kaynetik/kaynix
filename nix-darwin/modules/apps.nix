@@ -68,7 +68,7 @@
       "tflint"
       "checkov"
       "trivy"
-      
+
       "helm"
 
       "posting"
@@ -109,6 +109,7 @@
       "docker"
       "lens"
       "openvpn-connect"
+      # "pareto-security" # Ocassionally Run Checks!
 
       "viber"
       "spotify"
