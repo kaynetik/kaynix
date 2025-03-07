@@ -1,6 +1,7 @@
 { pkgs, ...}: {
 
   environment.systemPackages = with pkgs; [
+    zig
     git
     git-lfs
     lazygit
@@ -70,8 +71,15 @@
       "trivy"
 
       "helm"
+      "k3d"
+      "buildifier" # https://github.com/bazelbuild/buildtools
+      "protobuf"
+      "crane"
+      "protoc-gen-grpc-swift"
+      "swift-protobuf"
 
       "posting"
+      "grpcurl"
 
       "lua"
       "luarocks"
