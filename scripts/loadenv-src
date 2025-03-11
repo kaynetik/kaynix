@@ -4,7 +4,7 @@
 usage() {
   echo "Usage: switchenv <environment>"
   echo "Supported environments:"
-  echo "  peer    - Sets Bazel to 6.3.0 and K8s context to arn:aws:eks:eu-central-1:340291253219:cluster/stage-peer"
+  echo "  peer    - Sets Bazel to 6.5.0 and K8s context to arn:aws:eks:eu-central-1:340291253219:cluster/stage-peer"
   echo "  toothly - Sets Bazel to 8.1.1 and K8s context to k3d-toothly-cluster"
   exit 1
 }
@@ -20,7 +20,7 @@ CONFIG_FILE=~/.config/zsh/conf-peer.zsh
 # Handle different environments
 case "$ENV" in
 "peer")
-  BAZEL_VERSION="6.3.0"
+  BAZEL_VERSION="6.5.0"
   KUBE_CONTEXT="arn:aws:eks:eu-central-1:340291253219:cluster/stage-peer"
   ;;
 "toothly")
