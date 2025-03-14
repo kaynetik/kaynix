@@ -59,6 +59,37 @@ fi
 echo "Switching Kubernetes context to $KUBE_CONTEXT..."
 kubectl config use-context "$KUBE_CONTEXT"
 
+# Set environment variable in current shell
+export USE_BAZEL_VERSION=$BAZEL_VERSION
+
+# Update tmux environment if running in tmux
+if [ -n "$TMUX" ]; then
+  echo "Updating tmux environment variables..."
+  # Set the global tmux environment variable
+  tmux set-environment -g USE_BAZEL_VERSION "$BAZEL_VERSION"
+  
+  # Create a direct export command to send to each pane
+  EXPORT_CMD="export USE_BAZEL_VERSION=$BAZEL_VERSION"
+  
+  # Get the current pane ID to avoid sending to our current pane
+  CURRENT_PANE=$(tmux display-message -p "#{session_name}:#{window_index}.#{pane_index}")
+  
+  # Send the export command to all panes except the current one
+  tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index}" | while read -r pane; do
+    if [ "$pane" != "$CURRENT_PANE" ]; then
+      tmux send-keys -t "$pane" "$EXPORT_CMD" C-m
+    fi
+  done
+  
+  echo "Environment variables updated in all tmux panes."
+  echo "Note: For some complex shell configurations, you may need to run 'source $CONFIG_FILE' manually in specific panes."
+fi
+
 echo "Environment '$ENV' loaded successfully!"
 echo "- Bazel version: $BAZEL_VERSION"
 echo "- Kubernetes context: $KUBE_CONTEXT"
+
+# Instructions for manual sourcing if needed
+echo ""
+echo "To ensure the environment is loaded in your current shell, you can run:"
+echo "  source $CONFIG_FILE"
