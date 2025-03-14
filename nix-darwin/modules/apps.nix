@@ -99,7 +99,7 @@
 	    "alacritty"
       "keepassxc"
       "gpg-suite"
-      "lulu"
+      # "lulu" => causing strange issues for git
       "protonvpn"
       "raycast"
       "obsidian"
