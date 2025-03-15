@@ -13,6 +13,7 @@
     kubectl
     tree
     infracost
+    tparse # CLI summarizer for `go test` output
   ];
 
   fonts.packages =

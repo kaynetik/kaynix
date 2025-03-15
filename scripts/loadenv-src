@@ -65,24 +65,67 @@ export USE_BAZEL_VERSION=$BAZEL_VERSION
 # Update tmux environment if running in tmux
 if [ -n "$TMUX" ]; then
   echo "Updating tmux environment variables..."
+  
   # Set the global tmux environment variable
   tmux set-environment -g USE_BAZEL_VERSION "$BAZEL_VERSION"
   
-  # Create a direct export command to send to each pane
-  EXPORT_CMD="export USE_BAZEL_VERSION=$BAZEL_VERSION"
-  
-  # Get the current pane ID to avoid sending to our current pane
-  CURRENT_PANE=$(tmux display-message -p "#{session_name}:#{window_index}.#{pane_index}")
-  
-  # Send the export command to all panes except the current one
-  tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index}" | while read -r pane; do
-    if [ "$pane" != "$CURRENT_PANE" ]; then
-      tmux send-keys -t "$pane" "$EXPORT_CMD" C-m
+  # Make sure USE_BAZEL_VERSION is in the update-environment list
+  if ! tmux show-options -g | grep -q "update-environment.*USE_BAZEL_VERSION"; then
+    # Get current update-environment value
+    CURRENT_UPDATE_ENV=$(tmux show-options -g update-environment | awk '{$1=""; print $0}' | sed 's/^[[:space:]]*//')
+    
+    # Add USE_BAZEL_VERSION if not already present
+    if [[ "$CURRENT_UPDATE_ENV" != *"USE_BAZEL_VERSION"* ]]; then
+      # Remove quotes if present
+      CURRENT_UPDATE_ENV=$(echo "$CURRENT_UPDATE_ENV" | sed 's/^"\(.*\)"$/\1/')
+      
+      # Add our variable and set the option
+      NEW_UPDATE_ENV="\"$CURRENT_UPDATE_ENV USE_BAZEL_VERSION\""
+      tmux set-option -g update-environment "$NEW_UPDATE_ENV"
     fi
+  fi
+  
+  # Create a temporary script to update environment in all panes
+  TMUX_UPDATE_SCRIPT=$(mktemp)
+  cat << EOF > "$TMUX_UPDATE_SCRIPT"
+#!/bin/bash
+export USE_BAZEL_VERSION=$BAZEL_VERSION
+EOF
+  chmod +x "$TMUX_UPDATE_SCRIPT"
+  
+  # Get current pane ID to avoid sending to our current pane twice
+  CURRENT_PANE=$(tmux display-message -p "#{pane_id}")
+  
+  # Send the command to all panes in all sessions
+  echo "Updating environment in all tmux panes..."
+  for pane_id in $(tmux list-panes -a -F "#{pane_id}"); do
+    # Use the unique pane ID to target the specific pane
+    tmux send-keys -t "$pane_id" "export USE_BAZEL_VERSION=$BAZEL_VERSION" C-m
   done
   
-  echo "Environment variables updated in all tmux panes."
-  echo "Note: For some complex shell configurations, you may need to run 'source $CONFIG_FILE' manually in specific panes."
+  # Clean up
+  rm "$TMUX_UPDATE_SCRIPT"
+  
+  echo "Environment variable set in tmux global environment and all panes."
+  echo "New panes will inherit this environment variable automatically."
+  
+  # Create a helper script for manual updates if needed
+  cat << 'EOF' > /tmp/tmux_update_env.sh
+#!/bin/bash
+# Helper script to update environment variables from tmux
+if [ -n "$TMUX" ]; then
+  # Get all environment variables from tmux
+  eval $(tmux show-environment -g | grep -v "^-")
+  echo "Environment updated from tmux global environment."
+else
+  echo "Not running in tmux."
+fi
+EOF
+  chmod +x /tmp/tmux_update_env.sh
+  
+  echo ""
+  echo "If you need to manually update the environment in a specific pane, you can run:"
+  echo "  source /tmp/tmux_update_env.sh"
 fi
 
 echo "Environment '$ENV' loaded successfully!"
