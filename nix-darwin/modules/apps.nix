@@ -41,6 +41,7 @@
       "homebrew/services"
       "nikitabobko/tap"
       "FelixKratz/formulae"
+      "txn2/tap"
     ];
 
     brews = [
@@ -73,6 +74,7 @@
 
       "helm"
       "k3d"
+      "kubefwd"
       "buildifier" # https://github.com/bazelbuild/buildtools
       "protobuf"
       "crane"
@@ -81,6 +83,8 @@
 
       "posting"
       "grpcurl"
+      "pgcli"
+      "goose"
 
       "lua"
       "luarocks"
@@ -93,6 +97,7 @@
       "swiftgen"
 
       "pandoc"
+      "exiftool"
     ];
 
     casks = [
