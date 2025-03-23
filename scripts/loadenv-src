@@ -85,47 +85,11 @@ if [ -n "$TMUX" ]; then
     fi
   fi
   
-  # Create a temporary script to update environment in all panes
-  TMUX_UPDATE_SCRIPT=$(mktemp)
-  cat << EOF > "$TMUX_UPDATE_SCRIPT"
-#!/bin/bash
-export USE_BAZEL_VERSION=$BAZEL_VERSION
-EOF
-  chmod +x "$TMUX_UPDATE_SCRIPT"
-  
-  # Get current pane ID to avoid sending to our current pane twice
-  CURRENT_PANE=$(tmux display-message -p "#{pane_id}")
-  
-  # Send the command to all panes in all sessions
-  echo "Updating environment in all tmux panes..."
-  for pane_id in $(tmux list-panes -a -F "#{pane_id}"); do
-    # Use the unique pane ID to target the specific pane
-    tmux send-keys -t "$pane_id" "export USE_BAZEL_VERSION=$BAZEL_VERSION" C-m
-  done
-  
-  # Clean up
-  rm "$TMUX_UPDATE_SCRIPT"
-  
-  echo "Environment variable set in tmux global environment and all panes."
+  echo "Environment variable set in tmux global environment."
   echo "New panes will inherit this environment variable automatically."
-  
-  # Create a helper script for manual updates if needed
-  cat << 'EOF' > /tmp/tmux_update_env.sh
-#!/bin/bash
-# Helper script to update environment variables from tmux
-if [ -n "$TMUX" ]; then
-  # Get all environment variables from tmux
-  eval $(tmux show-environment -g | grep -v "^-")
-  echo "Environment updated from tmux global environment."
-else
-  echo "Not running in tmux."
-fi
-EOF
-  chmod +x /tmp/tmux_update_env.sh
-  
   echo ""
-  echo "If you need to manually update the environment in a specific pane, you can run:"
-  echo "  source /tmp/tmux_update_env.sh"
+  echo "For existing panes, you have two options:"
+  echo "1. Restart tmux with: tmux kill-server && tmux"
 fi
 
 echo "Environment '$ENV' loaded successfully!"
