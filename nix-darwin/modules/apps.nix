@@ -38,7 +38,6 @@
     # };
 
     taps = [
-      "homebrew/services"
       "nikitabobko/tap"
       "FelixKratz/formulae"
       "txn2/tap"
