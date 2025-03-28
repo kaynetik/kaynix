@@ -14,6 +14,7 @@
     tree
     infracost
     tparse # CLI summarizer for `go test` output
+    htop
   ];
 
   fonts.packages =
@@ -122,6 +123,7 @@
       "docker"
       "lens"
       "openvpn-connect"
+      "ngrok"
       # "pareto-security" # Ocassionally Run Checks!
 
       "viber"
