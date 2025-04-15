@@ -135,6 +135,7 @@
       "gimp"
       "qbittorrent"
       "mactex"
+      "texstudio"
     ];
   };
 }

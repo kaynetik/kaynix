@@ -8,6 +8,7 @@ raycast
 zed/conversations/*
 zed/prompts/*
 infracost/*
+texstudio/*
 
 gtk-*
 qbittorrent
