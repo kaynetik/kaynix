@@ -7,6 +7,7 @@ alias elt="eza -al --sort=modified --icons=auto"
 
 alias history="omz_history -E"
 alias k="kubectl"
+alias kz="kustomize"
 alias kname-prd="k config set-context --current --namespace=cloud-prd"
 alias kname-stg="k config set-context --current --namespace=cloud-stg"
 

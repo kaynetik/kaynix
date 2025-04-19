@@ -11,6 +11,7 @@
     nodejs
     wget
     kubectl
+    kustomize
     tree
     infracost
     tparse # CLI summarizer for `go test` output
