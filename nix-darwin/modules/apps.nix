@@ -16,6 +16,7 @@
     infracost
     tparse # CLI summarizer for `go test` output
     htop
+    postgresql_17
   ];
 
   fonts.packages =
