@@ -44,6 +44,7 @@
       "nikitabobko/tap"
       "FelixKratz/formulae"
       "txn2/tap"
+      "jwt-rs/jwt-ui"
     ];
 
     brews = [
@@ -85,6 +86,7 @@
 
       "posting"
       "grpcurl"
+      "jwt-rs/jwt-ui/jwt-ui"
       "pgcli"
       "goose"
 
