@@ -14,6 +14,7 @@
     kustomize
     tree
     infracost
+    terraformer # GCP tool for easier importing of lost/drifted state
     tparse # CLI summarizer for `go test` output
     htop
     postgresql_17
