@@ -2,6 +2,7 @@
 
   environment.systemPackages = with pkgs; [
     zig
+    rustup
     git
     git-lfs
     lazygit
