@@ -19,6 +19,7 @@
     tparse # CLI summarizer for `go test` output
     htop
     postgresql_17
+    grafana-alloy
   ];
 
   fonts.packages =
@@ -142,6 +143,7 @@
       "qbittorrent"
       "mactex"
       "texstudio"
+      "gather"
     ];
   };
 }
