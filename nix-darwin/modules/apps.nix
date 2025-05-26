@@ -20,6 +20,7 @@
     htop
     postgresql_17
     grafana-alloy
+    imagemagick
   ];
 
   fonts.packages =
