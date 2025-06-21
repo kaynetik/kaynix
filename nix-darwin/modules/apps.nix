@@ -106,6 +106,7 @@
 
       "pandoc"
       "exiftool"
+      "hugo"
     ];
 
     casks = [
