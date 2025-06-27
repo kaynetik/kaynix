@@ -13,6 +13,7 @@
     wget
     kubectl
     kustomize
+    k9s
     tree
     infracost
     terraformer # GCP tool for easier importing of lost/drifted state
@@ -129,8 +130,8 @@
       "postman"
       "jetbrains-toolbox"
       "google-cloud-sdk"
-      "docker"
-      "lens"
+      "docker-desktop"
+      "lens" #k9s migration should happen asap!
       "openvpn-connect"
       "ngrok"
       # "pareto-security" # Ocassionally Run Checks!
