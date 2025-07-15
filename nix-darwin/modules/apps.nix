@@ -129,7 +129,7 @@
       "font-sf-mono"
       "postman"
       "jetbrains-toolbox"
-      "google-cloud-sdk"
+      "gcloud-cli"
       "docker-desktop"
       "lens" #k9s migration should happen asap!
       "openvpn-connect"
