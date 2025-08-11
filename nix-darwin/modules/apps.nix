@@ -22,6 +22,11 @@
     postgresql_17
     grafana-alloy
     imagemagick
+    
+    pre-commit
+    awscli2
+    
+    gh
   ];
 
   fonts.packages =
@@ -30,13 +35,12 @@
 
   homebrew = {
     enable = true;
-    # FIXME: Research how to disable ANALYTICS by default
-    # I've caught by accident an outgoing request to InfluxDB for analytics
-    # brew analytics off
+    # Note: Analytics needs to be disabled manually with: brew analytics off
 
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
+      upgrade = true;
     };
 
     # FIXME: Redownload not available...
@@ -70,9 +74,6 @@
 
       "bazelisk"
       "openjdk"
-      "awscli"
-      "pre-commit"
-      "gh"
 
       # Terraform
       "tfenv"

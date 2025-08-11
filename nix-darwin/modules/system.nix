@@ -4,7 +4,7 @@
 
   system = {
     stateVersion = 5;
-    primaryUser = username;
+    primaryUser = "kaynetik";
     # activationScripts are executed every time you boot the system or run `nixos-rebuild` / `darwin-rebuild`.
 
     defaults = {
