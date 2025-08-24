@@ -18,3 +18,4 @@ k3d
 pgcli
 
 scripts/loadenv-src
+stripe/*
