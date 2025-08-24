@@ -22,10 +22,11 @@
     postgresql_17
     grafana-alloy
     imagemagick
-    
+ 
     pre-commit
     awscli2
-    
+    stripe-cli
+
     gh
   ];
 
