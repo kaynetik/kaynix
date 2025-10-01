@@ -26,6 +26,7 @@
     pre-commit
     awscli2
     stripe-cli
+    argocd
 
     gh
   ];
