@@ -23,10 +23,10 @@
     grafana-alloy
     imagemagick
  
-    pre-commit
-    awscli2
     stripe-cli
     argocd
+    dotenvx
+    awscli2
 
     gh
   ];
@@ -73,6 +73,7 @@
       "fzf"
       "ripgrep"
       "croc"
+      "pre-commit"
 
       "bazelisk"
       "openjdk"
