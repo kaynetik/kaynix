@@ -151,6 +151,7 @@
       "mactex"
       "texstudio"
       "gather"
+      "steam"
     ];
   };
 }
