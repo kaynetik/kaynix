@@ -27,6 +27,8 @@
     argocd
     dotenvx
     awscli2
+    prometheus
+    prometheus.cli  # This provides promtool
 
     gh
   ];
