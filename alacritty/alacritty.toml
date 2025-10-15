@@ -36,3 +36,24 @@ style = "Medium Italic"
 [font.normal]
 family = "JetBrainsMono Nerd Font"
 style = "Medium"
+
+# Keyboard bindings for better history navigation
+[[keyboard.bindings]]
+key = "Up"
+mods = "Alt"
+chars = "\u001b[1;3A"
+
+[[keyboard.bindings]]
+key = "Down"
+mods = "Alt"
+chars = "\u001b[1;3B"
+
+[[keyboard.bindings]]
+key = "Up"
+mods = "Command"
+chars = "\u001b[1;9A"
+
+[[keyboard.bindings]]
+key = "Down"
+mods = "Command"
+chars = "\u001b[1;9B"

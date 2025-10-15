@@ -114,8 +114,15 @@
             
             # Global zsh configuration
             interactiveShellInit = ''
-              # Enable vi mode
-              bindkey -v
+              # Use emacs mode (standard shell keybindings) for better compatibility
+              # with zsh plugins and arrow key navigation
+              bindkey -e
+              
+              # Explicit keybindings for arrow keys to navigate history
+              bindkey '^[[A' up-line-or-history      # Up arrow
+              bindkey '^[[B' down-line-or-history    # Down arrow
+              bindkey '^[OA' up-line-or-history      # Up arrow (alternate)
+              bindkey '^[OB' down-line-or-history    # Down arrow (alternate)
               
               # History settings
               HISTSIZE=10000
