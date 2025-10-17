@@ -46,4 +46,3 @@ Your current nix-darwin configuration's structure should be as follows:
 │   └── system.nix      # defines your macOS's system configuration(like dock, trackpad, keyboard, finder, loginwindow, etc.)
 └── README.md
 ```
-

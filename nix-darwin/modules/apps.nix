@@ -1,41 +1,60 @@
-{ pkgs, ...}: {
-
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
+    # Development languages & tools
     zig
     rustup
+    alejandra
+
+    # Version control
     git
     git-lfs
     lazygit
+    gh
+
+    # CLI utilities & text processing
     jq
+    yq
     bat
+    curl
+    wget
+    tree
+
+    # JavaScript/Node ecosystem
     bun
     nodejs
-    wget
+
+    # Kubernetes & cloud tools
     kubectl
     kustomize
     k9s
-    tree
+    awscli2
+    argocd
+
+    # Terraform & infrastructure
     infracost
     terraformer # GCP tool for easier importing of lost/drifted state
-    tparse # CLI summarizer for `go test` output
-    htop
-    postgresql_17
-    grafana-alloy
-    imagemagick
- 
-    stripe-cli
-    argocd
-    dotenvx
-    awscli2
-    prometheus
-    prometheus.cli  # This provides promtool
 
-    gh
+    # Monitoring & observability
+    prometheus
+    prometheus.cli # This provides promtool
+    grafana-alloy
+
+    # Database & API tools
+    postgresql_18
+    stripe-cli
+    dotenvx
+
+    # Go tools
+    tparse # CLI summarizer for `go test` output
+
+    # System utilities
+    htop
+    imagemagick
   ];
 
   fonts.packages =
     builtins.filter pkgs.lib.attrsets.isDerivation
-      (builtins.attrValues pkgs.nerd-fonts);
+    (builtins.attrValues pkgs.nerd-fonts);
 
   homebrew = {
     enable = true;
@@ -118,7 +137,7 @@
 
     casks = [
       "brave-browser"
-	    "alacritty"
+      "alacritty"
       "keepassxc"
       "gpg-suite"
       # "lulu" => causing strange issues for git

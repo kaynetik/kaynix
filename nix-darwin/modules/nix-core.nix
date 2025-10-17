@@ -1,7 +1,4 @@
-
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   # Configure nixpkgs to handle deprecation warnings gracefully
   nixpkgs.config = {
     allowUnfree = true;
@@ -28,7 +25,6 @@
 
   # clean up every once in a while
   nix.gc.automatic = true;
-
 
   # Auto upgrade nix package and the daemon service.
   nix.enable = true;

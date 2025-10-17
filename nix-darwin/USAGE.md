@@ -5,7 +5,7 @@
 This nix-darwin configuration provides a comprehensive, declarative system management setup for macOS with the following features:
 
 - **System-wide package management** via Nix
-- **GUI applications** via Homebrew  
+- **GUI applications** via Homebrew
 - **User configuration management** without Home Manager
 - **Development environments** via flake dev shells
 - **Secrets management** via agenix
@@ -69,7 +69,7 @@ nix develop .#rust
    ```bash
    # Install agenix if not already available
    nix profile install github:ryantm/agenix
-   
+
    # Create encrypted secret
    agenix -e api-token.age
    ```
@@ -92,7 +92,7 @@ age.secrets = {
 ```
 modules/
 ├── nix-core.nix      # Core Nix settings and garbage collection
-├── system.nix        # macOS system defaults and preferences  
+├── system.nix        # macOS system defaults and preferences
 ├── apps.nix          # Package management (Nix + Homebrew)
 ├── host-users.nix    # Host and user configuration
 ├── user-config.nix   # User-specific settings and shell config
@@ -205,7 +205,6 @@ If you decide to add Home Manager:
 ## Performance Tips
 
 1. **Use binary caches**: Configuration already optimized for fast builds
-2. **Regular cleanup**: Run `nix-clean` monthly  
+2. **Regular cleanup**: Run `nix-clean` monthly
 3. **Pin important software**: Use specific versions for critical tools
 4. **Profile startup**: Use `time zsh -i -c exit` to check shell startup time
-
