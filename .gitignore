@@ -20,3 +20,4 @@ pgcli
 scripts/loadenv-src
 stripe/*
 argocd/*
+configstore/*

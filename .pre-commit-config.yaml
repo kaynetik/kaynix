@@ -39,11 +39,8 @@ repos:
         pass_filenames: false
 
   # Security scanning with checkov
-  # Note: Currently throws too many warnings; deal with that in the future...
   - repo: https://github.com/bridgecrewio/checkov.git
-    rev: 3.2.435
+    rev: 3.2.484
     hooks:
       - id: checkov
         args: [-d ., --quiet, --compact]
-        # Optional: Skip specific checks that are too noisy
-        # args: [-d ., --quiet, --compact, --skip-check CKV_*]
