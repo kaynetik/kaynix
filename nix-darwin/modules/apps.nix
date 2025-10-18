@@ -1,56 +1,120 @@
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
-    # Development languages & tools
+    # ============================================================
+    # Languages & Runtimes
+    # ============================================================
     zig
     rustup
     alejandra
+    hugo
+    bun
+    nodejs
 
-    # Version control
+    # ============================================================
+    # VCS
+    # ============================================================
     git
     git-lfs
     lazygit
     gh
+    pre-commit
 
-    # CLI utilities & text processing
+    # ============================================================
+    # Terminal & Shell Utilities
+    # ============================================================
+    alacritty
+    alacritty-theme
+    neovim
+    tmux
+    atuin
+    zoxide
+    zinit
+    fzf
+    fzf-zsh
+    htop
+    #
+    # Text Processing & Search
     jq
     yq
     bat
+    ripgrep
+    fd
+    eza
+    tree
+    exiftool
+
+    # ============================================================
+    # Network & Transfer Utilities
+    # ============================================================
     curl
     wget
-    tree
+    croc
+    grpcurl
 
-    # JavaScript/Node ecosystem
-    bun
-    nodejs
-
-    # Kubernetes & cloud tools
+    # ============================================================
+    # Kubernetes & Container Tools
+    # ============================================================
     kubectl
     kustomize
     k9s
-    awscli2
     argocd
+    kubefwd
+    k3d
+    kubernetes-helm
 
-    # Terraform & infrastructure
+    # ============================================================
+    # Cloud Platforms
+    # ============================================================
+    awscli2
+
+    # ============================================================
+    # IaC & Security
+    # ============================================================
     infracost
-    terraformer # GCP tool for easier importing of lost/drifted state
+    tflint
+    checkov
+    trivy
 
-    # Monitoring & observability
+    # ============================================================
+    # Monitoring & Observability
+    # ============================================================
     prometheus
     prometheus.cli # This provides promtool
     grafana-alloy
 
-    # Database & API tools
+    # ============================================================
+    # Database & API Tools
+    # ============================================================
     postgresql_18
+    pgcli
+    postman
     stripe-cli
     dotenvx
 
-    # Go tools
+    # ============================================================
+    # Go Development Tools
+    # ============================================================
     tparse # CLI summarizer for `go test` output
+    goose
+    crane
+    bazel-buildtools
+    bazelisk
 
-    # System utilities
-    htop
+    # ============================================================
+    # Media & Creative Tools
+    # ============================================================
+    audacity
+    qbittorrent-enhanced
+    spotify
     imagemagick
-    atuin
+    shottr
+
+    # ============================================================
+    # Communication Tools
+    # ============================================================
+    telegram-desktop
+    slack
+    languagetool
   ];
 
   fonts.packages =
@@ -67,12 +131,6 @@
       upgrade = true;
     };
 
-    # FIXME: Redownload not available...
-    # masApps = {
-    #   "Bitwarden" = 1352778147;
-    #   "Windows App" = 1295203466;
-    # };
-
     taps = [
       "nikitabobko/tap"
       "FelixKratz/formulae"
@@ -81,97 +139,76 @@
     ];
 
     brews = [
-      "zinit"
-      "neovim"
-      "tmux"
-      "eza"
-      "languagetool"
+      # Security & GPG
       "keychain"
       "gpg"
       "gpg2"
       "gnupg"
       "pinentry-mac"
-      "zoxide"
-      "fzf"
-      "ripgrep"
-      "croc"
-      "pre-commit"
 
-      "bazelisk"
+      # Programming Languages & Runtimes
       "openjdk"
-
-      # Terraform
-      "tfenv"
-      "tflint"
-      "checkov"
-      "trivy"
-
-      "helm"
-      "k3d"
-      "kubefwd"
-      "buildifier" # https://github.com/bazelbuild/buildtools
-      "protobuf"
-      "crane"
-      "protoc-gen-grpc-swift"
-      "swift-protobuf"
-
-      "posting"
-      "grpcurl"
-      "jwt-rs/jwt-ui/jwt-ui"
-      "pgcli"
-      "goose"
-
       "lua"
       "luarocks"
-      "fd"
+
+      # Infrastructure & DevOps
+      "tfenv"
+      "jwt-rs/jwt-ui/jwt-ui"
+
+      # UI & Desktop Tools
       "sketchybar"
       "borders"
+
+      # Audio & Media Utilities
       "switchaudio-osx"
       "nowplaying-cli"
+
+      # Swift Development
       "swiftlint"
       "swiftgen"
-
-      "pandoc"
-      "exiftool"
-      "hugo"
+      "protobuf"
+      "swift-protobuf"
+      "protoc-gen-grpc-swift"
     ];
 
     casks = [
+      # Browsers
       "brave-browser"
-      "alacritty"
+
+      # Security & Privacy
       "keepassxc"
       "gpg-suite"
       # "lulu" => causing strange issues for git
       "protonvpn"
+      # "pareto-security" # Occasionally run security checks
+
+      # Productivity & Utilities
       "raycast"
       "obsidian"
-      "slack"
-      "telegram"
-      "zed"
-      "cursor"
       "nikitabobko/tap/aerospace"
+
+      # Development Tools
+      "cursor"
+      "jetbrains-toolbox"
+
+      # Fonts & Design Resources
       "sf-symbols"
       "font-sf-pro"
       "font-sf-mono"
-      "postman"
-      "jetbrains-toolbox"
+
+      # Cloud & Infrastructure
       "gcloud-cli"
       "docker-desktop"
-      "lens" #k9s migration should happen asap!
-      "openvpn-connect"
-      "ngrok"
-      # "pareto-security" # Ocassionally Run Checks!
+      "lens" # k9s migration should happen asap!
 
-      "viber"
-      "spotify"
-      "audacity"
-      "vlc"
+      # Media & Creative Tools
       "calibre"
-      "shottr"
-      "gimp"
-      "qbittorrent"
       "mactex"
       "texstudio"
+      "vlc"
+      "gimp"
+
+      # Communication & Entertainment
       "gather"
       "steam"
     ];
