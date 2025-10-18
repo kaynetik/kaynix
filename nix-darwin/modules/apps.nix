@@ -28,7 +28,6 @@
     tmux
     atuin
     zoxide
-    zinit
     fzf
     fzf-zsh
     htop
@@ -151,7 +150,8 @@
       "lua"
       "luarocks"
 
-      # Infrastructure & DevOps
+      # Shell Tools
+      "zinit"
       "tfenv"
       "jwt-rs/jwt-ui/jwt-ui"
 
