@@ -100,7 +100,7 @@
     bazelisk
 
     # ============================================================
-    # Media & Creative Tools
+    # Media | Audio | Video
     # ============================================================
     audacity
     qbittorrent-enhanced
@@ -109,9 +109,8 @@
     shottr
 
     # ============================================================
-    # Communication Tools
+    # Comms
     # ============================================================
-    telegram-desktop
     slack
     languagetool
   ];
@@ -211,6 +210,7 @@
       # Communication & Entertainment
       "gather"
       "steam"
+      "telegram"
     ];
   };
 }
