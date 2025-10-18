@@ -1,6 +1,6 @@
 paths=(
     ~/.config/scripts
-    ~/sdk/go1.24.1/bin
+    ~/sdk/go1.25.3/bin
     /Users/kaynetik/go/bin
     /opt/homebrew/Cellar/openjdk/25/bin
 )

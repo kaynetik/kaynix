@@ -1,5 +1,6 @@
 zsh/conf-*.zsh
 
+atuin/*
 tmux/plugins/*
 gcloud
 github-copilot

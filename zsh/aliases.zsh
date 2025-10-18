@@ -5,7 +5,6 @@ alias ell="eza -al --group-directories-first --icons=always"
 alias els="eza -alf --color=always --sort=size --icons=always | grep -v /"
 alias elt="eza -al --sort=modified --icons=auto"
 
-alias history="omz_history -E"
 alias k="kubectl"
 alias kz="kustomize"
 alias kname-prd="k config set-context --current --namespace=cloud-prd"

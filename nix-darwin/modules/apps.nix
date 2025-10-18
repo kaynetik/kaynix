@@ -50,6 +50,7 @@
     # System utilities
     htop
     imagemagick
+    atuin
   ];
 
   fonts.packages =
