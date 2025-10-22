@@ -9,6 +9,7 @@
     hugo
     bun
     nodejs
+    poetry # Python dependency management
 
     # ============================================================
     # VCS
