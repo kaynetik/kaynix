@@ -9,7 +9,10 @@
     hugo
     bun
     nodejs
+    ## Python Deps [temporary]
     poetry # Python dependency management
+    mypy
+    ruff
 
     # ============================================================
     # VCS
