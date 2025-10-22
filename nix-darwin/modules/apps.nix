@@ -73,6 +73,7 @@
     tflint
     checkov
     trivy
+    terraform-docs
 
     # ============================================================
     # Monitoring & Observability
