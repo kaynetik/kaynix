@@ -75,7 +75,6 @@
     # ============================================================
     infracost
     tflint
-    checkov
     trivy
     terraform-docs
 
@@ -91,7 +90,6 @@
     # ============================================================
     postgresql_18
     pgcli
-    postman
     stripe-cli
     dotenvx
 
@@ -108,21 +106,16 @@
     # Media | Audio | Video
     # ============================================================
     audacity
-    qbittorrent-enhanced
-    spotify
     imagemagick
     shottr
-
-    # ============================================================
-    # Comms
-    # ============================================================
-    slack
     languagetool
   ];
 
-  fonts.packages =
-    builtins.filter pkgs.lib.attrsets.isDerivation
-    (builtins.attrValues pkgs.nerd-fonts);
+  fonts.packages = with pkgs.nerd-fonts; [
+    jetbrains-mono # Primary terminal font (Alacritty)
+    fira-code
+    meslo-lg
+  ];
 
   homebrew = {
     enable = true;
@@ -158,6 +151,7 @@
       "zinit"
       "tfenv"
       "jwt-rs/jwt-ui/jwt-ui"
+      "checkov" # Note: Installing via pkgmanager caused Wayland dependency.
 
       # UI & Desktop Tools
       "sketchybar"
@@ -194,6 +188,7 @@
       # Development Tools
       "cursor"
       "jetbrains-toolbox"
+      "postman"
 
       # Fonts & Design Resources
       "sf-symbols"
@@ -207,15 +202,15 @@
 
       # Media & Creative Tools
       "calibre"
-      "mactex"
-      "texstudio"
       "vlc"
       "gimp"
+      "steam"
 
       # Communication & Entertainment
       "gather"
-      "steam"
       "telegram"
+      "slack"
+      "spotify"
     ];
   };
 }
