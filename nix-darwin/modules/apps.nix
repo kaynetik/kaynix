@@ -13,6 +13,8 @@
     poetry # Python dependency management
     mypy
     ruff
+    ## Crypto
+    # secp256k1
 
     # ============================================================
     # VCS
@@ -141,6 +143,7 @@
       "gpg2"
       "gnupg"
       "pinentry-mac"
+      "secp256k1"
 
       # Programming Languages & Runtimes
       "openjdk"
@@ -204,7 +207,6 @@
       "calibre"
       "vlc"
       "gimp"
-      "steam"
 
       # Communication & Entertainment
       "gather"
