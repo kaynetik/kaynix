@@ -207,12 +207,14 @@
       "calibre"
       "vlc"
       "gimp"
+      "steam"
 
       # Communication & Entertainment
       "gather"
       "telegram"
       "slack"
       "spotify"
+      "viber"
     ];
   };
 }
