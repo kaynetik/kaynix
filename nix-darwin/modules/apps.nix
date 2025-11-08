@@ -207,6 +207,7 @@
       "calibre"
       "vlc"
       "gimp"
+      "transmission"
       "steam"
 
       # Communication & Entertainment
