@@ -40,7 +40,7 @@
     #
     # Text Processing & Search
     jq
-    yq
+    yq-go
     bat
     ripgrep
     fd
