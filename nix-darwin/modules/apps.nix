@@ -13,8 +13,6 @@
     poetry # Python dependency management
     mypy
     ruff
-    ## Crypto
-    # secp256k1
 
     # ============================================================
     # VCS
@@ -208,7 +206,6 @@
       "vlc"
       "gimp"
       "transmission"
-      "steam"
 
       # Communication & Entertainment
       "gather"
