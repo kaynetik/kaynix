@@ -18,17 +18,19 @@
   networking.knownNetworkServices = [
     "Wi-Fi"
     "Thunderbolt Bridge"
+    "ThinkPad TBT 3 Dock"
+    "USB 10/100 LAN"
     # Note: VPN services (like ProtonVPN) intentionally excluded
     # to allow them to manage their own DNS
   ];
 
   # DNS servers to apply to the above network services
   networking.dns = [
+    "192.168.2.1"
     "1.1.1.1" # Cloudflare Primary (fast, privacy-focused)
     "1.0.0.1" # Cloudflare Secondary
     "8.8.8.8" # Google Primary (reliable fallback)
     "8.8.4.4" # Google Secondary (reliable fallback)
-    # "192.168.2.1"
   ];
 
   users.users."${username}" = {
