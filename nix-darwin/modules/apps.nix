@@ -87,7 +87,6 @@
     postgresql_18
     pgcli
     stripe-cli
-    dotenvx
 
     # ============================================================
     # Go Development Tools
@@ -128,6 +127,7 @@
       "FelixKratz/formulae"
       "txn2/tap"
       "jwt-rs/jwt-ui"
+      "dotenvx/brew"
     ];
 
     brews = [
@@ -149,6 +149,7 @@
       "tfenv"
       "jwt-rs/jwt-ui/jwt-ui"
       "checkov" # Note: Installing via pkgmanager caused Wayland dependency.
+      "dotenvx"
 
       # UI & Desktop Tools
       "sketchybar"
