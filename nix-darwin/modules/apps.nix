@@ -41,6 +41,7 @@
     eza
     tree
     exiftool
+    # mvt # phone spyware analysis
 
     # ============================================================
     # Network & Transfer Utilities
@@ -203,6 +204,7 @@
       "vlc"
       "gimp"
       "transmission"
+      "unetbootin"
 
       # Communication & Entertainment
       "gather"
