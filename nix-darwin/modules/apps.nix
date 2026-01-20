@@ -29,7 +29,6 @@
     atuin
     zoxide
     fzf
-    fzf-zsh
     htop
     #
     # Text Processing & Search
