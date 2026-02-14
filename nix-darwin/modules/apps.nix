@@ -206,7 +206,6 @@
       "unetbootin"
 
       # Communication & Entertainment
-      "gather"
       "telegram"
       "slack"
       "spotify"
