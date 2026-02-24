@@ -1,6 +1,6 @@
 zsh/conf-*.zsh
 
-atuin/*
+/atuin
 tmux/plugins/*
 gcloud
 github-copilot
@@ -8,8 +8,8 @@ jgit
 raycast
 zed/conversations/*
 zed/prompts/*
-infracost/*
-texstudio/*
+/infracost
+/texstudio
 
 gtk-*
 qbittorrent
@@ -19,7 +19,8 @@ k3d
 pgcli
 
 scripts/loadenv-src
-stripe/*
-argocd/*
-configstore/*
-cagent/*
+/stripe
+/argocd
+/configstore
+/cagent
+/containers

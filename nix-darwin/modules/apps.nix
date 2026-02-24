@@ -60,6 +60,8 @@
     kubefwd
     k3d
     kubernetes-helm
+    podman
+    podman-desktop
 
     # ============================================================
     # Cloud Platforms
