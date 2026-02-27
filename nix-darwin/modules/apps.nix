@@ -15,6 +15,7 @@
     # ============================================================
     git
     git-lfs
+    git-filter-repo
     lazygit
     gh
     pre-commit
@@ -41,6 +42,7 @@
     tree
     exiftool
     # mvt # phone spyware analysis
+    uv
 
     # ============================================================
     # Network & Transfer Utilities
