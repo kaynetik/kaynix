@@ -44,3 +44,9 @@ repos:
     hooks:
       - id: checkov
         args: [-d ., --quiet, --compact]
+
+  # Scannning for usual leaks
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.0
+    hooks:
+      - id: gitleaks
