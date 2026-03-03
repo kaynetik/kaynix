@@ -58,7 +58,7 @@
     kubectl
     kustomize
     k9s
-    # argocd # temporarily broken in nixpkgs (fetchYarnDeps hash mismatch in argocd-ui 3.3.0)
+    argocd
     kubefwd
     k3d
     kubernetes-helm
@@ -150,7 +150,6 @@
       "luarocks"
 
       # Shell Tools
-      # "argocd"
       "zinit"
       "tfenv"
       "jwt-rs/jwt-ui/jwt-ui"
