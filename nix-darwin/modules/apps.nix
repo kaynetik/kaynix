@@ -43,6 +43,7 @@
     exiftool
     # mvt # phone spyware analysis
     uv
+    cmctl # interact with a cert-manager instalation on k8s
 
     # ============================================================
     # Network & Transfer Utilities
