@@ -52,6 +52,8 @@
     wget
     croc
     grpcurl
+    wireguard-tools
+    wireguard-ui
 
     # ============================================================
     # Kubernetes & Container Tools
@@ -65,6 +67,7 @@
     kubernetes-helm
     podman
     podman-desktop
+    sops # manage encryption keys
 
     # ============================================================
     # Cloud Platforms
