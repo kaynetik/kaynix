@@ -112,6 +112,7 @@
     imagemagick
     shottr
     languagetool
+    sbarlua
   ];
 
   fonts.packages = with pkgs.nerd-fonts; [
