@@ -1,0 +1,22 @@
+: 1773330900:0;ls ~/.config
+: 1773330909:0;gh auth login
+: 1773330942:0;gh auth status
+: 1773330995:0;gh api repos/kaynetik/dot-nix/events --jq '[.[] | select(.type=="PushEvent")] | .[0] | {before: .payload.before, after: .payload.head, time: .created_at}'\
+
+: 1773331003:0;gh api repos/kaynetik/dot-nix/events --jq '[.[] | select(.type=="PushEvent")] | .[0] | {before: .payload.before, after: .payload.head, time: .created_at}'
+: 1773331009:0;gh api repos/kaynetik/dot-nix/events --jq '[.[] | select(.type=="PushEvent")] | .[0] | {before: .payload.before, after: .payload.head, time: .created_at}' | cat
+: 1773331023:0;cd /tmp\
+git clone git@github.com:kaynetik/dot-nix.git config-restore\
+cd config-restore
+: 1773331039:0;git checkout 0ca462005b322d2796538403b1b1bee709589b3d
+: 1773331097:0;git log --oneline -10\
+
+: 1773331145:0;ell
+: 1773331157:0;cd
+: 1773331160:0;ell .cursor
+: 1773331207:0;atuin stats
+: 1773331222:0;ls ~/.oh-my-zsh
+: 1773331256:0;ls ~/.config
+: 1773331275:0;ell
+: 1773331423:0;rm /Users/kaynetik/.config/zsh/conf-peer.zsh
+: 1773331462:0;ls ~/.config
