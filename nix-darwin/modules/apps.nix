@@ -5,6 +5,7 @@
     # ============================================================
     zig
     rustup
+    go
     alejandra
     hugo
     bun
@@ -42,7 +43,6 @@
     tree
     exiftool
     # mvt # phone spyware analysis
-    uv
     cmctl # interact with a cert-manager instalation on k8s
 
     # ============================================================
@@ -184,9 +184,9 @@
       # Security & Privacy
       "keepassxc"
       "gpg-suite"
-      # "lulu" => causing strange issues for git
+      "lulu"
       "protonvpn"
-      # "pareto-security" # Occasionally run security checks
+      "pareto-security" # Occasionally run security checks
 
       # Productivity & Utilities
       "raycast"
@@ -195,7 +195,6 @@
 
       # Development Tools
       "cursor"
-      "jetbrains-toolbox"
       "postman"
 
       # Fonts & Design Resources
@@ -219,7 +218,6 @@
       "telegram"
       "slack"
       "spotify"
-      "viber"
     ];
   };
 }
