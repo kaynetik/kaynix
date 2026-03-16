@@ -185,6 +185,7 @@
       "keepassxc"
       "gpg-suite"
       "lulu"
+      "reikey"
       "protonvpn"
       "pareto-security" # Occasionally run security checks
 
