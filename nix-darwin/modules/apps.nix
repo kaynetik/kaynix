@@ -1,4 +1,6 @@
 {pkgs, ...}: {
+  services.sketchybar.enable = true;
+
   environment.systemPackages = with pkgs; [
     # ============================================================
     # Languages & Runtimes
@@ -10,6 +12,11 @@
     hugo
     bun
     nodejs
+
+    # ============================================================
+    # Nix - i3 akin flow
+    # ============================================================
+    jankyborders
 
     # ============================================================
     # VCS
@@ -44,6 +51,7 @@
     exiftool
     # mvt # phone spyware analysis
     cmctl # interact with a cert-manager instalation on k8s
+    # dotenvx
 
     # ============================================================
     # Network & Transfer Utilities
@@ -68,6 +76,7 @@
     podman
     podman-desktop
     sops # manage encryption keys
+    checkov # if it fails to compile, check for Wayland issues
 
     # ============================================================
     # Cloud Platforms
@@ -158,12 +167,11 @@
       "zinit"
       "tfenv"
       "jwt-rs/jwt-ui/jwt-ui"
-      "checkov" # Note: Installing via pkgmanager caused Wayland dependency.
-      "dotenvx"
+      # "dotenvx"
 
       # UI & Desktop Tools
-      "sketchybar"
-      "borders"
+      # "sketchybar"
+      # "borders"
 
       # Audio & Media Utilities
       "switchaudio-osx"
@@ -208,17 +216,17 @@
       "docker-desktop"
       "lens" # k9s migration should happen asap!
 
-      # Media & Creative Tools
+      # Media Tools
       "calibre"
       "vlc"
+      "spotify"
       "gimp"
       "transmission"
       "unetbootin"
 
-      # Communication & Entertainment
+      # Communication
       "telegram"
       "slack"
-      "spotify"
     ];
   };
 }
