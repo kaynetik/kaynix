@@ -30,7 +30,7 @@
         outer.right = 4;
         outer.bottom = 4;
         outer.top = [
-          { monitor."Built-in Retina Display" = 6; }
+          {monitor."Built-in Retina Display" = 6;}
           40
         ];
       };
