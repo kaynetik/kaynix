@@ -8,6 +8,7 @@
     zig
     rustup
     go
+    lua
     alejandra
     hugo
     bun
@@ -16,7 +17,10 @@
     # ============================================================
     # Nix - i3 akin flow
     # ============================================================
+    sbarlua
     jankyborders
+    switchaudio-osx
+    nowplaying-cli
 
     # ============================================================
     # VCS
@@ -36,6 +40,7 @@
     neovim
     tmux
     atuin
+    # zinit -> fix for nixdarwin
     zoxide
     fzf
     htop
@@ -121,7 +126,7 @@
     imagemagick
     shottr
     languagetool
-    sbarlua
+    # vlc => fix this?
   ];
 
   fonts.packages = with pkgs.nerd-fonts; [
@@ -141,11 +146,11 @@
     };
 
     taps = [
-      "nikitabobko/tap"
-      "FelixKratz/formulae"
+      # "nikitabobko/tap"
+      # "FelixKratz/formulae"
       "txn2/tap"
       "jwt-rs/jwt-ui"
-      "dotenvx/brew"
+      # "dotenvx/brew"
     ];
 
     brews = [
@@ -159,26 +164,18 @@
       "tor"
 
       # Programming Languages & Runtimes
-      "openjdk"
-      "lua"
+      "openjdk" # equal alt in nix?
+      # "lua"
       "luarocks"
 
       # Shell Tools
-      "zinit"
-      "tfenv"
+      "zinit" 
+      "tfenv" # wtf why isnt this in nix already?
       "jwt-rs/jwt-ui/jwt-ui"
       # "dotenvx"
 
-      # UI & Desktop Tools
-      # "sketchybar"
-      # "borders"
-
-      # Audio & Media Utilities
-      "switchaudio-osx"
-      "nowplaying-cli"
-
-      # Swift Development
-      "swiftlint"
+      # Swift Development ## Migrate to nix asap
+      "swiftlint" 
       "swiftgen"
       "protobuf"
       "swift-protobuf"
@@ -200,7 +197,6 @@
       # Productivity & Utilities
       "raycast"
       "obsidian"
-      "nikitabobko/tap/aerospace"
 
       # Development Tools
       "cursor"
