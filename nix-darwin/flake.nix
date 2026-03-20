@@ -59,6 +59,7 @@
         ./modules/nix-core.nix
         ./modules/system.nix
         ./modules/apps.nix
+        ./modules/aerospace.nix
         ./modules/host-users.nix
         ./modules/secrets.nix
 
