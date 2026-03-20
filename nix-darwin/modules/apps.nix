@@ -169,13 +169,13 @@
       "luarocks"
 
       # Shell Tools
-      "zinit" 
+      "zinit"
       "tfenv" # wtf why isnt this in nix already?
       "jwt-rs/jwt-ui/jwt-ui"
       # "dotenvx"
 
       # Swift Development ## Migrate to nix asap
-      "swiftlint" 
+      "swiftlint"
       "swiftgen"
       "protobuf"
       "swift-protobuf"
