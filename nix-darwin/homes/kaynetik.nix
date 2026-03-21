@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: let
@@ -22,9 +23,22 @@ in {
 
   home.username = "kaynetik";
   home.homeDirectory = "/Users/kaynetik";
-  home.stateVersion = "25.05";
+  home.stateVersion = "26.05";
 
   xdg.enable = true;
+
+  # copyApps rsyncs materialized .app trees into ~/Applications/Home Manager Apps. That often
+  # fails with Permission denied on unlink (macOS TCC / bundle flags). linkApps instead symlinks
+  # the merged home.packages Applications/ directory into the store; rebuilds update the link.
+  targets.darwin.copyApps.enable = true;
+  # targets.darwin.linkApps.enable = true;
+
+  # One stable path for Launchpad / "Open with" / App Management: points at the current
+  # pkgs.alacritty bundle in the store; updated on every home activation / darwin-rebuild.
+  home.file."Applications/Alacritty.app" = lib.mkIf pkgs.stdenv.isDarwin {
+    source = "${pkgs.alacritty}/Applications/Alacritty.app";
+    recursive = true;
+  };
 
   home.packages =
     [dot-nix-scripts]
@@ -32,10 +46,7 @@ in {
     # wave 1: terminal
     alacritty
     tmux
-    atuin
     htop
-    fzf
-    zoxide
     bat
     ripgrep
     fd
@@ -172,8 +183,73 @@ in {
 
   programs.atuin = {
     enable = true;
-    enableZshIntegration = false;
+    enableZshIntegration = true;
   };
+
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    defaultOptions = [
+      "--height 40%"
+      "--layout=reverse"
+      "--border"
+      "--inline-info"
+      "--color=bg+:#414559,bg:#303446,spinner:#f2d5cf,hl:#e78284"
+      "--color=fg:#c6d0f5,header:#e78284,info:#ca9ee6,pointer:#f2d5cf"
+      "--color=marker:#f2d5cf,fg+:#c6d0f5,prompt:#ca9ee6,hl+:#e78284"
+    ];
+  };
+
+  home.sessionVariables = {
+    ZSH_DISABLE_COMPFIX = "true";
+    DISABLE_MAGIC_FUNCTIONS = "true";
+    HIST_STAMPS = "dd.mm.yyyy";
+  };
+
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    dotDir = "${config.xdg.configHome}/zsh";
+    "oh-my-zsh" = {
+      enable = true;
+      theme = "bira";
+      plugins = ["git"];
+    };
+    # zinit stays on Homebrew. Order: mkBefore (early), mkOrder 550 (before oh-my-zsh), tail (after HM hooks).
+    initContent = lib.mkMerge [
+      (lib.mkBefore ''
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+        source /opt/homebrew/opt/zinit/zinit.zsh
+        zinit light zsh-users/zsh-autosuggestions
+        zinit light zdharma-continuum/fast-syntax-highlighting
+        zinit light marlonrichert/zsh-autocomplete
+        ulimit -n 65536
+        source ${config.xdg.configHome}/zsh/setopt-history.zsh
+        source ${config.xdg.configHome}/zsh/aliases.zsh
+        source ${config.xdg.configHome}/zsh/exports.zsh
+        [[ -r ${config.xdg.configHome}/zsh/conf-seda.zsh ]] && source ${config.xdg.configHome}/zsh/conf-seda.zsh
+        [[ -r ${config.xdg.configHome}/zsh/conf-sietch.zsh ]] && source ${config.xdg.configHome}/zsh/conf-sietch.zsh
+      '')
+      (lib.mkOrder 550 ''
+        zstyle ':omz:update' mode auto
+        export GPG_TTY=$(tty)
+      '')
+      ''
+        # Atuin, zoxide, fzf: Home Manager adds hooks when programs.*.enableZshIntegration is true.
+        bindkey '^[[1;9A' beginning-of-line
+        bindkey '^[[1;9B' end-of-line
+      ''
+    ];
+  };
+
+  xdg.configFile."zsh/aliases.zsh".source = ./static/zsh/aliases.zsh;
+  xdg.configFile."zsh/setopt-history.zsh".source = ./static/zsh/setopt-history.zsh;
+  xdg.configFile."zsh/exports.zsh".source = ./static/zsh/exports.zsh;
 
   xdg.configFile."alacritty/alacritty.toml".source = ./static/alacritty/alacritty.toml;
   xdg.configFile."alacritty/catppuccin-frappe.toml".source = ./static/alacritty/catppuccin-frappe.toml;

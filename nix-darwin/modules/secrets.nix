@@ -40,6 +40,9 @@
   #   SECRET_API_TOKEN = "$(cat ${config.age.secrets.api-token.path})";
   # };
 
+  # Future: ship ~/.config/zsh/conf-seda.zsh (and similar) from age-encrypted files into
+  # ~/.config/nix-darwin/secrets/ and source from zsh, instead of keeping secrets only on disk.
+
   # Create secrets directory if it doesn't exist
   system.activationScripts.createSecretsDir.text = ''
     mkdir -p /Users/${username}/.config/nix-darwin/secrets
