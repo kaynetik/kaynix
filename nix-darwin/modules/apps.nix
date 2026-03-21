@@ -56,7 +56,7 @@
     exiftool
     # mvt # phone spyware analysis
     cmctl # interact with a cert-manager instalation on k8s
-    # dotenvx
+    # dotenvx -> broken upstream, PR pending: https://github.com/NixOS/nixpkgs/pull/500959#issuecomment-4103458168
 
     # ============================================================
     # Network & Transfer Utilities
@@ -82,6 +82,8 @@
     podman-desktop
     sops # manage encryption keys
     checkov # if it fails to compile, check for Wayland issues
+    bazel-buildtools
+    bazelisk
 
     # ============================================================
     # Cloud Platforms
@@ -116,8 +118,6 @@
     tparse # CLI summarizer for `go test` output
     goose
     crane
-    bazel-buildtools
-    bazelisk
 
     # ============================================================
     # Media | Audio | Video
@@ -126,7 +126,7 @@
     imagemagick
     shottr
     languagetool
-    # vlc => fix this?
+    # vlc => fix this for darwinians?
   ];
 
   fonts.packages = with pkgs.nerd-fonts; [
@@ -137,7 +137,7 @@
 
   homebrew = {
     enable = true;
-    # Note: Analytics needs to be disabled manually with: brew analytics off
+    # Note: Analytics still needs to be disabled manually with: brew analytics off
 
     onActivation = {
       autoUpdate = true;
@@ -146,11 +146,8 @@
     };
 
     taps = [
-      # "nikitabobko/tap"
-      # "FelixKratz/formulae"
       "txn2/tap"
       "jwt-rs/jwt-ui"
-      # "dotenvx/brew"
     ];
 
     brews = [
@@ -165,14 +162,12 @@
 
       # Programming Languages & Runtimes
       "openjdk" # equal alt in nix?
-      # "lua"
       "luarocks"
 
       # Shell Tools
       "zinit"
       "tfenv" # wtf why isnt this in nix already?
       "jwt-rs/jwt-ui/jwt-ui"
-      # "dotenvx"
 
       # Swift Development ## Migrate to nix asap
       "swiftlint"
@@ -202,7 +197,7 @@
       "cursor"
       "postman"
 
-      # Fonts & Design Resources
+      # Fonts
       "sf-symbols"
       "font-sf-pro"
       "font-sf-mono"
