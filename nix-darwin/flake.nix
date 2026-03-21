@@ -75,6 +75,8 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
+          # First switch: rename any plain files that block HM into *.hm-backup, then link from the store.
+          home-manager.backupFileExtension = "hm-backup";
           # zinit stays on Homebrew (nixpkgs zinit is problematic); shell stays in ~/.zshrc for now.
           home-manager.users.kaynetik = import ./homes/kaynetik.nix;
         }

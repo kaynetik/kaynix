@@ -1,1 +1,4 @@
 *-dns.sh
+tmp-bkup/
+homes/static/tmux/plugins/*
+homes/static/nvim/.neoconf.json

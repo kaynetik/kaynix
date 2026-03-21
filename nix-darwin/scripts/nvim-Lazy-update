@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+# Usage: nvim-lazy-update
+# Updates lazy-lock.json in the flake repo (see @DOT_NIX_ROOT@ substituted at build time).
+
+emulate -L zsh
+setopt errexit nounset pipefail
+
+local tmp
+tmp=$(mktemp -d)
+
+cp -r "${HOME}/.config/nvim" "${tmp}/nvim"
+chmod -R u+w "${tmp}/nvim"
+
+NVIM_APPNAME=nvim XDG_CONFIG_HOME=$tmp nvim --headless "+Lazy! update" +qa
+
+local repo='@DOT_NIX_ROOT@'
+cp "${tmp}/nvim/lazy-lock.json" "${repo}/nix-darwin/homes/static/nvim/lazy-lock.json"
+
+rm -rf "${tmp}"
+
+print -r -- "lazy-lock.json updated -- commit and darwin-rebuild switch when ready"

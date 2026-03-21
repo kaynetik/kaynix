@@ -1,9 +1,0 @@
-export PAT_GCP_GHCR_SEDA_OVERLAY_LOGIN=ghp_0
-export SEDA_CHAIN_MNEMONIC=''
-export SEDA_GCP_BILLING_ACCOUNT_ID=
-export SEDA_LOCAL_SEPOLIA_PRIVATE_KEY=
-export SEDA_LOCAL_SEPOLIA_PRIVATE_KEY_V2=
-
-# SENSITIVE DATA
-export TF_VAR_billing_account_id=
-export TF_VAR_ghcr_pat=ghp_0
