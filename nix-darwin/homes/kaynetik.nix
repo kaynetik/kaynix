@@ -27,31 +27,32 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
-    userName = "kaynetik";
-    userEmail = "aleksandar@nesovic.dev";
     signing = {
+      format = "openpgp";
       signByDefault = true;
       key = "FC04210D2782C032";
     };
-    extraConfig = {
-      credential.helper = "osxkeychain"; # Make this system agnostic.
-      push.autoSetupRemote = true;
-      init.defaultBranch = "main";
+    settings = {
+      user = {
+        name = "kaynetik";
+        email = "aleksandar@nesovic.dev";
+      };
+      credential = {helper = "osxkeychain";};
+      push = {autoSetupRemote = true;};
+      init = {defaultBranch = "main";};
       core = {
         excludesFile = "${config.xdg.configHome}/git/ignore_global";
         autocrlf = "input";
       };
-      advice.detachedHead = false;
-      http.postBuffer = "524288000";
-      tag.gpgSign = true;
+      advice = {detachedHead = false;};
+      http = {postBuffer = "524288000";};
     };
-    includes = [
-      {
-        # Kept as old example atm; will cleanup & enhance
-        # condition = "gitdir:${config.home.homeDirectory}/Development/Work/opencorp/";
-        # path = "${config.home.homeDirectory}/.gitconfig_opencorp";
-      }
-    ];
+    # includes = [ # old example; cleannup
+    #   {
+    #     condition = "gitdir:${config.home.homeDirectory}/Development/Work/opencorp/";
+    #     path = "${config.home.homeDirectory}/.gitconfig_opencorp";
+    #   }
+    # ];
   };
 
   # home.file.".gitconfig_opencorp".source = ./static/git/opencorp.gitconfig;
@@ -60,7 +61,7 @@
 
   programs.atuin = {
     enable = true;
-    enableZshIntegration = false; # FIXME: Investigate why disabled, what was the conflict?
+    enableZshIntegration = false;
   };
 
   xdg.configFile."alacritty/alacritty.toml".source = ./static/alacritty/alacritty.toml;
