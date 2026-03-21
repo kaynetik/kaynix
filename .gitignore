@@ -1,27 +1,9 @@
-zsh/conf-*.zsh
+# This repo lives at ~/.config. Only nix-darwin/ is source of truth;
+# everything else is either HM-managed symlinks or legacy config.
+*
 
-/atuin
-tmux/plugins/*
-gcloud
-github-copilot
-jgit
-raycast
-zed/conversations/*
-zed/prompts/*
-/infracost
-/texstudio
-
-gtk-*
-qbittorrent
-croc
-
-k3d
-pgcli
-
-scripts/loadenv-src
-/stripe
-/argocd
-/configstore
-/cagent
-/containers
-\result
+# Whitelist nix-darwin and repo metadata
+!.gitignore
+!.pre-commit-config.yaml
+!nix-darwin/
+!nix-darwin/**

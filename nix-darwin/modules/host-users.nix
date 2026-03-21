@@ -11,7 +11,6 @@
 {
   networking.hostName = hostname;
   networking.computerName = hostname;
-  system.defaults.smb.NetBIOSName = hostname;
 
   # Specify which network services should have DNS managed by nix-darwin
   # Retrieved from: networksetup -listallnetworkservices
