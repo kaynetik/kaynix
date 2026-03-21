@@ -34,24 +34,14 @@
 
     # ============================================================
     # Terminal & Shell Utilities
+    # (alacritty, tmux, atuin, zoxide, fzf, htop, bat, ripgrep, fd, eza -> home.packages in homes/kaynetik.nix)
     # ============================================================
-    alacritty
-    alacritty-theme
     neovim
-    tmux
-    atuin
-    # zinit -> fix for nixdarwin
-    zoxide
-    fzf
-    htop
+    # zinit stays on Homebrew (nixpkgs zinit has issues)
     #
     # Text Processing & Search
     jq
     yq-go
-    bat
-    ripgrep
-    fd
-    eza
     tree
     exiftool
     # mvt # phone spyware analysis

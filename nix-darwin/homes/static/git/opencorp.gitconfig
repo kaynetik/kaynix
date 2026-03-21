@@ -1,0 +1,11 @@
+[user]
+    name = kaynetik
+    email = aleksandar.nesovic@opencorporates.com
+    signingkey = 13F37DAF0375C97B
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgsign = true
+

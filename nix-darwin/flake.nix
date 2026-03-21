@@ -17,9 +17,15 @@
   # Each item in `inputs` will be passed as a parameter to the `outputs` function after being pulled and built.
   inputs = {
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.follows = "nixpkgs-darwin";
 
     darwin = {
       url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
@@ -37,7 +43,9 @@
   outputs = inputs @ {
     self,
     nixpkgs,
+    nixpkgs-darwin,
     darwin,
+    home-manager,
     agenix,
     ...
   }: let
@@ -63,18 +71,20 @@
         ./modules/host-users.nix
         ./modules/secrets.nix
 
-        # Minimal inline module for user directory setup
-        # Note: Shell, Git, and environment configs are managed manually outside of Nix
+        home-manager.darwinModules.home-manager
         {
-          # Create user directories structure on system activation
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          # zinit stays on Homebrew (nixpkgs zinit is problematic); shell stays in ~/.zshrc for now.
+          home-manager.users.kaynetik = import ./homes/kaynetik.nix;
+        }
+
+        # Minimal inline module for user directory setup (Home Manager owns git + listed dotfiles)
+        {
           system.activationScripts.userDirectories.text = ''
             sudo -u ${username} mkdir -p /Users/${username}/Development/{Work,Personal}
             sudo -u ${username} mkdir -p /Users/${username}/Development/Nix/{flakes,shells}
-            sudo -u ${username} mkdir -p /Users/${username}/.config/{git,zsh}
-
-            if [ ! -f /Users/${username}/.gitconfig ]; then
-              sudo -u ${username} touch /Users/${username}/.gitconfig
-            fi
+            sudo -u ${username} mkdir -p /Users/${username}/.config/zsh
           '';
         }
       ];
