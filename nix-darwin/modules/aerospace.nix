@@ -1,4 +1,6 @@
 {...}: {
+  # AeroSpace is started by nix-darwin launchd; keep start-at-login false (module assertion).
+  # Do not add ~/.config/aerospace/aerospace.toml (single source of truth is this attr set).
   services.aerospace = {
     enable = true;
     settings = {
