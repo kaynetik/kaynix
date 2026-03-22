@@ -1,10 +1,7 @@
 # Security scanning: secrets in git history, static analysis, optional Nix closure CVE hints.
 # Renovate is planned separately.
-#
-# Optional repo/org settings:
-# - GITLEAKS_LICENSE: only for Gitleaks enterprise (OSS scan does not need it).
-#
-# Grype on the formatter closure can be noisy (Nix store paths); tune --fail-on or use continue-on-error below.
+# Grype on the formatter closure can be noisy (Nix store paths); 
+## tune --fail-on or use continue-on-error below.
 
 name: Security
 
@@ -21,6 +18,9 @@ permissions:
   contents: read
   pull-requests: read
   security-events: write
+  # upload-sarif uses the Actions API for run metadata; without this the step fails with
+  # "Resource not accessible by integration" (see github/codeql-action#2117).
+  actions: read
 
 concurrency:
   group: security-${{ github.workflow }}-${{ github.ref }}
@@ -38,12 +38,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: "3.12"
 
@@ -96,7 +96,7 @@ jobs:
           always() && hashFiles('gitleaks-results.sarif') != '' &&
           (github.event_name != 'pull_request' ||
            github.event.pull_request.head.repo.full_name == github.repository)
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4.34.1
         with:
           sarif_file: gitleaks-results.sarif
 
@@ -134,10 +134,10 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v14
+        uses: DeterminateSystems/nix-installer-action@v21
 
       - name: Flake check (no build)
         run: nix flake check --no-build --accept-flake-config
@@ -145,16 +145,22 @@ jobs:
       - name: Build formatter output
         run: nix build .#formatter.aarch64-darwin -L --accept-flake-config -o result
 
-      - name: Install Grype
-        run: brew install grype
+      - name: Install Grype and Syft
+        run: brew install grype syft
 
       - name: Grype scan formatter store path
         continue-on-error: true
         run: |
           target=$(readlink ./result)
           echo "Scanning $target"
-          grype "dir:${target}" -o table
-          grype "dir:${target}" --fail-on high
+          tmp=$(mktemp)
+          trap 'rm -f "$tmp"' EXIT
+          # Syft with explicit source metadata avoids "no explicit name and version" warnings from Grype's Syft driver.
+          syft scan "dir:${target}" -o syft-json \
+            --source-name flake-formatter \
+            --source-version "$(basename "$target")" > "$tmp"
+          grype -o table < "$tmp"
+          grype --fail-on high < "$tmp"
 
       - name: vulnix (optional)
         continue-on-error: true
