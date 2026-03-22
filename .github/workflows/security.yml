@@ -60,7 +60,7 @@ jobs:
 
       - name: detect-secrets (baseline)
         run: |
-          python3 -m pip install --disable-pip-version-check -q "detect-secrets==1.5.0"
+          python3 -m pip install --disable-pip-version-check -q "detect-secrets==1.5.0" "gibberish-detector"
           detect-secrets scan --baseline .secrets.baseline --slim
 
       - name: Semgrep
@@ -143,7 +143,7 @@ jobs:
         run: nix flake check --no-build --accept-flake-config
 
       - name: Build formatter output
-        run: nix build .#formatter -L --accept-flake-config -o result
+        run: nix build .#formatter.aarch64-darwin -L --accept-flake-config -o result
 
       - name: Install Grype
         run: brew install grype
