@@ -14,7 +14,7 @@ chmod -R u+w "${tmp}/nvim"
 NVIM_APPNAME=nvim XDG_CONFIG_HOME=$tmp nvim --headless "+Lazy! update" +qa
 
 local repo='@DOT_NIX_ROOT@'
-cp "${tmp}/nvim/lazy-lock.json" "${repo}/nix-darwin/homes/static/nvim/lazy-lock.json"
+cp "${tmp}/nvim/lazy-lock.json" "${repo}/homes/static/nvim/lazy-lock.json"
 
 rm -rf "${tmp}"
 

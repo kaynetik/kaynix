@@ -4,9 +4,8 @@
   pkgs,
   ...
 }: let
-  # Checkout root (flake is under nix-darwin/). Used by nvim-lazy-update and sops bootstrap key path.
+  # Checkout root (flake at repo root). Used by nvim-lazy-update substitution.
   dotNixRoot = "${config.home.homeDirectory}/Development/Personal/dot-nix";
-  sopsBootstrapKey = "${dotNixRoot}/nix-darwin/secrets/dev.age.key";
   # YubiKey age identity stub (local file; never commit). Layout and commands: homes/static/sops/README.md
   sopsAgeIdentityYubikey = "${config.xdg.configHome}/sops/age/age-yubikey-identity-nix-sops.txt";
   sopsLaunchAgentPlist = "${config.home.homeDirectory}/Library/LaunchAgents/org.nix-community.home.sops-nix.plist";
@@ -22,7 +21,7 @@
     install -m755 ${../scripts/count-loc} $out/bin/count-loc
     install -m755 ${../scripts/on} $out/bin/on
     install -m755 ${../scripts/og} $out/bin/og
-    cp ${../scripts/nvim-Lazy-update} $out/bin/nvim-lazy-update
+    cp ${../scripts/nvim-lazy-update} $out/bin/nvim-lazy-update
     chmod +x $out/bin/nvim-lazy-update
     substituteInPlace $out/bin/nvim-lazy-update \
       --replace '@DOT_NIX_ROOT@' '${dotNixRoot}'

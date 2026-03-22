@@ -8,14 +8,12 @@ This repo is a Git flake: **only tracked files** are visible to `nix build` / `d
 
 ## Bootstrap key (current default)
 
-`homes/kaynetik.nix` sets `sops.age.keyFile` to:
+`homes/kaynetik.nix` uses YubiKey identity at `~/.config/sops/age/` for normal use. For a local bootstrap key only, create it under the repo (not in git):
 
-`$HOME/Development/Personal/dot-nix/nix-darwin/secrets/dev.age.key`
-
-Create that file locally (not in git):
+`$HOME/Development/Personal/dot-nix/secrets/dev.age.key`
 
 ```bash
-cd /path/to/dot-nix/nix-darwin
+cd /path/to/dot-nix
 mkdir -p secrets
 nix shell nixpkgs#age --command age-keygen -o secrets/dev.age.key
 ```
@@ -24,10 +22,10 @@ The **public** key for the bootstrap recipient in `.sops.yaml` must match this k
 
 ## Edit secrets
 
-From the `nix-darwin` directory (so paths match `path_regex` in `.sops.yaml`):
+From the **repository root** (so paths match `path_regex` in `.sops.yaml`):
 
 ```bash
-cd /path/to/dot-nix/nix-darwin
+cd /path/to/dot-nix
 nix develop   # or: nix shell nixpkgs#sops nixpkgs#age
 sops secrets/secrets.yaml
 ```

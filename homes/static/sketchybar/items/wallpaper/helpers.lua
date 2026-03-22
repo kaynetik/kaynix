@@ -1,7 +1,11 @@
 local colors = require("colors")
+local settings = require("settings")
 
 local components = require("items.wallpaper.components")
 local globals = require("items.wallpaper.globals")
+local pathguard = require("items.wallpaper.pathguard")
+
+local wallpaper_root = pathguard.normalize_path(settings.wallpaper.path)
 
 local helpers = {}
 
@@ -105,12 +109,13 @@ function helpers.entryToggle(tbl, locked, focused)
 			globals.lockedFilePath = locked
 			globals.selectedFilePath = target["FILE_PATH"]
 
-			sbar.exec(
-				os.getenv("BAR_NAME")
-					.. ' --set widgets.background.preview background.image="'
-					.. globals.selectedFilePath
-					.. '"'
-			)
+			local preview_path = pathguard.validate_wallpaper_path(globals.selectedFilePath, wallpaper_root)
+			if preview_path then
+				local esc = pathguard.sketchybar_image_value_escape(preview_path)
+				sbar.exec(
+					os.getenv("BAR_NAME") .. ' --set widgets.background.preview background.image="' .. esc .. '"'
+				)
+			end
 		end
 	end
 end
