@@ -13,8 +13,6 @@
     ];
   };
 
-  # This is the standard format for flake.nix. `inputs` are the dependencies of the flake,
-  # Each item in `inputs` will be passed as a parameter to the `outputs` function after being pulled and built.
   inputs = {
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixpkgs.follows = "nixpkgs-darwin";
@@ -35,11 +33,7 @@
     };
   };
 
-  # The `outputs` function will return all the build results of the flake.
-  # A flake can have many use cases and different types of outputs,
-  # parameters in `outputs` are defined in `inputs` and can be referenced by their names.
-  # However, `self` is an exception, this special parameter points to the `outputs` itself (self-reference)
-  # The `@` syntax here is used to alias the attribute set of the inputs's parameter, making it convenient to use inside the function.
+  # `inputs @ { ... }` binds flake inputs by name; `self` is the flake itself.
   outputs = inputs @ {
     self,
     nixpkgs,
@@ -92,7 +86,6 @@
       ];
     };
 
-    # Development shells for different projects
     devShells.${system} = let
       pkgs = import inputs.nixpkgs-darwin {
         inherit system;
@@ -113,7 +106,6 @@
         '';
       };
 
-      # Web development environment
       web = pkgs.mkShell {
         buildInputs = with pkgs; [
           nodejs_20
@@ -127,11 +119,10 @@
         '';
       };
 
-      # Systems/DevOps environment
       devops = pkgs.mkShell {
         buildInputs = with pkgs; [
           kubectl
-          kubernetes-helm # Use the correct Kubernetes helm package
+          kubernetes-helm
           terraform
           awscli2
           docker
@@ -143,7 +134,7 @@
         '';
       };
 
-      # Rust + Haskell via ghc/cabal (haskellPackages.ghcup is disabled/broken in nixpkgs).
+      # Rust + GHC/cabal (ghcup is not wired here).
       rust = pkgs.mkShell {
         buildInputs = with pkgs; [
           rustc
@@ -162,7 +153,6 @@
       };
     };
 
-    # nix code formatter
     formatter.${system} = inputs.nixpkgs-darwin.legacyPackages.${system}.alejandra;
   };
 }

@@ -1,6 +1,7 @@
-{...}: {
-  # AeroSpace is started by nix-darwin launchd; keep start-at-login false (module assertion).
-  # Do not add ~/.config/aerospace/aerospace.toml (single source of truth is this attr set).
+{lib, pkgs, ...}:
+lib.mkIf pkgs.stdenv.isDarwin {
+  # AeroSpace is macOS-only (nix-darwin launchd). No-op on other platforms.
+  # Keep start-at-login false (module assertion). Config lives here, not ~/.config/aerospace/aerospace.toml.
   services.aerospace = {
     enable = true;
     settings = {
