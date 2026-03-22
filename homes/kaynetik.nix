@@ -5,7 +5,7 @@
   ...
 }: let
   # Checkout root (flake at repo root). Used by nvim-lazy-update substitution.
-  dotNixRoot = "${config.home.homeDirectory}/Development/Personal/dot-nix";
+  dotNixRoot = "${config.home.homeDirectory}/Development/Personal/kaynix";
   # YubiKey age identity stub (local file; never commit). Layout and commands: homes/static/sops/README.md
   sopsAgeIdentityYubikey = "${config.xdg.configHome}/sops/age/age-yubikey-identity-nix-sops.txt";
   sopsLaunchAgentPlist = "${config.home.homeDirectory}/Library/LaunchAgents/org.nix-community.home.sops-nix.plist";
@@ -16,7 +16,7 @@
   );
 
   # Scripts must be tracked by git (flake source filter).
-  dot-nix-scripts = pkgs.runCommand "dot-nix-scripts" {} ''
+  kaynix-scripts = pkgs.runCommand "kaynix-scripts" {} ''
     mkdir -p $out/bin
     install -m755 ${../scripts/count-loc} $out/bin/count-loc
     install -m755 ${../scripts/on} $out/bin/on
@@ -115,7 +115,7 @@ in {
   };
 
   home.packages =
-    [dot-nix-scripts]
+    [kaynix-scripts]
     ++ (with pkgs; [
       # Terminal
       alacritty

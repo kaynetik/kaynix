@@ -36,7 +36,7 @@ Use one shell session for all commands below. From the **repository root** when 
 ### 0. Environment (every session)
 
 ```bash
-cd ~/Development/Personal/dot-nix
+cd ~/Development/Personal/kaynix
 export PATH="$(nix build nixpkgs#age-plugin-yubikey --no-link --print-out-paths | tail -1)/bin:$(nix build nixpkgs#age --no-link --print-out-paths | tail -1)/bin:$PATH"
 unset SOPS_AGE_KEY SOPS_AGE_KEY_CMD
 export SOPS_AGE_KEY_FILE="$HOME/.config/sops/age/age-yubikey-identity-nix-sops.txt"
