@@ -268,13 +268,13 @@ in {
       "github.com" = {
         hostname = "github.com";
         user = "git";
-        identityFile = "~/.ssh/prim_sk_id_ed25519";
+        identityFile = "~/.ssh/ed_kaynetik";
         identitiesOnly = true;
       };
       "gist.github.com" = {
         hostname = "gist.github.com";
         user = "git";
-        identityFile = "~/.ssh/prim_sk_id_ed25519";
+        identityFile = "~/.ssh/ed_kaynetik";
         identitiesOnly = true;
       };
     };
