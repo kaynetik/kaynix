@@ -200,7 +200,7 @@ in {
       go
       hugo
       lua
-      nodejs
+      nodejs_24
       rustup
       zig
 

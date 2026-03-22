@@ -107,7 +107,8 @@ jobs:
 
       - name: TruffleHog (git, full history)
         run: |
-          trufflehog git "file://${GITHUB_WORKSPACE}" --fail
+          # --no-update: self-updater cannot replace /usr/local/bin on Actions (permission / move errors).
+          trufflehog git "file://${GITHUB_WORKSPACE}" --fail --no-update
 
       - name: Install git-secrets
         run: |
