@@ -8,7 +8,7 @@ This nix-darwin configuration provides a comprehensive, declarative system manag
 - **GUI applications** via Homebrew
 - **User configuration management** without Home Manager
 - **Development environments** via flake dev shells
-- **Secrets management** via agenix
+- **Secrets management** via sops-nix (Home Manager)
 - **Optimized caching** with proper substituters
 
 ## Quick Commands
@@ -46,46 +46,18 @@ nix develop .#devops
 nix develop .#rust
 ```
 
-### Secrets Management with agenix
+### Secrets Management with sops-nix
 
-#### Initial Setup
-1. Generate an SSH key for agenix:
-   ```bash
-   ssh-keygen -t ed25519 -f ~/.ssh/agenix
-   ```
+Secrets are encrypted in `secrets/secrets.yaml` and decrypted at Home Manager activation. See `secrets/README.md` and `.sops.yaml`.
 
-2. Create a `secrets.nix` file in the root directory:
-   ```nix
-   let
-     kaynetik = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIxxx"; # Your public key
-   in
-   {
-     "api-token.age".publicKeys = [ kaynetik ];
-     "ssh-key.age".publicKeys = [ kaynetik ];
-   }
-   ```
-
-3. Create encrypted secrets:
-   ```bash
-   # Install agenix if not already available
-   nix profile install github:ryantm/agenix
-
-   # Create encrypted secret
-   agenix -e api-token.age
-   ```
-
-#### Using Secrets in Configuration
-Uncomment and modify the examples in `modules/secrets.nix`:
-
-```nix
-age.secrets = {
-  api-token = {
-    file = ../secrets/api-token.age;
-    owner = "kaynetik";
-    group = "staff";
-  };
-};
+```bash
+cd ~/.config/nix-darwin   # or your checkout .../dot-nix/nix-darwin
+nix develop               # provides sops and age in PATH
+# Create a local age key (gitignored): secrets/dev.age.key -- see secrets/README.md
+sops secrets/secrets.yaml
 ```
+
+Add new secret keys under `sops.secrets` in `homes/kaynetik.nix` as needed.
 
 ## Module Structure
 
@@ -96,7 +68,7 @@ modules/
 ├── apps.nix          # Package management (Nix + Homebrew)
 ├── host-users.nix    # Host and user configuration
 ├── user-config.nix   # User-specific settings and shell config
-└── secrets.nix       # Encrypted secrets management
+└── secrets.nix       # Writable secrets dir on disk (sops config is in homes/kaynetik.nix)
 ```
 
 ## Shell Features

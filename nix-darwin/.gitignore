@@ -1,4 +1,8 @@
 *-dns.sh
+# Never commit age private keys (bootstrap file is local-only; see secrets/README.md).
+secrets/dev.age.key
+# YubiKey age identity stubs are local-only (see homes/static/sops/README.md).
+**/age-yubikey-identity*.txt
 tmp-bkup/
 homes/static/tmux/plugins/*
 homes/static/nvim/.neoconf.json

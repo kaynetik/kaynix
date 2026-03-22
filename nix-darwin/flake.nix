@@ -29,8 +29,8 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    agenix = {
-      url = "github:ryantm/agenix";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
   };
@@ -46,7 +46,7 @@
     nixpkgs-darwin,
     darwin,
     home-manager,
-    agenix,
+    sops-nix,
     ...
   }: let
     # FIXME: Update in case username changes, or this is deployed to a new Mac.
@@ -63,7 +63,6 @@
     darwinConfigurations."${hostname}" = darwin.lib.darwinSystem {
       inherit system specialArgs;
       modules = [
-        agenix.darwinModules.default
         ./modules/nix-core.nix
         ./modules/system.nix
         ./modules/apps.nix
@@ -75,6 +74,7 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
+          home-manager.sharedModules = [sops-nix.homeManagerModules.sops];
           # First switch: rename any plain files that block HM into *.hm-backup, then link from the store.
           home-manager.backupFileExtension = "hm-backup";
           # zinit stays on Homebrew (nixpkgs zinit is problematic); zsh is managed in homes/kaynetik.nix.
@@ -104,6 +104,9 @@
           git
           alejandra
           nil # Nix LSP
+          sops
+          age
+          age-plugin-yubikey
         ];
         shellHook = ''
           echo "🚀 Default development environment loaded!"
@@ -143,7 +146,7 @@
         '';
       };
 
-      # Rust development environment
+      # Rust + Haskell via ghc/cabal (haskellPackages.ghcup is disabled/broken in nixpkgs).
       rust = pkgs.mkShell {
         buildInputs = with pkgs; [
           rustc
@@ -151,11 +154,14 @@
           rustfmt
           rust-analyzer
           clippy
+          ghc
+          cabal-install
           git
         ];
         shellHook = ''
           echo "🦀 Rust development environment loaded!"
           echo "Rust: $(rustc --version)"
+          echo "GHC: $(ghc --version | head -n1)"
         '';
       };
     };

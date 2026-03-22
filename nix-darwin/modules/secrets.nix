@@ -1,49 +1,9 @@
 {
-  pkgs,
   username,
   ...
-}:
-#############################################################
-#
-#  Secrets Management with agenix
-#  Handles encrypted secrets for the system
-#
-#############################################################
-{
-  # Enable agenix - package is already provided by agenix.darwinModules.default
-  # No need to explicitly add it to systemPackages
-
-  # Example secrets configuration
-  # To use this, you'll need to:
-  # 1. Generate an SSH key: ssh-keygen -t ed25519 -f ~/.ssh/agenix
-  # 2. Create a secrets.nix file with your public keys
-  # 3. Create encrypted secret files with: agenix -e secret-name.age
-
-  # age.secrets = {
-  #   # Example: encrypted SSH key
-  #   ssh-key = {
-  #     file = ../secrets/ssh-key.age;
-  #     owner = username;
-  #     group = "staff";
-  #   };
-  #
-  #   # Example: API token
-  #   api-token = {
-  #     file = ../secrets/api-token.age;
-  #     owner = username;
-  #     group = "staff";
-  #   };
-  # };
-
-  # Example of how to use secrets in your configuration:
-  # environment.variables = {
-  #   SECRET_API_TOKEN = "$(cat ${config.age.secrets.api-token.path})";
-  # };
-
-  # Future: ship ~/.config/zsh/conf-seda.zsh (and similar) from age-encrypted files into
-  # ~/.config/nix-darwin/secrets/ and source from zsh, instead of keeping secrets only on disk.
-
-  # Create secrets directory if it doesn't exist
+}: {
+  # sops-nix (Home Manager) decrypts secrets at activation; see ../secrets/README.md and ../.sops.yaml.
+  # Legacy: keep a writable area for non-sops scratch (optional).
   system.activationScripts.createSecretsDir.text = ''
     mkdir -p /Users/${username}/.config/nix-darwin/secrets
     chown ${username}:staff /Users/${username}/.config/nix-darwin/secrets

@@ -4,8 +4,17 @@
   pkgs,
   ...
 }: let
-  # Checkout root (flake is under nix-darwin/). Used by nvim-lazy-update.
+  # Checkout root (flake is under nix-darwin/). Used by nvim-lazy-update and sops bootstrap key path.
   dotNixRoot = "${config.home.homeDirectory}/Development/Personal/dot-nix";
+  sopsBootstrapKey = "${dotNixRoot}/nix-darwin/secrets/dev.age.key";
+  # YubiKey age identity stub (local file; never commit). Layout and commands: homes/static/sops/README.md
+  sopsAgeIdentityYubikey = "${config.xdg.configHome}/sops/age/age-yubikey-identity-nix-sops.txt";
+  sopsLaunchAgentPlist = "${config.home.homeDirectory}/Library/LaunchAgents/org.nix-community.home.sops-nix.plist";
+
+  # Same exports launchd passes to the sops-nix agent (needed for age-plugin-yubikey on PATH).
+  sopsActivationEnvExports = lib.concatStringsSep "\n" (
+    lib.mapAttrsToList (name: value: "export ${name}=${lib.escapeShellArg (toString value)}") config.sops.environment
+  );
 
   # Scripts must be tracked by git (flake source filter).
   dot-nix-scripts = pkgs.runCommand "dot-nix-scripts" {} ''
@@ -26,6 +35,72 @@ in {
   home.stateVersion = "26.05";
 
   xdg.enable = true;
+
+  # programs.zsh.dotDir keeps the real zsh config under ~/.config/zsh/. zsh only reads that
+  # directory when ZDOTDIR is set before the .zshrc phase. If it is not set, zsh falls back to
+  # ~/.zshrc in $HOME (you had a second copy there without the nixpkgs OpenSSH PATH line).
+  # Some hosts also source ~/.zshrc by path; delegate both to Home Manager.
+  home.file.".zshenv".text = ''
+    export ZDOTDIR="${config.home.homeDirectory}/.config/zsh"
+    [[ -r "$ZDOTDIR/.zshenv" ]] && . "$ZDOTDIR/.zshenv"
+  '';
+
+  home.file.".zshrc".text = ''
+    export ZDOTDIR="${config.home.homeDirectory}/.config/zsh"
+    [[ -r "$ZDOTDIR/.zshrc" ]] && . "$ZDOTDIR/.zshrc"
+  '';
+
+  # sops-nix: decrypts secrets.yaml into ~/.config/zsh/conf-{seda,sietch}.zsh (see secrets/README.md).
+  # Bootstrap key lives in the repo checkout; move to ~/Library/Application Support/sops/age/keys.txt
+  # and rotate .sops.yaml before you store real secrets (especially if the repo is public).
+  #
+  # YubiKey (PIV) age identities: generate with `age-plugin-yubikey`, store the identity stub at
+  # ~/.config/sops/age/age-yubikey-identity-nix-sops.txt (local; do not commit), add age1yubikey1... to .sops.yaml, then set
+  # age.keyFile to sopsAgeIdentityYubikey and remove the bootstrap key from .sops.yaml.
+  sops = {
+    defaultSopsFile = ../secrets/secrets.yaml;
+    age = {
+      keyFile = sopsAgeIdentityYubikey;
+      plugins = [ pkgs.age-plugin-yubikey ];
+    };
+    secrets = {
+      "zsh-seda" = {
+        key = "zsh_seda";
+        path = "${config.xdg.configHome}/zsh/conf-seda.zsh";
+        mode = "0600";
+        format = "yaml";
+      };
+      "zsh-sietch" = {
+        key = "zsh_sietch";
+        path = "${config.xdg.configHome}/zsh/conf-sietch.zsh";
+        mode = "0600";
+        format = "yaml";
+      };
+    };
+  };
+
+  # sops-nix on Darwin: (1) Order after setupLaunchAgents so the plist exists
+  # (https://github.com/Mic92/sops-nix/issues/910). (2) Run the same command the LaunchAgent uses
+  # once synchronously here: decrypt only happens in that script, not in the bare launchctl lines,
+  # and GUI launchd jobs often lack an interactive TTY for YubiKey. Repo zsh/conf-*.zsh is not
+  # deployed to ~/.config/zsh; only these secrets do.
+  home.activation.sops-nix = lib.mkIf pkgs.stdenv.isDarwin (
+    lib.mkForce (
+      lib.hm.dag.entryAfter [ "setupLaunchAgents" ] ''
+        ${sopsActivationEnvExports}
+        _plist=${lib.escapeShellArg sopsLaunchAgentPlist}
+        if [[ -r "$_plist" ]]; then
+          _cmd=$(/usr/libexec/PlistBuddy -c "Print :ProgramArguments:2" "$_plist" 2>/dev/null) || true
+          if [[ -n "$_cmd" ]]; then
+            /bin/bash -o errexit -c "$_cmd"
+          fi
+        fi
+        _hm_uid="$(id -u)"
+        /bin/launchctl bootout gui/''${_hm_uid}/org.nix-community.home.sops-nix && true
+        /bin/launchctl bootstrap gui/''${_hm_uid} ${lib.escapeShellArg sopsLaunchAgentPlist}
+      ''
+    )
+  );
 
   # copyApps rsyncs materialized .app trees into ~/Applications/Home Manager Apps. That often
   # fails with Permission denied on unlink (macOS TCC / bundle flags). linkApps instead symlinks
@@ -129,6 +204,12 @@ in {
     hugo
     bun
     nodejs
+
+    openssh
+    yubikey-manager
+    yubikey-agent
+    age-plugin-yubikey
+    age
   ]);
 
   programs.neovim = {
@@ -181,6 +262,8 @@ in {
 
   xdg.configFile."git/ignore_global".source = ./static/git/ignore_global;
 
+  xdg.configFile."sops/age/README.md".source = ./static/sops/README.md;
+
   programs.atuin = {
     enable = true;
     enableZshIntegration = true;
@@ -209,6 +292,17 @@ in {
     ZSH_DISABLE_COMPFIX = "true";
     DISABLE_MAGIC_FUNCTIONS = "true";
     HIST_STAMPS = "dd.mm.yyyy";
+    EDITOR = "nvim";
+  };
+
+  # PATH for what's not in the nix store.
+  home.sessionPath = [
+    "${config.home.homeDirectory}/go/bin"
+  ];
+
+  programs.java = {
+    enable = true;
+    package = pkgs.jdk25;
   };
 
   programs.zsh = {
@@ -231,7 +325,7 @@ in {
         ulimit -n 65536
         source ${config.xdg.configHome}/zsh/setopt-history.zsh
         source ${config.xdg.configHome}/zsh/aliases.zsh
-        source ${config.xdg.configHome}/zsh/exports.zsh
+        # sops-nix writes these paths at activation (see sops.secrets).
         [[ -r ${config.xdg.configHome}/zsh/conf-seda.zsh ]] && source ${config.xdg.configHome}/zsh/conf-seda.zsh
         [[ -r ${config.xdg.configHome}/zsh/conf-sietch.zsh ]] && source ${config.xdg.configHome}/zsh/conf-sietch.zsh
       '')
@@ -244,12 +338,16 @@ in {
         bindkey '^[[1;9A' beginning-of-line
         bindkey '^[[1;9B' end-of-line
       ''
+      (lib.mkAfter ''
+        # After brew shellenv and oh-my-zsh: macOS /usr/bin OpenSSH has no working FIDO provider.
+        # Prepend nixpkgs openssh so ssh, ssh-keygen, scp, sftp match (libfido2-backed sk keys).
+        export PATH="${lib.makeBinPath [ pkgs.openssh ]}:$PATH"
+      '')
     ];
   };
 
   xdg.configFile."zsh/aliases.zsh".source = ./static/zsh/aliases.zsh;
   xdg.configFile."zsh/setopt-history.zsh".source = ./static/zsh/setopt-history.zsh;
-  xdg.configFile."zsh/exports.zsh".source = ./static/zsh/exports.zsh;
 
   xdg.configFile."alacritty/alacritty.toml".source = ./static/alacritty/alacritty.toml;
   xdg.configFile."alacritty/catppuccin-frappe.toml".source = ./static/alacritty/catppuccin-frappe.toml;

@@ -1,0 +1,9 @@
+# sops config: https://github.com/getsops/sops#using-sops-yaml-conf-to-select-kms-pgp-and-age-for-new-files
+keys:
+  # YubiKey PIV age identity (age-plugin-yubikey). Identity stub: ~/.config/sops/age/age-yubikey-identity-nix-sops.txt
+  - &yubikey_age age1yubikey1qv9j7h0q2juhcku6ezcpjqdpt8ehzy66rt9ej9ft09gn7cs8xlgv2hrar28
+creation_rules:
+  - path_regex: secrets/secrets\.yaml$
+    key_groups:
+      - age:
+          - *yubikey_age
