@@ -2,13 +2,7 @@
   hostname,
   username,
   ...
-}:
-#############################################################
-#
-#  Host & Users configuration
-#
-#############################################################
-{
+}: {
   networking.hostName = hostname;
   networking.computerName = hostname;
 
@@ -26,10 +20,10 @@
   # DNS servers to apply to the above network services
   networking.dns = [
     "192.168.2.1"
-    "1.1.1.1" # Cloudflare Primary (fast, privacy-focused)
-    "1.0.0.1" # Cloudflare Secondary
-    "8.8.8.8" # Google Primary (reliable fallback)
-    "8.8.4.4" # Google Secondary (reliable fallback)
+    "1.1.1.1"
+    "1.0.0.1"
+    "8.8.8.8"
+    "8.8.4.4"
   ];
 
   users.users."${username}" = {

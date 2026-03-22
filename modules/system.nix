@@ -8,7 +8,7 @@
   system = {
     stateVersion = 5;
     primaryUser = "kaynetik";
-    # activationScripts are executed every time you boot the system or run `nixos-rebuild` / `darwin-rebuild`.
+    # activationScripts run on boot and on `darwin-rebuild`.
 
     defaults = {
       menuExtraClock.Show24Hour = true;
@@ -54,7 +54,6 @@
     };
   };
 
-  # Add ability to used TouchID for sudo authentication
   security.pam.services.sudo_local.touchIdAuth = true;
 
   programs.zsh.enable = true;
