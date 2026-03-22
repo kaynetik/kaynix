@@ -1,9 +1,11 @@
-# This repo lives at ~/.config. Only nix-darwin/ is source of truth;
-# everything else is either HM-managed symlinks or legacy config.
-*
+*-dns.sh
+# Never commit age private keys (bootstrap file is local-only; see secrets/README.md).
+secrets/dev.age.key
+# YubiKey age identity stubs are local-only (see homes/static/sops/README.md).
+**/age-yubikey-identity*.txt
 
-# Whitelist nix-darwin and repo metadata
-!.gitignore
-!.pre-commit-config.yaml
-!nix-darwin/
-!nix-darwin/**
+homes/static/tmux/plugins/*
+homes/static/nvim/.neoconf.json
+
+yubikey.md
+USAGE.md
