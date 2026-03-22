@@ -22,21 +22,21 @@ A copy of this README is linked into `~/.config/sops/age/README.md` on activatio
    ```
 
 3. Match the filename to `sopsAgeIdentityYubikey` in `kaynetik.nix`.
-4. Recipients for `nix-darwin/.sops.yaml` come from `age-plugin-yubikey --list`.
+4. Recipients for `.sops.yaml` at the repo root come from `age-plugin-yubikey --list`.
 
 ## Related docs
 
-- `nix-darwin/secrets/README.md` -- editing `secrets.yaml`, bootstrap age key
+- `secrets/README.md` (repo root) -- editing `secrets.yaml`, bootstrap age key
 - `yubikey.md` (repo root) -- OpenSSH `sk-*`, PIV vs FIDO, `age-plugin-yubikey`, troubleshooting
 
 ## End-to-end flows (YubiKey age + SOPS)
 
-Use one shell session for all commands below. From `nix-darwin/` when touching `secrets/secrets.yaml` (matches `path_regex` in `.sops.yaml`).
+Use one shell session for all commands below. From the **repository root** when touching `secrets/secrets.yaml` (matches `path_regex` in `.sops.yaml`).
 
 ### 0. Environment (every session)
 
 ```bash
-cd ~/Development/Personal/dot-nix/nix-darwin
+cd ~/Development/Personal/dot-nix
 export PATH="$(nix build nixpkgs#age-plugin-yubikey --no-link --print-out-paths | tail -1)/bin:$(nix build nixpkgs#age --no-link --print-out-paths | tail -1)/bin:$PATH"
 unset SOPS_AGE_KEY SOPS_AGE_KEY_CMD
 export SOPS_AGE_KEY_FILE="$HOME/.config/sops/age/age-yubikey-identity-nix-sops.txt"
@@ -80,14 +80,14 @@ age -d -i "$SOPS_AGE_KEY_FILE" /tmp/sops-smoke.txt.age
 rm -f /tmp/sops-smoke.txt /tmp/sops-smoke.txt.age
 ```
 
-Use the same recipient string as in `nix-darwin/.sops.yaml` if you prefer to copy it manually.
+Use the same recipient string as in `.sops.yaml` at the repo root if you prefer to copy it manually.
 
 - If **this fails**: fix identity file (regenerate with `age-plugin-yubikey --identity --slot N`), PIN, touch, or TDES management key (see `yubikey.md`). SOPS cannot work until this passes.
 - If **this works** but **SOPS** fails: check `sops --version`, `unset SOPS_AGE_KEY`, and that `sops` uses the same `age` from `PATH`.
 
 ### 3. Encryption flow (normal ongoing work)
 
-Recipients come from `nix-darwin/.sops.yaml`. After changing secrets:
+Recipients come from `.sops.yaml` at the repo root. After changing secrets:
 
 ```bash
 sops secrets/secrets.yaml

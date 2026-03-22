@@ -1,6 +1,8 @@
 local colors = require("colors")
 local settings = require("settings")
-local globals = require("items.wallpaper.globals")
+local pathguard = require("items.wallpaper.pathguard")
+
+local wallpaper_root = pathguard.normalize_path(settings.wallpaper.path)
 
 local components = {}
 
@@ -78,6 +80,11 @@ sbar.exec(
 components.entries = {}
 
 local function genEntries(dir, name, pos, entryTbl)
+	dir = pathguard.normalize_path(dir)
+	if not pathguard.is_within_root(dir, wallpaper_root) then
+		return
+	end
+
 	-- selected is the current entry in the table of wallpapers selected
 	entryTbl["SELECTED"] = 1
 	entryTbl.getSelected = function()
@@ -91,41 +98,51 @@ local function genEntries(dir, name, pos, entryTbl)
 	entryTbl["OPT_SELECTED"] = 1
 
 	local count = 0
-	for file in io.popen('ls "' .. dir .. '" | grep .'):lines() do
-		count = count + 1
-		local optName = name .. "." .. file
-		local filePath = dir .. "/" .. file
+	local ls_cmd = "LANG=C /bin/ls -1A " .. pathguard.shell_single_quote(dir)
+	local handle = io.popen(ls_cmd)
+	if not handle then
+		return
+	end
+	for file in handle:lines() do
+		if file ~= "" and not pathguard.path_has_dotdot(file) and not string.find(file, "/") then
+			local filePath = pathguard.normalize_path(dir .. "/" .. file)
+			if pathguard.is_within_root(filePath, wallpaper_root) and not pathguard.path_has_unsafe_chars(filePath) then
+				count = count + 1
+				local optName = name .. "." .. file
 
-		-- Declare an object for either the wallpaper or directory that is read
-		local option = sbar.add("item", optName, {
-			position = "popup." .. pos,
-			drawing = count < 5 and true or false,
-			popup = { align = "right", drawing = false },
-			label = { string = file },
-		})
+				-- Declare an object for either the wallpaper or directory that is read
+				local option = sbar.add("item", optName, {
+					position = "popup." .. pos,
+					drawing = count < 5 and true or false,
+					popup = { align = "right", drawing = false },
+					label = { string = file },
+				})
 
-		if string.find(file, "%.") then
-			-- We read in a wallpaper file
-			local group = {}
-			entryTbl[count] = group
-			group["SBAR_ITEM"] = option
-			group["FILE_PATH"] = filePath
-			option:set({ label = { string = string.match(option:query().label.value, "(.-)%.") } })
-		else
-			-- We read in a directory
-			local group = {}
-			entryTbl[count] = group
+				if string.find(file, "%.") then
+					-- We read in a wallpaper file
+					local group = {}
+					entryTbl[count] = group
+					group["SBAR_ITEM"] = option
+					group["FILE_PATH"] = filePath
+					option:set({ label = { string = string.match(option:query().label.value, "(.-)%.") } })
+				else
+					-- We read in a directory
+					local group = {}
+					entryTbl[count] = group
 
-			group["SBAR_ITEM"] = option
-			group["DIR_FILES"] = {}
+					group["SBAR_ITEM"] = option
+					group["DIR_FILES"] = {}
 
-			option:set({ label = { string = "􀈖 " .. option:query().label.value } })
+					option:set({ label = { string = "􀈖 " .. option:query().label.value } })
 
-			genEntries(filePath, optName, option.name, group["DIR_FILES"])
+					genEntries(filePath, optName, option.name, group["DIR_FILES"])
+				end
+			end
 		end
 	end
+	handle:close()
 end
 
-genEntries(settings.wallpaper.path, "widgets.background", components.bg.name, components.entries)
+genEntries(wallpaper_root, "widgets.background", components.bg.name, components.entries)
 
 return components

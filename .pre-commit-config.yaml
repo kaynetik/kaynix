@@ -25,7 +25,7 @@ repos:
         description: Format Nix files with Alejandra
         entry: alejandra
         language: system
-        files: ^nix-darwin/.*\.nix$
+        files: \.nix$
         pass_filenames: true
 
   # Nix flake checker
@@ -33,9 +33,9 @@ repos:
     hooks:
       - id: nix-flake-check
         name: nix flake check
-        entry: bash -c 'cd nix-darwin && nix flake check --no-build'
+        entry: bash -c 'nix flake check --no-build'
         language: system
-        files: ^nix-darwin/.*\.nix$
+        files: \.nix$|^flake\.lock$
         pass_filenames: false
 
   # Security scanning with checkov

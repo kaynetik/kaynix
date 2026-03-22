@@ -1,6 +1,10 @@
+local settings = require("settings")
 local globals = require("items.wallpaper.globals")
 local helpers = require("items.wallpaper.helpers")
 local components = require("items.wallpaper.components")
+local pathguard = require("items.wallpaper.pathguard")
+
+local wallpaper_root = pathguard.normalize_path(settings.wallpaper.path)
 
 -- Key events
 sbar.add("event", "request_bg")
@@ -28,17 +32,23 @@ components.bg:subscribe("cycle_bg", function(env)
 end)
 
 local function setWallpaper()
-	-- Get number of spaces
-	-- local handle = io.popen("echo $(yabai -m query --spaces --display) | jq length $1")
-	-- local result = handle:read("*a")
-	-- handle:close()
+	local raw = globals.selectedFilePath
+	local path = pathguard.validate_wallpaper_path(raw, wallpaper_root)
+	if not path then
+		return
+	end
+	local f = io.open(path, "r")
+	if not f then
+		return
+	end
+	f:close()
 
-	-- Cycle through spaces setting wallpaper for each
-	local cmd = [[osascript -e "tell application \"System Events\" to set picture of every desktop to \"]]
-		.. globals.selectedFilePath
-		.. [[\" as POSIX file"]]
-
-	os.execute(cmd)
+	local inner = pathguard.applescript_escape_string(path)
+	local applescript = 'tell application "System Events" to set picture of every desktop to POSIX file "'
+		.. inner
+		.. '"'
+	local shell_arg = pathguard.shell_single_quote(applescript)
+	os.execute("/usr/bin/osascript -e " .. shell_arg)
 end
 
 components.bg:subscribe("select_bg", function(env)
