@@ -1,5 +1,5 @@
 # Path allowlist (Gitleaks v8). .gitleaksignore is for fingerprints only, not paths.
-title = "dot-nix"
+title = "kaynix"
 
 [extend]
 useDefault = true

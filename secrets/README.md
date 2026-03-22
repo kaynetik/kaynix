@@ -10,10 +10,10 @@ This repo is a Git flake: **only tracked files** are visible to `nix build` / `d
 
 `homes/kaynetik.nix` uses YubiKey identity at `~/.config/sops/age/` for normal use. For a local bootstrap key only, create it under the repo (not in git):
 
-`$HOME/Development/Personal/dot-nix/secrets/dev.age.key`
+`$HOME/Development/Personal/kaynix/secrets/dev.age.key`
 
 ```bash
-cd /path/to/dot-nix
+cd /path/to/kaynix
 mkdir -p secrets
 nix shell nixpkgs#age --command age-keygen -o secrets/dev.age.key
 ```
@@ -25,7 +25,7 @@ The **public** key for the bootstrap recipient in `.sops.yaml` must match this k
 From the **repository root** (so paths match `path_regex` in `.sops.yaml`):
 
 ```bash
-cd /path/to/dot-nix
+cd /path/to/kaynix
 nix develop   # or: nix shell nixpkgs#sops nixpkgs#age
 sops secrets/secrets.yaml
 ```

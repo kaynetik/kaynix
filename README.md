@@ -1,4 +1,4 @@
-# dot-nix
+# kaynix
 
 Personal [nix-darwin](https://github.com/nix-darwin/nix-darwin) flake with [Home Manager](https://github.com/nix-community/home-manager) and [sops-nix](https://github.com/Mic92/sops-nix). System modules live under `modules/`; user config is `homes/kaynetik.nix`.
 
@@ -67,6 +67,8 @@ graph TD
     SOPS --> KN
 ```
 
+
+
 ## Secrets (SOPS + YubiKey)
 
 Secrets are encrypted at rest in `secrets/secrets.yaml`, decrypted at Home Manager activation by sops-nix. See `secrets/README.md` for editing and `yubikey.md` for the full YubiKey setup.
@@ -86,6 +88,8 @@ flowchart LR
     SOPSF --> SOPSNIX
     SOPSNIX --> PLAIN
 ```
+
+
 
 ## Layout
 
