@@ -1,7 +1,7 @@
 <h3 align="center">
  <img src="https://avatars.githubusercontent.com/u/48174247?v=4" width="100" alt="Logo"/><br/>
  <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="30" width="0px"/>
- <img src="https://nixos.org/logo/nixos-logo-only-hires.png" height="20" /> NixOS Config for <a href="https://github.com/kaynetik">kaynetik</a>
+  NixOS Config for <a href="https://github.com/kaynetik">kaynetik</a>
  <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="30" width="0px"/>
 </h3>
 
@@ -12,6 +12,8 @@
  <img alt="Nix Flakes Ready" src="https://img.shields.io/static/v1?logo=nixos&logoColor=d8dee9&label=Nix%20Flakes&labelColor=5e81ac&message=Ready&color=d8dee9&style=for-the-badge">
 </a>
 </p>
+
+---
 
 # kaynix
 
