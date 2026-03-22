@@ -75,6 +75,15 @@ in {
         mode = "0600";
         format = "yaml";
       };
+      # Sensitive SSH host blocks (work servers, internal IPs, etc.).
+      # Decrypted to ~/.ssh/conf.d/work and included by programs.ssh extraConfig.
+      # Edit with: sops secrets/secrets.yaml  (add key: ssh_config_work)
+      "ssh-work" = {
+        key = "ssh_config_work";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/work";
+        mode = "0600";
+        format = "yaml";
+      };
     };
   };
 
@@ -231,6 +240,51 @@ in {
     recursive = true;
   };
 
+  # Create ~/.ssh/conf.d before sops-nix writes the work host block into it.
+  home.activation.sshConfDir = lib.hm.dag.entryBefore ["sops-nix"] ''
+    mkdir -p "${config.home.homeDirectory}/.ssh/conf.d"
+    chmod 700 "${config.home.homeDirectory}/.ssh/conf.d"
+  '';
+
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    matchBlocks = {
+      # Global defaults.
+      # AddKeysToAgent is understood by nixpkgs openssh (the binary on PATH).
+      # UseKeychain is macOS-only (Apple openssh); IgnoreUnknown silences the
+      # error when nixpkgs openssh parses this file.
+      # Include cannot appear inside a Host block, so it goes in extraConfig
+      # via lib.mkBefore to guarantee it lands before the Host blocks below.
+      "*" = {
+        extraOptions = {
+          IgnoreUnknown = "UseKeychain";
+          UseKeychain = "yes";
+          AddKeysToAgent = "yes";
+          ServerAliveInterval = "60";
+          ServerAliveCountMax = "3";
+        };
+      };
+      "github.com" = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = "~/.ssh/ed_kaynetik";
+        identitiesOnly = true;
+      };
+      "gist.github.com" = {
+        hostname = "gist.github.com";
+        user = "git";
+        identityFile = "~/.ssh/ed_kaynetik";
+        identitiesOnly = true;
+      };
+    };
+    # Include must be a top-level directive; lib.mkBefore places it ahead of
+    # the Host blocks that HM generates from matchBlocks above.
+    extraConfig = lib.mkBefore ''
+      Include ~/.ssh/conf.d/work
+    '';
+  };
+
   programs.gh.enable = true;
 
   programs.git = {
@@ -300,6 +354,9 @@ in {
     DISABLE_MAGIC_FUNCTIONS = "true";
     HIST_STAMPS = "dd.mm.yyyy";
     EDITOR = "nvim";
+    # Required by the sops CLI when editing secrets/secrets.yaml manually.
+    # sops-nix itself uses the ageKeyFile field in the manifest, not this var.
+    SOPS_AGE_KEY_FILE = sopsAgeIdentityYubikey;
   };
 
   # PATH for what's not in the nix store.
