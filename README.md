@@ -6,7 +6,7 @@ Personal [nix-darwin](https://github.com/nix-darwin/nix-darwin) flake with [Home
 
 1. Install Nix: [nixos.org/download](https://nixos.org/download.html#download-nix) or [DeterminateSystems/nix-installer](https://github.com/DeterminateSystems/nix-installer).
 2. Read `flake.nix`, `modules/`, and `homes/kaynetik.nix` before switching. For flakes and nix-darwin, [ryan4yin/nixos-and-flakes-book](https://github.com/ryan4yin/nixos-and-flakes-book) is a solid intro.
-3. Install [Homebrew](https://brew.sh/) if you use the casks and brews declared in `modules/apps.nix` (GUI apps and some CLI tools are not taken from nixpkgs there).
+3. Install [Homebrew](https://brew.sh/) if you use the casks and brews declared in `modules/apps.nix` (GUI apps and some CLI tools not available in nixpkgs).
 
 ## First deploy
 
@@ -33,6 +33,60 @@ deploy:
 
 Then run `make deploy` from the checkout.
 
+## Architecture
+
+```mermaid
+graph TD
+    F["flake.nix"]
+
+    subgraph darwin["darwinConfigurations (system)"]
+        NC["nix-core.nix<br/>nix settings, GC, caches"]
+        SYS["system.nix<br/>macOS defaults, Touch ID"]
+        APPS["apps.nix<br/>Homebrew, fonts, SketchyBar"]
+        HU["host-users.nix<br/>hostname, DNS, users"]
+        AERO["aerospace.nix<br/>tiling WM (darwin-only)"]
+        SEC["secrets.nix<br/>writable secrets dir"]
+    end
+
+    subgraph hm["Home Manager"]
+        KN["homes/kaynetik.nix<br/>packages, zsh, git, sops"]
+        STATIC["homes/static/<br/>nvim, tmux, alacritty,<br/>sketchybar, zsh"]
+    end
+
+    subgraph inputs["Flake inputs"]
+        NP["nixpkgs-unstable"]
+        DW["nix-darwin"]
+        HMI["home-manager"]
+        SOPS["sops-nix"]
+    end
+
+    F --> darwin
+    F --> hm
+    inputs --> F
+    KN --> STATIC
+    SOPS --> KN
+```
+
+## Secrets (SOPS + YubiKey)
+
+Secrets are encrypted at rest in `secrets/secrets.yaml`, decrypted at Home Manager activation by sops-nix. See `secrets/README.md` for editing and `yubikey.md` for the full YubiKey setup.
+
+```mermaid
+flowchart LR
+    YK["YubiKey (PIV slot)"]
+    PLUGIN["age-plugin-yubikey"]
+    ID["~/.config/sops/age/<br/>identity stub"]
+    SOPSF["secrets/secrets.yaml<br/>(encrypted)"]
+    SOPSNIX["sops-nix<br/>(HM activation)"]
+    PLAIN["~/.config/zsh/conf-*.zsh<br/>(decrypted, 0600)"]
+
+    YK -- "PIV PIN + touch" --> PLUGIN
+    PLUGIN --> ID
+    ID --> SOPSNIX
+    SOPSF --> SOPSNIX
+    SOPSNIX --> PLAIN
+```
+
 ## Layout
 
 ```text
@@ -44,6 +98,6 @@ Then run `make deploy` from the checkout.
 │   └── kaynetik.nix   # Home Manager user config
 ├── secrets/           # sops-encrypted secrets (see secrets/README.md)
 ├── scripts/           # helper scripts installed into home.packages
-├── USAGE.md           # commands and customization (flake-relative paths)
+├── USAGE.md           # commands and customization
 └── yubikey.md         # OpenSSH sk keys, PIV, age-plugin-yubikey, SOPS
 ```

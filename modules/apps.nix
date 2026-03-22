@@ -1,67 +1,8 @@
 {pkgs, ...}: {
   services.sketchybar.enable = true;
 
-  # environment.systemPackages = with pkgs; [
-  # ============================================================
-  # Languages & Runtimes
-  # ============================================================
-
-  # ============================================================
-  # Nix - i3 akin flow
-  # ============================================================
-
-  # ============================================================
-  # VCS
-  # (git, git-lfs, git-filter-repo, lazygit, gh, pre-commit -> homes/kaynetik.nix + programs.git / programs.gh)
-  # ============================================================
-
-  # ============================================================
-  # Terminal & Shell Utilities
-  # (alacritty, tmux, atuin, zoxide, fzf, htop, bat, ripgrep, fd, eza, neovim, jq, yq-go, tree, exiftool, cmctl,
-  #  curl, wget, croc, grpcurl, wireguard-tools, wireguard-ui -> home.packages in homes/kaynetik.nix)
-  # ============================================================
-  # zinit stays on Homebrew (nixpkgs zinit has issues)
-  #
-  # mvt # phone spyware analysis
-  # dotenvx -> broken upstream, PR pending: https://github.com/NixOS/nixpkgs/pull/500959#issuecomment-4103458168
-
-  # ============================================================
-  # Kubernetes & Container Tools
-  # (kubectl, kustomize, k9s, argocd, kubefwd, k3d, kubernetes-helm, podman, podman-desktop,
-  #  sops, checkov, bazel-buildtools, bazelisk -> home.packages in homes/kaynetik.nix)
-  # ============================================================
-
-  # ============================================================
-  # Cloud Platforms
-  # (awscli2 -> home.packages in homes/kaynetik.nix)
-  # ============================================================
-
-  # ============================================================
-  # IaC & Security
-  # (infracost, tflint, trivy, terraform-docs -> home.packages in homes/kaynetik.nix)
-  # ============================================================
-
-  # ============================================================
-  # Monitoring & Observability
-  # (prometheus, prometheus.cli, grafana-alloy -> home.packages in homes/kaynetik.nix)
-  # ============================================================
-
-  # ============================================================
-  # Database & API Tools
-  # (postgresql_18, pgcli, stripe-cli -> home.packages in homes/kaynetik.nix)
-  # ============================================================
-
-  # ============================================================
-  # Go Development Tools
-  # (tparse, goose, crane -> home.packages in homes/kaynetik.nix)
-  # ============================================================
-
-  # ============================================================
-  # Media | Audio | Video
-  # (audacity, imagemagick, shottr, languagetool -> home.packages in homes/kaynetik.nix)
-  # vlc => fix this for darwinians?
-  # ============================================================
-  # ];
+  # User packages are in homes/kaynetik.nix (home.packages, programs.*).
+  # dotenvx is broken upstream: https://github.com/NixOS/nixpkgs/pull/500959#issuecomment-4103458168
 
   fonts.packages = with pkgs.nerd-fonts; [
     jetbrains-mono # Primary terminal font (Alacritty)
