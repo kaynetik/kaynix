@@ -114,8 +114,8 @@ Confirm the prompt (or use `sops updatekeys --yes` if you accept non-interactive
 
 ### 5. If `Failed to decrypt YubiKey stanza` persists
 
-- Regenerate the stub for the **same slot** that holds the key:  
-  `age-plugin-yubikey --identity --slot 1 > ~/.config/sops/age/age-yubikey-identity-nix-sops.txt`  
+- Regenerate the stub for the **same slot** that holds the key:
+  `age-plugin-yubikey --identity --slot 1 > ~/.config/sops/age/age-yubikey-identity-nix-sops.txt`
   then `chmod 600` that file.
 - Confirm `cat ~/.config/sops/age/age-yubikey-identity-nix-sops.txt` **Recipient:** line matches the recipient inside `secrets.yaml` under `sops.age` and in `.sops.yaml`.
 - Avoid switching to another applet (e.g. FIDO-only use) between PIN entry and decrypt if your key clears PIV session (see `age-plugin-yubikey` README).
