@@ -30,4 +30,4 @@ find "$VAULT_DIR/$SOURCE_DIR" -type f -name "*.md" | while read -r file; do
 
 done
 
-echo "Done 🪷"
+echo "Done"

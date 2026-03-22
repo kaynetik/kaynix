@@ -109,8 +109,7 @@
           age-plugin-yubikey
         ];
         shellHook = ''
-          echo "🚀 Default development environment loaded!"
-          echo "Available tools: git, alejandra (nix formatter), nil (nix LSP)"
+          echo "Default dev shell: git, alejandra, nil, sops, age, age-plugin-yubikey"
         '';
       };
 
@@ -124,8 +123,7 @@
           git
         ];
         shellHook = ''
-          echo "🌐 Web development environment loaded!"
-          echo "Node: $(node --version), Bun: $(bun --version)"
+          echo "Web dev shell: node $(node --version), bun $(bun --version)"
         '';
       };
 
@@ -141,8 +139,7 @@
           git
         ];
         shellHook = ''
-          echo "🔧 DevOps environment loaded!"
-          echo "Available: kubectl, helm, terraform, aws, docker, k9s"
+          echo "DevOps shell: kubectl, helm, terraform, aws, docker, k9s"
         '';
       };
 
@@ -159,9 +156,8 @@
           git
         ];
         shellHook = ''
-          echo "🦀 Rust development environment loaded!"
-          echo "Rust: $(rustc --version)"
-          echo "GHC: $(ghc --version | head -n1)"
+          echo "Rust/Haskell shell: $(rustc --version)"
+          echo "$(ghc --version | head -n1)"
         '';
       };
     };

@@ -124,7 +124,7 @@ local function set_icon_line(workspace_id)
       end
 
       if no_app then
-        icon_line = " —"
+        icon_line = " -"
       end
 
       if workspace_id == "focused" then

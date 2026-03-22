@@ -1,0 +1,167 @@
+# Security scanning: secrets in git history, static analysis, optional Nix closure CVE hints.
+# Renovate is planned separately.
+#
+# Optional repo/org settings:
+# - GITLEAKS_LICENSE: only for Gitleaks enterprise (OSS scan does not need it).
+#
+# Grype on the formatter closure can be noisy (Nix store paths); tune --fail-on or use continue-on-error below.
+
+name: Security
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+permissions:
+  contents: read
+  pull-requests: read
+  security-events: write
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GITLEAKS_VERSION: "8.24.2"
+  TRUFFLEHOG_VERSION: "3.88.4"
+  OSV_SCANNER_VERSION: "1.9.2"
+
+jobs:
+  secrets-and-static:
+    name: Secrets and static analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: ShellCheck (tracked *.sh)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck
+          mapfile -t files < <(git ls-files '*.sh')
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No tracked .sh files"
+            exit 0
+          fi
+          shellcheck "${files[@]}"
+
+      - name: detect-secrets (baseline)
+        run: |
+          python3 -m pip install --disable-pip-version-check -q "detect-secrets==1.5.0"
+          detect-secrets scan --baseline .secrets.baseline --slim
+
+      - name: Semgrep
+        run: |
+          python3 -m pip install --disable-pip-version-check -q semgrep
+          # Limit scope to first-party config; Neovim plugin trees are huge and mostly upstream.
+          semgrep scan --error --metrics off --jobs 2 \
+            --config p/security-audit \
+            --config p/secrets \
+            --exclude 'homes/static/nvim' \
+            flake.nix homes modules scripts .github
+
+      - name: OSV-Scanner
+        run: |
+          curl -sSfL -o osv-scanner \
+            "https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/osv-scanner_linux_amd64"
+          chmod +x osv-scanner
+          ./osv-scanner scan -r .
+
+      - name: Install Gitleaks
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin gitleaks
+
+      - name: Gitleaks (SARIF + fail on leak)
+        run: |
+          gitleaks detect --source . --verbose --redact \
+            --report-path gitleaks-results.sarif \
+            --report-format sarif
+
+      - name: Upload Gitleaks SARIF
+        if: >-
+          always() && hashFiles('gitleaks-results.sarif') != '' &&
+          (github.event_name != 'pull_request' ||
+           github.event.pull_request.head.repo.full_name == github.repository)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gitleaks-results.sarif
+
+      - name: Install TruffleHog
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh \
+            | sudo sh -s -- -b /usr/local/bin "v${TRUFFLEHOG_VERSION}"
+
+      - name: TruffleHog (git, full history)
+        run: |
+          trufflehog git "file://${GITHUB_WORKSPACE}" --fail
+
+      - name: Install git-secrets
+        run: |
+          git clone --depth 1 https://github.com/awslabs/git-secrets.git /tmp/git-secrets
+          cd /tmp/git-secrets && sudo make install
+
+      - name: git-secrets (history scan)
+        run: |
+          git secrets --install
+          git secrets --register-aws
+          if [ -f .gitallowed ]; then
+            while IFS= read -r line || [ -n "$line" ]; do
+              case "$line" in
+                ''|'#'*) continue ;;
+              esac
+              git secrets --add --allowed "$line"
+            done < .gitallowed
+          fi
+          git secrets --scan-history
+
+  nix-grype:
+    name: Nix flake check + Grype (formatter closure)
+    runs-on: macos-14
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Flake check (no build)
+        run: nix flake check --no-build --accept-flake-config
+
+      - name: Build formatter output
+        run: nix build .#formatter -L --accept-flake-config -o result
+
+      - name: Install Grype
+        run: brew install grype
+
+      - name: Grype scan formatter store path
+        continue-on-error: true
+        run: |
+          target=$(readlink ./result)
+          echo "Scanning $target"
+          grype "dir:${target}" -o table
+          grype "dir:${target}" --fail-on high
+
+      - name: vulnix (optional)
+        continue-on-error: true
+        run: |
+          target=$(readlink ./result)
+          if nix run nixpkgs#vulnix -- -S "$target"; then
+            echo "vulnix ok"
+          else
+            echo "vulnix skipped or failed (common on darwin); see log"
+          fi

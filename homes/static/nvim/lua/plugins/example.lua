@@ -1,4 +1,4 @@
--- since this is just an example spec, don't actually load anything here and return an empty spec
+-- Upstream LazyVim example; early return keeps this file from loading as a real spec.
 -- stylua: ignore
 if true then return {} end
 
@@ -180,7 +180,7 @@ return {
     opts = function(_, opts)
       table.insert(opts.sections.lualine_x, {
         function()
-          return "😄"
+          return ":)"
         end,
       })
     end,

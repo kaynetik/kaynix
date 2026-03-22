@@ -1,0 +1,12 @@
+# Path allowlist (Gitleaks v8). .gitleaksignore is for fingerprints only, not paths.
+title = "dot-nix"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "detect-secrets baseline hashes; Neovim lazy-lock commit refs"
+paths = [
+  '''\.secrets\.baseline$''',
+  '''homes/static/nvim/lazy-lock\.json$''',
+]

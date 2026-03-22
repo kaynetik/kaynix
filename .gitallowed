@@ -1,0 +1,4 @@
+# Lines passed to: git secrets --add --allowed <line>
+# Add regexes here only if git-secrets false-positives on this repo (e.g. long hex in docs).
+# Example (uncomment if needed):
+# ^[0-9a-f]{40}$
