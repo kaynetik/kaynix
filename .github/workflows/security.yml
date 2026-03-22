@@ -1,6 +1,6 @@
 # Security scanning: secrets in git history, static analysis, optional Nix closure CVE hints.
 # Renovate is planned separately.
-# Grype on the formatter closure can be noisy (Nix store paths); 
+# Grype on the formatter closure can be noisy (Nix store paths);
 ## tune --fail-on or use continue-on-error below.
 
 name: Security
@@ -30,6 +30,9 @@ env:
   GITLEAKS_VERSION: "8.24.2"
   TRUFFLEHOG_VERSION: "3.88.4"
   OSV_SCANNER_VERSION: "1.9.2"
+  # Third-party actions still on @actions/core Node 20 (e.g. nix-installer-action): opt into Node 24 early.
+  # https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   secrets-and-static:
@@ -108,7 +111,13 @@ jobs:
       - name: TruffleHog (git, full history)
         run: |
           # --no-update: self-updater cannot replace /usr/local/bin on Actions (permission / move errors).
-          trufflehog git "file://${GITHUB_WORKSPACE}" --fail --no-update
+          # lazy-lock.json commit SHAs trigger the GitHub detector as false positives; nvim tree is upstream-heavy (same as Semgrep scope).
+          cat > /tmp/trufflehog-exclude.txt <<'EOF'
+          .*lazy-lock\.json$
+          ^homes/static/nvim/
+          EOF
+          trufflehog git "file://${GITHUB_WORKSPACE}" --fail --no-update \
+            -x /tmp/trufflehog-exclude.txt
 
       - name: Install git-secrets
         run: |
