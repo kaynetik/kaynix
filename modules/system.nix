@@ -44,7 +44,7 @@
         ShowPathbar = true;
 
         # default to list view
-        FXPreferredViewStyle = "clmv"; # # Default folder view is Columns "Nlsv";
+        FXPreferredViewStyle = "clmv";
         # full path in window title
         _FXShowPosixPathInTitle = true;
         AppleShowAllExtensions = true;
