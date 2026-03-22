@@ -34,12 +34,23 @@ Keys used by Home Manager here:
 
 - `zsh_alpha` -> `~/.config/zsh/conf-alpha.zsh`
 - `zsh_bravo` -> `~/.config/zsh/conf-bravo.zsh`
+- `ssh_config_work` -> `~/.ssh/conf.d/work` (sensitive SSH host blocks; included by `~/.ssh/config`)
 
 Use YAML multiline values, for example:
 
 ```yaml
 zsh_alpha: |
   export FOO=bar
+
+ssh_config_work: |
+  Host monitoring
+      User ec2-user
+      HostName <internal-ip-or-hostname>
+      IdentityFile ~/.ssh/alpha-monitoring
+      LocalForward 9443 127.0.0.1:9443
+      LocalForward 7331 127.0.0.1:7331
+      LocalForward 3001 127.0.0.1:3001
+      LocalForward 3000 127.0.0.1:3000
 ```
 
 ## Move off the bootstrap key
