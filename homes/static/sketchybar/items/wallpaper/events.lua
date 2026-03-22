@@ -82,7 +82,7 @@ components.bg:subscribe("select_bg", function(env)
 			-- Moved out one directory
 			globals.depth = globals.depth - 1
 
-			-- We just need the table
+			-- Need the table only
 			local tbl = helpers.getFocusedEntryTbl()
 
 			-- Unset highlight

@@ -60,7 +60,7 @@ in {
     defaultSopsFile = ../secrets/secrets.yaml;
     age = {
       keyFile = sopsAgeIdentityYubikey;
-      plugins = [ pkgs.age-plugin-yubikey ];
+      plugins = [pkgs.age-plugin-yubikey];
     };
     secrets = {
       "zsh-seda" = {
@@ -85,7 +85,7 @@ in {
   # deployed to ~/.config/zsh; only these secrets do.
   home.activation.sops-nix = lib.mkIf pkgs.stdenv.isDarwin (
     lib.mkForce (
-      lib.hm.dag.entryAfter [ "setupLaunchAgents" ] ''
+      lib.hm.dag.entryAfter ["setupLaunchAgents"] ''
         ${sopsActivationEnvExports}
         _plist=${lib.escapeShellArg sopsLaunchAgentPlist}
         if [[ -r "$_plist" ]]; then
@@ -117,99 +117,100 @@ in {
   home.packages =
     [dot-nix-scripts]
     ++ (with pkgs; [
-    # wave 1: terminal
-    alacritty
-    tmux
-    htop
-    bat
-    ripgrep
-    fd
-    eza
-    # wave 2: editor + VCS helpers (git / git-lfs via programs.git; gh via programs.gh)
-    # neovim binary via programs.neovim below
-    git-filter-repo
-    lazygit
-    pre-commit
-    # wave 2: structured data + files
-    jq
-    yq-go
-    tree
-    exiftool
-    cmctl
-    # wave 2: network
-    curl
-    wget
-    croc
-    grpcurl
-    wireguard-tools
-    wireguard-ui
+      # wave 1: terminal
+      alacritty
+      tmux
+      htop
+      bat
+      ripgrep
+      fd
+      eza
+      # wave 2: editor + VCS helpers (git / git-lfs via programs.git; gh via programs.gh)
+      # neovim binary via programs.neovim below
+      git-filter-repo
+      lazygit
+      pre-commit
+      # wave 2: structured data + files
+      jq
+      yq-go
+      tree
+      exiftool
+      cmctl
+      # wave 2: network
+      curl
+      wget
+      croc
+      grpcurl
+      wireguard-tools
+      wireguard-ui
 
-    # wave 3: Kubernetes & containers
-    kubectl
-    kustomize
-    k9s
-    argocd
-    kubefwd
-    k3d
-    kubernetes-helm
-    podman
-    podman-desktop
-    sops
-    checkov # if it fails to compile, check for Wayland issues
-    bazel-buildtools
-    bazelisk
+      # wave 3: Kubernetes & containers
+      kubectl
+      kustomize
+      k9s
+      argocd
+      kubefwd
+      k3d
+      kubernetes-helm
+      podman
+      podman-desktop
+      sops
+      checkov # if it fails to compile, check for Wayland issues
+      bazel-buildtools
+      bazelisk
 
-    # wave 3: cloud platforms
-    awscli2
+      # wave 3: cloud platforms
+      awscli2
+      google-cloud-sdk
 
-    # wave 3: IaC & security scanning
-    infracost
-    tflint
-    trivy
-    terraform-docs
+      # wave 3: IaC & security scanning
+      infracost
+      tflint
+      trivy
+      terraform-docs
 
-    # wave 3: monitoring & observability
-    prometheus
-    prometheus.cli # promtool
-    grafana-alloy
+      # wave 3: monitoring & observability
+      prometheus
+      prometheus.cli # promtool
+      grafana-alloy
 
-    # wave 3: database & API tools
-    postgresql_18
-    pgcli
-    stripe-cli
+      # wave 3: database & API tools
+      postgresql_18
+      pgcli
+      stripe-cli
 
-    # wave 3: Go development tools
-    tparse # CLI summarizer for `go test` output
-    goose
-    crane
+      # wave 3: Go development tools
+      tparse # CLI summarizer for `go test` output
+      goose
+      crane
 
-    # wave 3: media | audio | video
-    audacity
-    imagemagick
-    shottr
-    languagetool
+      # wave 3: media | audio | video
+      audacity
+      imagemagick
+      shottr
+      languagetool
 
-    # these make sense only on darwin arch, shouldn't they be behind a flag?
-    sbarlua
-    jankyborders
-    switchaudio-osx
-    nowplaying-cli
+      # these make sense only on darwin arch, shouldn't they be behind a flag?
+      sbarlua
+      jankyborders
+      switchaudio-osx
+      nowplaying-cli
 
-    zig
-    rustup
-    go
-    lua
-    alejandra
-    hugo
-    bun
-    nodejs
+      zig
+      rustup
+      go
+      lua
+      alejandra
+      hugo
+      bun
+      nodejs
 
-    openssh
-    yubikey-manager
-    yubikey-agent
-    age-plugin-yubikey
-    age
-  ]);
+      openssh
+      yubikey-manager
+      yubikey-agent
+      age-plugin-yubikey
+      age
+    ]);
 
   programs.neovim = {
     enable = true;
@@ -242,7 +243,7 @@ in {
       push = {autoSetupRemote = true;};
       init = {defaultBranch = "main";};
       core = {
-        excludesFile = "${config.xdg.configHome}/git/ignore_global";
+        excludesFile = "${config.home.homeDirectory}/.gitignore_global";
         autocrlf = "input";
       };
       advice = {detachedHead = false;};
@@ -259,7 +260,7 @@ in {
 
   # home.file.".gitconfig_template".source = ./static/git/template.gitconfig;
 
-  xdg.configFile."git/ignore_global".source = ./static/git/ignore_global;
+  home.file.".gitignore_global".source = ./static/git/ignore_global;
 
   xdg.configFile."sops/age/README.md".source = ./static/sops/README.md;
 
@@ -340,7 +341,7 @@ in {
       (lib.mkAfter ''
         # After brew shellenv and oh-my-zsh: macOS /usr/bin OpenSSH has no working FIDO provider.
         # Prepend nixpkgs openssh so ssh, ssh-keygen, scp, sftp match (libfido2-backed sk keys).
-        export PATH="${lib.makeBinPath [ pkgs.openssh ]}:$PATH"
+        export PATH="${lib.makeBinPath [pkgs.openssh]}:$PATH"
       '')
     ];
   };

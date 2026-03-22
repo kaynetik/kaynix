@@ -2,67 +2,65 @@
   services.sketchybar.enable = true;
 
   # environment.systemPackages = with pkgs; [
-    # ============================================================
-    # Languages & Runtimes
-    # ============================================================
+  # ============================================================
+  # Languages & Runtimes
+  # ============================================================
 
+  # ============================================================
+  # Nix - i3 akin flow
+  # ============================================================
 
-    # ============================================================
-    # Nix - i3 akin flow
-    # ============================================================
+  # ============================================================
+  # VCS
+  # (git, git-lfs, git-filter-repo, lazygit, gh, pre-commit -> homes/kaynetik.nix + programs.git / programs.gh)
+  # ============================================================
 
+  # ============================================================
+  # Terminal & Shell Utilities
+  # (alacritty, tmux, atuin, zoxide, fzf, htop, bat, ripgrep, fd, eza, neovim, jq, yq-go, tree, exiftool, cmctl,
+  #  curl, wget, croc, grpcurl, wireguard-tools, wireguard-ui -> home.packages in homes/kaynetik.nix)
+  # ============================================================
+  # zinit stays on Homebrew (nixpkgs zinit has issues)
+  #
+  # mvt # phone spyware analysis
+  # dotenvx -> broken upstream, PR pending: https://github.com/NixOS/nixpkgs/pull/500959#issuecomment-4103458168
 
-    # ============================================================
-    # VCS
-    # (git, git-lfs, git-filter-repo, lazygit, gh, pre-commit -> homes/kaynetik.nix + programs.git / programs.gh)
-    # ============================================================
+  # ============================================================
+  # Kubernetes & Container Tools
+  # (kubectl, kustomize, k9s, argocd, kubefwd, k3d, kubernetes-helm, podman, podman-desktop,
+  #  sops, checkov, bazel-buildtools, bazelisk -> home.packages in homes/kaynetik.nix)
+  # ============================================================
 
-    # ============================================================
-    # Terminal & Shell Utilities
-    # (alacritty, tmux, atuin, zoxide, fzf, htop, bat, ripgrep, fd, eza, neovim, jq, yq-go, tree, exiftool, cmctl,
-    #  curl, wget, croc, grpcurl, wireguard-tools, wireguard-ui -> home.packages in homes/kaynetik.nix)
-    # ============================================================
-    # zinit stays on Homebrew (nixpkgs zinit has issues)
-    #
-    # mvt # phone spyware analysis
-    # dotenvx -> broken upstream, PR pending: https://github.com/NixOS/nixpkgs/pull/500959#issuecomment-4103458168
+  # ============================================================
+  # Cloud Platforms
+  # (awscli2 -> home.packages in homes/kaynetik.nix)
+  # ============================================================
 
-    # ============================================================
-    # Kubernetes & Container Tools
-    # (kubectl, kustomize, k9s, argocd, kubefwd, k3d, kubernetes-helm, podman, podman-desktop,
-    #  sops, checkov, bazel-buildtools, bazelisk -> home.packages in homes/kaynetik.nix)
-    # ============================================================
+  # ============================================================
+  # IaC & Security
+  # (infracost, tflint, trivy, terraform-docs -> home.packages in homes/kaynetik.nix)
+  # ============================================================
 
-    # ============================================================
-    # Cloud Platforms
-    # (awscli2 -> home.packages in homes/kaynetik.nix)
-    # ============================================================
+  # ============================================================
+  # Monitoring & Observability
+  # (prometheus, prometheus.cli, grafana-alloy -> home.packages in homes/kaynetik.nix)
+  # ============================================================
 
-    # ============================================================
-    # IaC & Security
-    # (infracost, tflint, trivy, terraform-docs -> home.packages in homes/kaynetik.nix)
-    # ============================================================
+  # ============================================================
+  # Database & API Tools
+  # (postgresql_18, pgcli, stripe-cli -> home.packages in homes/kaynetik.nix)
+  # ============================================================
 
-    # ============================================================
-    # Monitoring & Observability
-    # (prometheus, prometheus.cli, grafana-alloy -> home.packages in homes/kaynetik.nix)
-    # ============================================================
+  # ============================================================
+  # Go Development Tools
+  # (tparse, goose, crane -> home.packages in homes/kaynetik.nix)
+  # ============================================================
 
-    # ============================================================
-    # Database & API Tools
-    # (postgresql_18, pgcli, stripe-cli -> home.packages in homes/kaynetik.nix)
-    # ============================================================
-
-    # ============================================================
-    # Go Development Tools
-    # (tparse, goose, crane -> home.packages in homes/kaynetik.nix)
-    # ============================================================
-
-    # ============================================================
-    # Media | Audio | Video
-    # (audacity, imagemagick, shottr, languagetool -> home.packages in homes/kaynetik.nix)
-    # vlc => fix this for darwinians?
-    # ============================================================
+  # ============================================================
+  # Media | Audio | Video
+  # (audacity, imagemagick, shottr, languagetool -> home.packages in homes/kaynetik.nix)
+  # vlc => fix this for darwinians?
+  # ============================================================
   # ];
 
   fonts.packages = with pkgs.nerd-fonts; [
@@ -97,7 +95,7 @@
       "tor"
 
       # Programming Languages & Runtimes
-      "openjdk" # equal alt in nix?
+      # "openjdk" # equal alt in nix?
       "luarocks"
 
       # Shell Tools
@@ -120,9 +118,10 @@
       # Security & Privacy
       "keepassxc"
       "gpg-suite"
+      "protonvpn"
+      ## objectivesee
       "lulu"
       "reikey"
-      "protonvpn"
       "pareto-security" # Occasionally run security checks
 
       # Productivity & Utilities
@@ -139,14 +138,14 @@
       "font-sf-mono"
 
       # Cloud & Infrastructure
-      "gcloud-cli"
+      # "gcloud-cli"
       "docker-desktop"
       "lens" # Rice k9s more to reach the LENS usability levels.
 
       # Media Tools
       "calibre"
       "vlc"
-      "spotify"
+      "spotify" # Ditch this crap ASAP
       "gimp"
       "transmission"
       "unetbootin"

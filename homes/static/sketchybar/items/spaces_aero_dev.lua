@@ -61,7 +61,7 @@ local function updateWindows(workspace_index)
 					return
 				end
 				if no_app and workspace_index == tonumber(focused_workspace) then
-					icon_line = " —"
+					icon_line = " -"
 					workspaces[workspace_index]:set({
 						icon = { drawing = true },
 						label = {

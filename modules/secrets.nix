@@ -1,7 +1,4 @@
-{
-  username,
-  ...
-}: {
+{username, ...}: {
   # sops-nix (Home Manager) decrypts secrets at activation; see ../secrets/README.md and ../.sops.yaml.
   # Legacy: keep a writable area for non-sops scratch (optional).
   system.activationScripts.createSecretsDir.text = ''
