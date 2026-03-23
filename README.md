@@ -1,13 +1,15 @@
 <h3 align="center">
- <img src="https://avatars.githubusercontent.com/u/48174247?v=4" width="100" alt="Logo"/><br/>
+ <br/>
  <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="30" width="0px"/>
   NixOS Config for <a href="https://github.com/kaynetik">kaynetik</a>
  <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="30" width="0px"/>
 </h3>
 
 <p align="center">
- <a href="https://github.com/kaynetik/kaynix/stargazers"><img src="https://img.shields.io/github/stars/kaynetik/kaynix?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
- <a href="https://github.com/kaynetik/kaynix/commits"><img src="https://img.shields.io/github/last-commit/kaynetik/kaynix?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
+ <!-- <a href="https://github.com/kaynetik/kaynix/stargazers"><img src="https://img.shields.io/github/stars/kaynetik/kaynix?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a> I'm obviously stargazing myself... -->
+ <a href="https://github.com/kaynetik/kaynix/commits"><img src="https://img.shields.io/github/last-commit/kaynetik/kaynix?colorA=363a4f&colorB=f5a97f&style=for-the-badge" alt="Last commit"></a>
+ <a href="https://github.com/kaynetik/kaynix/actions/workflows/security.yml"><img src="https://img.shields.io/github/actions/workflow/status/kaynetik/kaynix/security.yml?branch=main&amp;colorA=363a4f&amp;style=for-the-badge&amp;logo=github&amp;logoColor=d8dee9&amp;label=Security" alt="Security CI workflow status"></a>
+ <a href="https://github.com/kaynetik/kaynix/blob/main/.github/workflows/security.yml"><img src="https://img.shields.io/static/v1?label=CI%20runners&amp;message=Ubuntu%20%26%20macOS&amp;labelColor=363a4f&amp;color=cad3f5&amp;logo=githubactions&amp;logoColor=d8dee9&amp;style=for-the-badge" alt="CI runs on Ubuntu and macOS"></a>
   <a href="https://wiki.nixos.org/wiki/Flakes" target="_blank">
  <img alt="Nix Flakes Ready" src="https://img.shields.io/static/v1?logo=nixos&logoColor=d8dee9&label=Nix%20Flakes&labelColor=5e81ac&message=Ready&color=d8dee9&style=for-the-badge">
 </a>
