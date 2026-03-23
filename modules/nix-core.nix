@@ -19,7 +19,16 @@
     warn-dirty = false;
   };
 
-  nix.gc.automatic = true;
+  nix.gc = {
+    automatic = true;
+    # nix-darwin launchd schedule: run monthly on day 1 at 15:15 local time.
+    interval = {
+      Day = 1;
+      Hour = 15;
+      Minute = 15;
+    };
+    options = "--delete-older-than 30d";
+  };
 
   nix.enable = true;
   nix.package = pkgs.nix;
