@@ -67,6 +67,7 @@ Before storing real secrets (required if the repo is public):
 ## Notes
 
 ```bash
-ssh-keygen -t ed25519-sk -O verify-required -C "yubi-primary" -f ~/.ssh/prim_sk_id_ed25519
-ssh-keygen -t ed25519-sk -O verify-required -C "yubi-backup" -f ~/.ssh/bkup_sk_id_ed25519
+# Default: touch + optional passphrase for the key file (see yubikey.md for verify-required tradeoffs).
+ssh-keygen -t ed25519-sk -C "yubi-primary" -f ~/.ssh/prim_sk_id_ed25519
+ssh-keygen -t ed25519-sk -C "yubi-backup" -f ~/.ssh/bkup_sk_id_ed25519
 ```

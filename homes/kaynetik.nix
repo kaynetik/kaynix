@@ -402,11 +402,30 @@ in {
         bindkey '^[[1;9A' beginning-of-line
         bindkey '^[[1;9B' end-of-line
       ''
-      (lib.mkAfter ''
+      (lib.mkAfter (''
         # After brew shellenv and oh-my-zsh: macOS /usr/bin OpenSSH has no working FIDO provider.
         # Prepend nixpkgs openssh so ssh, ssh-keygen, scp, sftp match (libfido2-backed sk keys).
         export PATH="${lib.makeBinPath [pkgs.openssh]}:$PATH"
-      '')
+      ''
+        + lib.optionalString pkgs.stdenv.isDarwin ''
+        # launchd's /usr/bin/ssh-agent can disagree with nix ssh/ssh-add on ed25519-sk signing; use one OpenSSH for both.
+        if [[ -o interactive ]]; then
+          export SSH_AUTH_SOCK="${config.home.homeDirectory}/.ssh/nix-ssh-agent.sock"
+          _nix_ssh_agent="${pkgs.openssh}/bin/ssh-agent"
+          _nix_ssh_add="${pkgs.openssh}/bin/ssh-add"
+          _need_agent=0
+          if [[ ! -S "$SSH_AUTH_SOCK" ]]; then
+            _need_agent=1
+          elif ! _ssh_add_out=$("$_nix_ssh_add" -l 2>&1); then
+            [[ "$_ssh_add_out" == *'The agent has no identities.'* ]] || _need_agent=1
+          fi
+          if [[ "$_need_agent" -eq 1 ]]; then
+            rm -f "$SSH_AUTH_SOCK"
+            eval "$("$_nix_ssh_agent" -s -a "$SSH_AUTH_SOCK")" >/dev/null
+          fi
+          unset _nix_ssh_agent _nix_ssh_add _need_agent _ssh_add_out
+        fi
+      ''))
     ];
   };
 
