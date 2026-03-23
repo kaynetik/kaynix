@@ -130,6 +130,7 @@ in {
       alacritty
       tmux
       htop
+      btop
 
       # Pager, search, listing
       bat
@@ -187,12 +188,12 @@ in {
       prometheus
       prometheus.cli
 
-      # Databases and APIs
+      # Databases and APIs; maybe prep a DB-uber shell that would contain more tools?
       pgcli
       postgresql_18
       stripe-cli
 
-      # Go
+      # Go => start migration to the dev shell
       crane
       goose
       tparse
@@ -201,7 +202,6 @@ in {
       audacity
       imagemagick
       languagetool
-      shottr
 
       # Compilers and runtimes
       alejandra
@@ -220,12 +220,14 @@ in {
       yubikey-agent
       yubikey-manager
     ])
-    # i3-like flow for MacOS
-    ++ lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
+   ++ lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
+      # i3-like flow for MacOS
       jankyborders
       nowplaying-cli
       sbarlua
       switchaudio-osx
+      
+      shottr # Screen Shots
     ]);
 
   programs.neovim = {
