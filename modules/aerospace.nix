@@ -12,6 +12,7 @@ lib.mkIf pkgs.stdenv.isDarwin {
       after-login-command = [];
       after-startup-command = [
         "exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0"
+        "exec-and-forget /usr/local/bin/zapmenu"
       ];
 
       exec-on-workspace-change = [
@@ -103,6 +104,7 @@ lib.mkIf pkgs.stdenv.isDarwin {
         alt-shift-j = ["join-with down" "mode main"];
         alt-shift-k = ["join-with up" "mode main"];
         alt-shift-l = ["join-with right" "mode main"];
+        b = ["exec-and-forget /bin/bash -c 'pkill -USR1 zapmenu'" "mode main"];
         down = "volume down";
         up = "volume up";
         shift-down = ["volume set 0" "mode main"];

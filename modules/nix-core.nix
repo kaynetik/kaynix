@@ -3,6 +3,15 @@
     allowUnfree = true;
     permittedInsecurePackages = [];
   };
+
+  # nixpkgs has tabulate 0.10.0; checkov 3.2.510 declares tabulate<0.10, so pythonRuntimeDepsCheck fails.
+  nixpkgs.overlays = [
+    (final: prev: {
+      checkov = prev.checkov.overridePythonAttrs (old: {
+        pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["tabulate"];
+      });
+    })
+  ];
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
 
