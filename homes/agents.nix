@@ -1,3 +1,6 @@
+# Agentic hour is upon us! Learn the timetables, feel the platform hum, step aboard,
+# or sit the saddle while the locomotive thins to smoke and rumor down the line.
+###
 {config, ...}: let
   cursorSkillsSource = "${config.home.homeDirectory}/Development/Personal/kaynetik-skills";
   cursorSkillNames = [
@@ -10,10 +13,12 @@
     "markdown-documentation"
     "mermaid-diagrams"
     "meta-cognition-parallel"
+    "podmaster"
     "practical-haskell"
     "solidity-security"
     "tdd-red-green-refactor"
     "tmux-mastery"
+    "ultimate-db"
     "ultimate-nixos"
     "ziglang"
   ];
