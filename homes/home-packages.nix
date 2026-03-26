@@ -132,11 +132,9 @@
     shottr
   ];
 in {
-  # copyApps rsyncs materialized .app trees into ~/Applications/Home Manager Apps. That often
-  # fails with Permission denied on unlink (macOS TCC / bundle flags). linkApps instead symlinks
-  # the merged home.packages Applications/ directory into the store; rebuilds update the link.
+  # copyApps rsyncs materialized .app trees into ~/Applications/Home Manager Apps
   targets.darwin.copyApps.enable = true;
-  # targets.darwin.linkApps.enable = true;
+  targets.darwin.linkApps.enable = false;
 
   home.packages =
     [kaynix-scripts]
