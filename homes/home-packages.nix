@@ -31,12 +31,11 @@
 
   gitTools = with pkgs; [
     git-filter-repo
-    lazygit
+    # lazygit - managed via programs.
     pre-commit
   ];
 
-  dataAndCerts = with pkgs; [
-    cmctl
+  dataParsing = with pkgs; [
     exiftool
     jq
     yq-go
@@ -53,6 +52,7 @@
 
   k8sAndOci = with pkgs; [
     argocd
+    cmctl # Manage certs.
     k3d
     kubectl
     kubefwd
@@ -63,7 +63,7 @@
     podman-desktop
   ];
 
-  iacAndPolicy = with pkgs; [
+  iacAndCD = with pkgs; [
     bazel-buildtools
     bazelisk
     checkov
@@ -92,6 +92,7 @@
     stripe-cli
   ];
 
+  # Makes sense to now migrate to Go-dev env?
   goTools = with pkgs; [
     crane
     goose
@@ -113,6 +114,7 @@
     nodejs_24
     rustup
     zig
+    foundry
   ];
 
   sshAndAge = with pkgs; [
@@ -140,10 +142,10 @@ in {
     [kaynix-scripts]
     ++ terminal
     ++ gitTools
-    ++ dataAndCerts
+    ++ dataParsing
     ++ network
     ++ k8sAndOci
-    ++ iacAndPolicy
+    ++ iacAndCD
     ++ cloud
     ++ observability
     ++ databases
