@@ -16,6 +16,121 @@
     substituteInPlace $out/bin/nvim-lazy-update \
       --replace '@DOT_NIX_ROOT@' '${dotNixRoot}'
   '';
+
+  terminal = with pkgs; [
+    alacritty
+    tmux
+    htop
+    btop
+    bat
+    eza
+    fd
+    ripgrep
+    tree
+  ];
+
+  gitTools = with pkgs; [
+    git-filter-repo
+    lazygit
+    pre-commit
+  ];
+
+  dataAndCerts = with pkgs; [
+    cmctl
+    exiftool
+    jq
+    yq-go
+  ];
+
+  network = with pkgs; [
+    croc
+    curl
+    grpcurl
+    wget
+    wireguard-tools
+    wireguard-ui
+  ];
+
+  k8sAndOci = with pkgs; [
+    argocd
+    k3d
+    kubectl
+    kubefwd
+    kubernetes-helm
+    kustomize
+    k9s
+    podman
+    podman-desktop
+  ];
+
+  iacAndPolicy = with pkgs; [
+    bazel-buildtools
+    bazelisk
+    checkov
+    infracost
+    terraform-docs
+    tflint
+    trivy
+  ];
+
+  cloud = with pkgs; [
+    awscli2
+    (google-cloud-sdk.withExtraComponents [
+      google-cloud-sdk.components.gke-gcloud-auth-plugin
+    ])
+  ];
+
+  observability = with pkgs; [
+    grafana-alloy
+    prometheus
+    prometheus.cli
+  ];
+
+  databases = with pkgs; [
+    pgcli
+    postgresql_18
+    stripe-cli
+  ];
+
+  goTools = with pkgs; [
+    crane
+    goose
+    tparse
+  ];
+
+  media = with pkgs; [
+    audacity
+    imagemagick
+    languagetool
+  ];
+
+  compilersAndRuntimes = with pkgs; [
+    alejandra
+    bun
+    go
+    hugo
+    lua
+    nodejs_24
+    rustup
+    zig
+  ];
+
+  sshAndAge = with pkgs; [
+    age
+    sops
+    age-plugin-yubikey
+    openssh
+    yubikey-agent
+    yubikey-manager
+  ];
+
+  darwinOnly = with pkgs; [
+    jankyborders
+    nowplaying-cli
+    sbarlua
+    switchaudio-osx
+    shottr
+  ];
 in {
   # copyApps rsyncs materialized .app trees into ~/Applications/Home Manager Apps. That often
   # fails with Permission denied on unlink (macOS TCC / bundle flags). linkApps instead symlinks
@@ -25,110 +140,18 @@ in {
 
   home.packages =
     [kaynix-scripts]
-    ++ (with pkgs; [
-      # Terminal
-      alacritty
-      tmux
-      htop
-      btop
-
-      # Pager, search, listing
-      bat
-      eza
-      fd
-      ripgrep
-      tree
-
-      # Git
-      git-filter-repo
-      lazygit
-      pre-commit
-
-      # Data and certs
-      cmctl
-      exiftool
-      jq
-      yq-go
-
-      # Network
-      croc
-      curl
-      grpcurl
-      wget
-      wireguard-tools
-      wireguard-ui
-
-      # Kubernetes and OCI
-      argocd
-      k3d
-      kubectl
-      kubefwd
-      kubernetes-helm
-      kustomize
-      k9s
-      podman
-      podman-desktop
-      sops
-
-      # IaC and policy
-      bazel-buildtools
-      bazelisk
-      checkov
-      infracost
-      terraform-docs
-      tflint
-      trivy
-
-      # Cloud CLIs
-      awscli2
-      (google-cloud-sdk.withExtraComponents [
-        google-cloud-sdk.components.gke-gcloud-auth-plugin
-      ])
-
-      # Observability
-      grafana-alloy
-      prometheus
-      prometheus.cli
-
-      # Databases and APIs; maybe prep a DB-uber shell that would contain more tools?
-      pgcli
-      postgresql_18
-      stripe-cli
-
-      # Go => start migration to the dev shell
-      crane
-      goose
-      tparse
-
-      # Media
-      audacity
-      imagemagick
-      languagetool
-
-      # Compilers and runtimes
-      alejandra
-      bun
-      go
-      hugo
-      lua
-      nodejs_24
-      rustup
-      zig
-
-      # SSH (nixpkgs openssh for FIDO on macOS) and age for SOPS
-      age
-      age-plugin-yubikey
-      openssh
-      yubikey-agent
-      yubikey-manager
-    ])
-    ++ lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
-      # i3-like flow for MacOS
-      jankyborders
-      nowplaying-cli
-      sbarlua
-      switchaudio-osx
-
-      shottr # Screen Shots
-    ]);
+    ++ terminal
+    ++ gitTools
+    ++ dataAndCerts
+    ++ network
+    ++ k8sAndOci
+    ++ iacAndPolicy
+    ++ cloud
+    ++ observability
+    ++ databases
+    ++ goTools
+    ++ media
+    ++ compilersAndRuntimes
+    ++ sshAndAge
+    ++ lib.optionals pkgs.stdenv.isDarwin darwinOnly;
 }

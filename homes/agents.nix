@@ -8,6 +8,7 @@
     "c-cpp-compilers"
     "coding-guidelines"
     "devops-iac-engineer"
+    "gh"
     "helm"
     "lua-projects"
     "markdown-documentation"

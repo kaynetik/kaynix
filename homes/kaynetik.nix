@@ -15,16 +15,11 @@
 
   home.username = "kaynetik";
   home.homeDirectory = "/Users/kaynetik";
-  home.stateVersion = "26.05";
+  home.stateVersion = "24.11";
 
   xdg.enable = true;
 
   home.file = {
-    # Alacritty.app: stable path for Launchpad / "Open with" / App Management
-    "Applications/Alacritty.app" = lib.mkIf pkgs.stdenv.isDarwin {
-      source = "${pkgs.alacritty}/Applications/Alacritty.app";
-      recursive = true;
-    };
     ".gitignore_global".source = ./static/git/ignore_global;
   };
 

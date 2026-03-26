@@ -4,7 +4,6 @@
   pkgs,
   ...
 }: {
-  # Delegate ~/.zshenv and ~/.zshrc to the XDG-based config under ~/.config/zsh/.
   home.file = {
     ".zshenv".text = ''
       export ZDOTDIR="${config.home.homeDirectory}/.config/zsh"
