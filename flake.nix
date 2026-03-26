@@ -15,6 +15,9 @@
 
   inputs = {
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+
+    # Alias so transitive inputs that expect "nixpkgs" by name (darwin,
+    # home-manager, sops-nix) all resolve to the same evaluated nixpkgs.
     nixpkgs.follows = "nixpkgs-darwin";
 
     darwin = {
@@ -43,52 +46,61 @@
     sops-nix,
     ...
   }: let
-    # FIXME: Update in case username changes, or this is deployed to a new Mac.
-    username = "kaynetik";
-    system = "aarch64-darwin"; # aarch64-darwin (M-series) or x86_64-darwin
-    hostname = "knt-mbp";
-
-    specialArgs =
-      inputs
-      // {
-        inherit username hostname;
+    # Per-host config. Add an entry here when deploying to a new machine (mac, lix).
+    hosts = {
+      knt-mbp = {
+        system = "aarch64-darwin";
+        username = "kaynetik";
       };
-  in {
-    darwinConfigurations."${hostname}" = darwin.lib.darwinSystem {
-      inherit system specialArgs;
-      modules = [
-        ./modules/nix-core.nix
-        ./modules/system.nix
-        ./modules/apps.nix
-        ./modules/aerospace.nix
-        ./modules/host-users.nix
-        ./modules/secrets.nix
-
-        home-manager.darwinModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.sharedModules = [sops-nix.homeManagerModules.sops];
-          # First switch: rename any plain files that block HM into *.hm-backup, then link from the store.
-          home-manager.backupFileExtension = "hm-backup";
-          # zinit stays on Homebrew (nixpkgs zinit is problematic); zsh is managed in homes/kaynetik.nix.
-          home-manager.users.kaynetik = import ./homes/kaynetik.nix;
-        }
-
-        # Minimal inline module for user directory setup (Home Manager owns git + listed dotfiles)
-        {
-          system.activationScripts.userDirectories.text = ''
-            sudo -u ${username} mkdir -p /Users/${username}/Development/{Work,Personal}
-            sudo -u ${username} mkdir -p /Users/${username}/Development/Nix/{flakes,shells}
-            sudo -u ${username} mkdir -p /Users/${username}/.config/zsh
-          '';
-        }
-      ];
     };
 
-    devShells.${system} = let
+    mkDarwin = hostname: hostCfg: let
+      inherit (hostCfg) system username;
+      specialArgs =
+        inputs
+        // {
+          inherit username hostname;
+        };
+    in
+      darwin.lib.darwinSystem {
+        inherit system specialArgs;
+        modules = [
+          ./modules/nix-core.nix
+          ./modules/system.nix
+          ./modules/apps.nix
+          ./modules/aerospace.nix
+          ./modules/host-users.nix
+          ./modules/secrets.nix
+
+          home-manager.darwinModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.sharedModules = [sops-nix.homeManagerModules.sops];
+            home-manager.backupFileExtension = "hm-backup";
+            home-manager.users.${username} = import ./homes/kaynetik.nix;
+          }
+
+          {
+            system.activationScripts.userDirectories.text = ''
+              sudo -u ${username} mkdir -p /Users/${username}/Development/{Work,Personal}
+              sudo -u ${username} mkdir -p /Users/${username}/Development/Nix/{flakes,shells}
+              sudo -u ${username} mkdir -p /Users/${username}/.config/zsh
+            '';
+          }
+        ];
+      };
+
+    primaryHost = hosts.knt-mbp;
+  in {
+    darwinConfigurations = builtins.mapAttrs mkDarwin hosts;
+
+    # Dev shells intentionally re-declare packages that overlap with home.packages.
+    # home.packages provides the always-available baseline; dev shells provide
+    # version-isolated, project-scoped environments activated via `nix develop .#<name>`.
+    devShells.${primaryHost.system} = let
       pkgs = import inputs.nixpkgs-darwin {
-        inherit system;
+        system = primaryHost.system;
         config.allowUnfree = true;
       };
     in {
@@ -153,6 +165,6 @@
       };
     };
 
-    formatter.${system} = inputs.nixpkgs-darwin.legacyPackages.${system}.alejandra;
+    formatter.${primaryHost.system} = inputs.nixpkgs-darwin.legacyPackages.${primaryHost.system}.alejandra;
   };
 }
