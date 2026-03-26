@@ -80,7 +80,6 @@
 
       # Cloud & Infrastructure
       # "gcloud-cli"
-      "docker-desktop"
       "lens" # Rice k9s more to reach the LENS usability levels.
 
       # Media Tools

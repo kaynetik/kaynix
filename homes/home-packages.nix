@@ -31,7 +31,6 @@
 
   gitTools = with pkgs; [
     git-filter-repo
-    # lazygit - managed via programs.
     pre-commit
   ];
 
@@ -61,6 +60,7 @@
     k9s
     podman
     podman-desktop
+    docker # in podman-compatibility mode
   ];
 
   iacAndCD = with pkgs; [
