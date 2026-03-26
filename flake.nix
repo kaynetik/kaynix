@@ -137,12 +137,11 @@
           kubernetes-helm
           terraform
           awscli2
-          docker
           k9s
           git
         ];
         shellHook = ''
-          echo "DevOps shell: kubectl, helm, terraform, aws, docker, k9s"
+          echo "DevOps shell: kubectl, helm, terraform, aws, k9s"
         '';
       };
 

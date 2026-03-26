@@ -41,7 +41,11 @@
         ulimit -n 65536
         source ${config.xdg.configHome}/zsh/setopt-history.zsh
         source ${config.xdg.configHome}/zsh/aliases.zsh
-        # sops-nix writes these paths at activation (see sops.secrets).
+        # See secrets/README.md#darwin-activation-and-yubikey
+        if [[ ! -r ${config.xdg.configHome}/zsh/conf-seda.zsh ]] && [[ -o interactive ]] && command -v sops-rekey &>/dev/null; then
+          echo "[sops] Secrets missing -- attempting re-decryption (touch YubiKey when prompted)..."
+          sops-rekey && echo "[sops] Secrets restored." || echo "[sops] Decryption failed. Check YubiKey and retry with 'sops-rekey'."
+        fi
         [[ -r ${config.xdg.configHome}/zsh/conf-seda.zsh ]] && source ${config.xdg.configHome}/zsh/conf-seda.zsh
         [[ -r ${config.xdg.configHome}/zsh/conf-sietch.zsh ]] && source ${config.xdg.configHome}/zsh/conf-sietch.zsh
       '')
