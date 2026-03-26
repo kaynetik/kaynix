@@ -107,6 +107,11 @@
     # ];
   };
 
+  programs.lazygit = {
+    enable = true;
+    settings.git.overrideGpg = true;
+  };
+
   # home.file.".gitconfig_template".source = ./static/git/template.gitconfig;
 
   programs.atuin = {
