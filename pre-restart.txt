@@ -1,0 +1,22 @@
+$ ioreg -p IOUSB -w0
+
++-o Root  <class IORegistryEntry, id 0x100000100, retain 36>
+  +-o AppleT6000USBXHCI@02000000  <class AppleT6000USBXHCI, id 0x10000040a, registered, matched, active, busy 0 (87 ms), retain 73>
+  | +-o YubiKey OTP+FIDO+CCID@02100000  <class IOUSBHostDevice, id 0x100000a2a, registered, matched, active, busy 0 (74 ms), retain 43>
+  +-o AppleT6000USBXHCI@00000000  <class AppleT6000USBXHCI, id 0x100000378, registered, matched, active, busy 0 (8 ms), retain 39>
+  +-o AppleT6000USBXHCI@01000000  <class AppleT6000USBXHCI, id 0x100000549, registered, matched, active, busy 0 (147 ms), retain 89>
+  | +-o USB3.2 Hub@01200000  <class IOUSBHostDevice, id 0x10000698a, registered, matched, active, busy 0 (18 ms), retain 31>
+  | +-o USB2.1 Hub@01100000  <class IOUSBHostDevice, id 0x10000698d, registered, matched, active, busy 0 (61 ms), retain 36>
+  |   +-o HID Device@01140000  <class IOUSBHostDevice, id 0x1000069d1, registered, matched, active, busy 0 (37 ms), retain 29>
+  +-o AppleUSBXHCITR@20000000  <class AppleUSBXHCITR, id 0x10000121b, registered, matched, active, busy 0 (311 ms), retain 240>
+    +-o USB3.1 Hub@20400000  <class IOUSBHostDevice, id 0x10000122c, registered, matched, active, busy 0 (24 ms), retain 35>
+    | +-o USB3.1 Hub@20410000  <class IOUSBHostDevice, id 0x100001276, registered, matched, active, busy 0 (12 ms), retain 34>
+    +-o USB2.0 Hub@20200000  <class IOUSBHostDevice, id 0x10000123c, registered, matched, active, busy 0 (247 ms), retain 40>
+      +-o 40AN@20250000  <class IOUSBHostDevice, id 0x100001286, registered, matched, active, busy 0 (3 ms), retain 20>
+      +-o USB2.0 Hub@20210000  <class IOUSBHostDevice, id 0x100001289, registered, matched, active, busy 0 (195 ms), retain 37>
+      | +-o USB2.0 HUB@20211000  <class IOUSBHostDevice, id 0x1000012db, registered, matched, active, busy 0 (111 ms), retain 31>
+      | | +-o ThinkPad Thunderbolt 3 Dock USB Audio@20211200  <class IOUSBHostDevice, id 0x100001317, registered, matched, active, busy 0 (101 ms), retain 44>
+      | +-o DeathAdder V4 Pro@20214000  <class IOUSBHostDevice, id 0x1000012e6, registered, matched, active, busy 0 (36 ms), retain 63>
+      | +-o Ducky Keyboard@20213000  <class IOUSBHostDevice, id 0x100006677, registered, matched, active, busy 0 (37 ms), retain 42>
+      +-o C922 Pro Stream Webcam@20230000  <class IOUSBHostDevice, id 0x10000129c, registered, matched, active, busy 0 (26 ms), retain 33>
+      +-o Scarlett 2i2 USB@20240000  <class IOUSBHostDevice, id 0x1000012b0, registered, matched, active, busy 0 (14 ms), retain 31>
