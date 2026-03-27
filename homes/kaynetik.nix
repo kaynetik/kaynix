@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  username,
+  hostConfig,
   ...
 }: {
   imports = [
@@ -13,9 +15,9 @@
 
   programs.home-manager.enable = true;
 
-  home.username = "kaynetik";
-  home.homeDirectory = "/Users/kaynetik";
-  home.stateVersion = "24.11";
+  home.username = username;
+  home.homeDirectory = "/Users/${username}";
+  home.stateVersion = hostConfig.homeStateVersion or "24.11";
 
   xdg.enable = true;
 

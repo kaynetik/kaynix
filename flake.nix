@@ -46,20 +46,55 @@
     sops-nix,
     ...
   }: let
-    # Per-host config. Add an entry here when deploying to a new machine (mac, lix).
+    # Per-host config. Add an entry here when deploying to a new machine.
+    # Shared defaults live in the modules; `config` overrides per machine.
     hosts = {
       knt-mbp = {
         system = "aarch64-darwin";
         username = "kaynetik";
+        config = {
+          homeStateVersion = "24.11";
+          timeZone = "Europe/Belgrade";
+          loginGreeting = "nixing";
+          networking = {
+            knownNetworkServices = [
+              "Wi-Fi"
+              "Thunderbolt Bridge"
+              "ThinkPad TBT 3 Dock"
+              "USB 10/100 LAN"
+            ];
+            dns = [
+              "192.168.2.1"
+              "1.1.1.1"
+              "1.0.0.1"
+              "8.8.8.8"
+              "8.8.4.4"
+            ];
+          };
+        };
+      };
+
+      knt-mbpf = {
+        system = "aarch64-darwin";
+        username = "kaynetik";
+        config = {
+          homeStateVersion = "26.05";
+          timeZone = "Europe/Belgrade";
+          networking = {
+            knownNetworkServices = ["Wi-Fi" "Thunderbolt Bridge"];
+            dns = ["1.1.1.1" "1.0.0.1" "8.8.8.8" "8.8.4.4"];
+          };
+        };
       };
     };
 
     mkDarwin = hostname: hostCfg: let
       inherit (hostCfg) system username;
+      hostConfig = hostCfg.config or {};
       specialArgs =
         inputs
         // {
-          inherit username hostname;
+          inherit username hostname hostConfig;
         };
     in
       darwin.lib.darwinSystem {
@@ -76,6 +111,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = {inherit username hostConfig;};
             home-manager.sharedModules = [sops-nix.homeManagerModules.sops];
             home-manager.backupFileExtension = "hm-backup";
             home-manager.users.${username} = import ./homes/kaynetik.nix;
