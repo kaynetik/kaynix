@@ -144,6 +144,7 @@
 
   # PATH for what's not in the nix store.
   home.sessionPath = [
+    "${config.home.homeDirectory}/.cargo/bin"
     "${config.home.homeDirectory}/go/bin"
   ];
 
