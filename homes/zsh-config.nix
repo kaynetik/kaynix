@@ -15,11 +15,16 @@
     '';
   };
 
-  home.sessionVariables = {
-    ZSH_DISABLE_COMPFIX = "true";
-    DISABLE_MAGIC_FUNCTIONS = "true";
-    HIST_STAMPS = "dd.mm.yyyy";
-  };
+  home.sessionVariables =
+    {
+      ZSH_DISABLE_COMPFIX = "true";
+      DISABLE_MAGIC_FUNCTIONS = "true";
+      HIST_STAMPS = "dd.mm.yyyy";
+    }
+    // lib.optionalAttrs pkgs.stdenv.isDarwin {
+      # Match modules/apps.nix launchd LUA_CPATH for nixpkgs lua5_5 + sbarlua (interactive lua / sketchybarrc).
+      LUA_CPATH = "${pkgs.lua5_5}/lib/lua/5.5/?.so;${pkgs.lua5_5}/lib/lua/5.5/loadall.so;${pkgs.sbarlua}/lib/lua/5.5/?.so;./?.so";
+    };
 
   programs.zsh = {
     enable = true;
