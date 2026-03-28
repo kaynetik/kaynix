@@ -110,8 +110,8 @@
     bun
     go
     hugo
-    lua
-    luarocks
+    lua5_5
+    (lua5_5.pkgs.luarocks)
     nodejs_24
     rustup
     zig
