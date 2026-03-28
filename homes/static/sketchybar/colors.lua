@@ -11,11 +11,8 @@ return {
 	transparent = 0x00000000,
 
 	bar = {
-		bg = 0xBFffff,
-		-- bg = 0x829b9b9b,
+		bg = 0xBFffffff,
 		border = 0x66494d64,
-		-- border = 0xff494d66,
-		-- border = 0x801a1b27,
 	},
 	popup = {
 		bg = 0xc02c2e34,
@@ -23,13 +20,9 @@ return {
 	},
 	-- bg1 = 0xff363944,
 	-- bg2 = 0xff414550,
-	-- bg2 = 0xff,
 	bg1 = 0xff363944,
 	bg2 = 0xff414550,
 	bg3 = 0x99363944,
-	-- bg3 = 0xff414550,
-	-- bg3 = 0x754a4a4a,
-	-- bg3 = 0xc02c2e34,
 	transparency = 0.5,
 	blur_radius = 20,
 

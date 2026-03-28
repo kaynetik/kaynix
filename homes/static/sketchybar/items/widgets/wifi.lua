@@ -2,10 +2,13 @@ local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
 
--- Execute the event provider binary which provides the event "network_update"
--- for the network interface "en0", which is fired every 2.0 seconds.
+local config_dir = os.getenv("CONFIG_DIR") or (os.getenv("HOME") .. "/.config/sketchybar")
+
+-- Event provider: "network_update" every 2.0s on en0.
 sbar.exec(
-	"killall network_load >/dev/null; $CONFIG_DIR/helpers/event_providers/network_load/bin/network_load en0 network_update 2.0"
+	"killall network_load 2>/dev/null; "
+		.. config_dir
+		.. "/helpers/event_providers/network_load/bin/network_load en0 network_update 2.0"
 )
 
 local popup_width = 250

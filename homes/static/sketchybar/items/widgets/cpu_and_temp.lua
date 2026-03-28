@@ -2,9 +2,14 @@ local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
 
--- Execute the event provider binary which provides the event "cpu_update" for
--- the cpu load data, which is fired every 2.0 seconds.
-sbar.exec("killall cpu_load >/dev/null; $CONFIG_DIR/helpers/event_providers/cpu_load/bin/cpu_load cpu_update 2.0")
+local config_dir = os.getenv("CONFIG_DIR") or (os.getenv("HOME") .. "/.config/sketchybar")
+
+-- Event provider: fires "cpu_update" every 2.0s. Use absolute path; $CONFIG_DIR is not always set in sh -c.
+sbar.exec(
+	"killall cpu_load 2>/dev/null; "
+		.. config_dir
+		.. "/helpers/event_providers/cpu_load/bin/cpu_load cpu_update 2.0"
+)
 
 -- To get the SOC temperature, the command is
 -- /Applications/Stats.app/Contents/Resources/smc list -t | grep "Tp2a" | awk '{print $2}'
