@@ -1,5 +1,12 @@
 {pkgs, ...}: {
-  services.sketchybar.enable = true;
+  services.sketchybar = {
+    enable = true;
+    extraPackages = [pkgs.lua5_5 pkgs.sbarlua];
+  };
+
+  launchd.user.agents.sketchybar.environment = {
+    LUA_CPATH = "${pkgs.lua5_5}/lib/lua/5.5/?.so;${pkgs.lua5_5}/lib/lua/5.5/loadall.so;${pkgs.sbarlua}/lib/lua/5.5/?.so;./?.so";
+  };
 
   fonts.packages = with pkgs.nerd-fonts; [
     jetbrains-mono # Primary terminal font (Alacritty)

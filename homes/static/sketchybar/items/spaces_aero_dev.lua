@@ -154,6 +154,7 @@ for workspace_index = 1, max_workspaces do
 			string = workspace_index,
 			padding_left = 10,
 			padding_right = 5,
+			background = { drawing = false },
 		},
 		label = {
 			padding_right = 12,
@@ -161,6 +162,7 @@ for workspace_index = 1, max_workspaces do
 			highlight_color = colors.white,
 			font = "sketchybar-app-font:Regular:16.0",
 			y_offset = -1,
+			background = { drawing = false },
 		},
 		padding_right = 2,
 		padding_left = 2,
@@ -168,6 +170,7 @@ for workspace_index = 1, max_workspaces do
 			color = colors.bg3,
 			border_width = 1,
 			height = 28,
+			corner_radius = 9,
 			border_color = colors.bg2,
 		},
 		click_script = "aerospace workspace " .. workspace_index,
