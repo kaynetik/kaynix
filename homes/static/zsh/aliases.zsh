@@ -16,3 +16,10 @@ alias p="pnpm"
 alias rd="rmdir"
 
 alias tf=terraform
+
+# Dev shells -- enter from anywhere
+alias shell-default="nix develop $HOME/Development/Personal/kaynix#default"
+alias shell-python="nix develop $HOME/Development/Personal/kaynix#python"
+alias shell-web="nix develop $HOME/Development/Personal/kaynix#web"
+alias shell-devops="nix develop $HOME/Development/Personal/kaynix#devops"
+alias shell-rust="nix develop $HOME/Development/Personal/kaynix#rust"

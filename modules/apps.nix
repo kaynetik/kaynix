@@ -1,9 +1,6 @@
 {pkgs, ...}: {
   services.sketchybar.enable = true;
 
-  # User packages are in homes/kaynetik.nix (home.packages, programs.*).
-  # dotenvx is broken upstream: https://github.com/NixOS/nixpkgs/pull/500959#issuecomment-4103458168
-
   fonts.packages = with pkgs.nerd-fonts; [
     jetbrains-mono # Primary terminal font (Alacritty)
     fira-code

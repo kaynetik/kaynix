@@ -124,6 +124,7 @@
     openssh
     yubikey-agent
     yubikey-manager
+    dotenvx
   ];
 
   darwinOnly = with pkgs; [
