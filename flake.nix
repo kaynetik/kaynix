@@ -181,6 +181,19 @@
         '';
       };
 
+      python = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          uv
+          python3
+          ruff
+          basedpyright
+          git
+        ];
+        shellHook = ''
+          echo "Python shell: $(python3 --version), uv $(uv --version)"
+        '';
+      };
+
       # Rust + GHC/cabal (ghcup is not wired here).
       rust = pkgs.mkShell {
         buildInputs = with pkgs; [
