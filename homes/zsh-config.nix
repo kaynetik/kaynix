@@ -61,8 +61,8 @@
       (lib.mkAfter (''
           # After brew shellenv and oh-my-zsh: macOS /usr/bin OpenSSH has no working FIDO provider.
           # Prepend nixpkgs openssh so ssh, ssh-keygen, scp, sftp match (libfido2-backed sk keys).
-          # Also prepend lua/luarocks so the nix versions win over any homebrew remnants.
-          export PATH="${lib.makeBinPath [pkgs.openssh pkgs.lua pkgs.luarocks]}:$PATH"
+          # Also prepend lua5_5/luarocks so the nix versions win over any homebrew remnants.
+          export PATH="${lib.makeBinPath [pkgs.openssh pkgs.lua5_5 pkgs.lua5_5.pkgs.luarocks]}:$PATH"
         ''
         + lib.optionalString pkgs.stdenv.isDarwin ''
           # launchd's /usr/bin/ssh-agent can disagree with nix ssh/ssh-add on ed25519-sk signing; use one OpenSSH for both.

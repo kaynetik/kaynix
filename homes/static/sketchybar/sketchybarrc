@@ -1,4 +1,4 @@
-#!/nix/store/z7r81f7spasg4p87jmswc1cfpxqxfhvf-lua-5.4.7/bin/lua
+#!/usr/bin/env lua
 
 -- Load the sketchybar-package and prepare the helper binaries
 require("helpers")
