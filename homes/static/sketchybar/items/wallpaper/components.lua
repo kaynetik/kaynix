@@ -73,8 +73,9 @@ components.previewer = sbar.add("item", "widgets.background.preview", {
 	position = "popup." .. components.previewAnchor.name,
 	background = { drawing = true },
 })
+local bar_name = os.getenv("BAR_NAME") or "sketchybar"
 sbar.exec(
-	os.getenv("BAR_NAME") .. " --set widgets.background.preview background.image.scale=" .. settings.wallpaper.scale
+	bar_name .. " --set widgets.background.preview background.image.scale=" .. settings.wallpaper.scale
 )
 
 components.entries = {}

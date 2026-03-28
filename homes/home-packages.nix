@@ -111,6 +111,7 @@
     go
     hugo
     lua
+    luarocks
     nodejs_24
     rustup
     zig

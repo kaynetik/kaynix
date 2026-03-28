@@ -112,9 +112,8 @@ function helpers.entryToggle(tbl, locked, focused)
 			local preview_path = pathguard.validate_wallpaper_path(globals.selectedFilePath, wallpaper_root)
 			if preview_path then
 				local esc = pathguard.sketchybar_image_value_escape(preview_path)
-				sbar.exec(
-					os.getenv("BAR_NAME") .. ' --set widgets.background.preview background.image="' .. esc .. '"'
-				)
+				local bar_name = os.getenv("BAR_NAME") or "sketchybar"
+				sbar.exec(bar_name .. ' --set widgets.background.preview background.image="' .. esc .. '"')
 			end
 		end
 	end

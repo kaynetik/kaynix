@@ -48,7 +48,7 @@ local function setWallpaper()
 		.. inner
 		.. '"'
 	local shell_arg = pathguard.shell_single_quote(applescript)
-	os.execute("/usr/bin/osascript -e " .. shell_arg)
+	sbar.exec("/usr/bin/osascript -e " .. shell_arg)
 end
 
 components.bg:subscribe("select_bg", function(env)
@@ -71,7 +71,6 @@ components.bg:subscribe("select_bg", function(env)
 		helpers.entryToggle(tbl, true, true)
 
 		globals.depth = globals.depth + 1
-		print(globals.lockedFilePath)
 		if globals.lockedFilePath then
 			globals.depth = globals.depth - 1 < 1 and 1 or globals.depth - 1
 			-- sbar.exec('skhd -k "ctrl - b"')

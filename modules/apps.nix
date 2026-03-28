@@ -32,10 +32,6 @@
       "secp256k1"
       "tor"
 
-      # Programming Languages & Runtimes
-      # "openjdk" # equal alt in nix?
-      "luarocks"
-
       # Shell Tools
       "zinit"
       "tfenv" # wtf why isnt this in nix already?

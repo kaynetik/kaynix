@@ -21,7 +21,7 @@ local cal = sbar.add("item", {
 		font = { family = settings.font.numbers },
 	},
 	position = "right",
-	update_freq = 1,
+	update_freq = 30,
 	padding_left = 1,
 	padding_right = 1,
 	background = {
@@ -43,6 +43,6 @@ sbar.add("bracket", { cal.name }, {
 -- Padding item required because of bracket
 sbar.add("item", { position = "right", width = settings.group_paddings })
 
-cal:subscribe({ "forced", "routine", "system_woke" }, function(env)
+cal:subscribe({ "forced", "routine", "system_woke", "system_clock" }, function(env)
 	cal:set({ icon = os.date("%a. %d %b "), label = os.date("%H:%M") })
 end)
