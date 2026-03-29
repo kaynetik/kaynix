@@ -8,7 +8,6 @@
 }: {
   imports = [
     ../modules/home
-    ./agents.nix
     ./sops.nix
   ];
 
@@ -29,6 +28,7 @@
   ];
 
   kaynix.programs = {
+    agents.enable = lib.mkDefault true;
     atuin.enable = lib.mkDefault true;
     eza.enable = lib.mkDefault true;
     fzf.enable = lib.mkDefault true;

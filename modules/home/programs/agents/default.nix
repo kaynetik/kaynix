@@ -1,7 +1,11 @@
-# Agentic hour is upon us! Learn the timetables, feel the platform hum, step aboard,
-# or sit the saddle while the locomotive thins to smoke and rumor down the line.
-###
-{config, ...}: let
+# Symlinks ~/.cursor/skills/* to a local checkout of kaynetik-skills.
+{
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.kaynix.programs.agents;
+
   cursorSkillsSource = "${config.home.homeDirectory}/Development/Personal/kaynetik-skills";
   cursorSkillNames = [
     "argocd"
@@ -29,5 +33,11 @@
     })
     cursorSkillNames);
 in {
-  home.file = cursorSkillEntries;
+  options.kaynix.programs.agents = {
+    enable = lib.mkEnableOption "Cursor skill symlinks (kaynetik-skills)";
+  };
+
+  config = lib.mkIf cfg.enable {
+    home.file = cursorSkillEntries;
+  };
 }
