@@ -1,5 +1,5 @@
 {
-  description = "Nix for macOS [darwin]";
+  description = "Nix for macOS and Linux [kaynix]";
 
   # the nixConfig here only affects the flake itself, not the system configuration!
   nixConfig = {
@@ -111,7 +111,10 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {inherit username hostConfig;};
+            home-manager.extraSpecialArgs = {
+              inherit username hostConfig;
+              kaynixStatic = ./homes/static;
+            };
             home-manager.sharedModules = [sops-nix.homeManagerModules.sops];
             home-manager.backupFileExtension = "hm-backup";
             home-manager.users.${username} = import ./homes/kaynetik.nix;

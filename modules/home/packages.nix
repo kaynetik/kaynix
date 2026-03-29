@@ -8,10 +8,10 @@
 
   kaynix-scripts = pkgs.runCommand "kaynix-scripts" {} ''
     mkdir -p $out/bin
-    install -m755 ${../scripts/count-loc} $out/bin/count-loc
-    install -m755 ${../scripts/on} $out/bin/on
-    install -m755 ${../scripts/og} $out/bin/og
-    cp ${../scripts/nvim-lazy-update} $out/bin/nvim-lazy-update
+    install -m755 ${../../scripts/count-loc} $out/bin/count-loc
+    install -m755 ${../../scripts/on} $out/bin/on
+    install -m755 ${../../scripts/og} $out/bin/og
+    cp ${../../scripts/nvim-lazy-update} $out/bin/nvim-lazy-update
     chmod +x $out/bin/nvim-lazy-update
     substituteInPlace $out/bin/nvim-lazy-update \
       --replace '@DOT_NIX_ROOT@' '${dotNixRoot}'
@@ -23,7 +23,6 @@
     htop
     btop
     bat
-    eza
     fd
     ripgrep
     tree
@@ -31,6 +30,7 @@
 
   gitTools = with pkgs; [
     git-filter-repo
+    lazyjj
     pre-commit
   ];
 
@@ -51,7 +51,7 @@
 
   k8sAndOci = with pkgs; [
     argocd
-    cmctl # Manage certs.
+    cmctl
     k3d
     kubectl
     kubefwd
@@ -60,7 +60,7 @@
     k9s
     podman
     podman-desktop
-    docker # in podman-compatibility mode
+    docker
   ];
 
   iacAndCD = with pkgs; [
@@ -92,7 +92,6 @@
     stripe-cli
   ];
 
-  # Makes sense to now migrate to Go-dev env?
   goTools = with pkgs; [
     crane
     goose
@@ -136,9 +135,8 @@
     shottr
   ];
 in {
-  # copyApps rsyncs materialized .app trees into ~/Applications/Home Manager Apps
-  targets.darwin.copyApps.enable = true;
-  targets.darwin.linkApps.enable = false;
+  targets.darwin.copyApps.enable = lib.mkIf pkgs.stdenv.isDarwin true;
+  targets.darwin.linkApps.enable = lib.mkIf pkgs.stdenv.isDarwin false;
 
   home.packages =
     [kaynix-scripts]
