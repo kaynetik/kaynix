@@ -1,6 +1,7 @@
 {...}: {
   imports = [
     ./packages.nix
+    ./programs/agents
     ./programs/atuin
     ./programs/eza
     ./programs/fzf
