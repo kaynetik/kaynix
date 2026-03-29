@@ -14,6 +14,7 @@
     "devops-iac-engineer"
     "gh"
     "helm"
+    "kustomize"
     "lua-projects"
     "markdown-documentation"
     "mermaid-diagrams"
