@@ -12,17 +12,6 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    home.file = {
-      ".zshenv".text = ''
-        export ZDOTDIR="${config.home.homeDirectory}/.config/zsh"
-        [[ -r "$ZDOTDIR/.zshenv" ]] && . "$ZDOTDIR/.zshenv"
-      '';
-      ".zshrc".text = ''
-        export ZDOTDIR="${config.home.homeDirectory}/.config/zsh"
-        [[ -r "$ZDOTDIR/.zshrc" ]] && . "$ZDOTDIR/.zshrc"
-      '';
-    };
-
     home.sessionVariables =
       {
         ZSH_DISABLE_COMPFIX = "true";
