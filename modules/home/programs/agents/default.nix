@@ -22,6 +22,7 @@
     "podmaster"
     "practical-haskell"
     "solidity-security"
+    "svg-gen"
     "tdd-red-green-refactor"
     "tmux-mastery"
     "ultimate-db"
