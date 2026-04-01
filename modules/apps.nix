@@ -55,7 +55,7 @@
       "protonvpn"
       ## objectivesee
       "lulu"
-      "donotdisturb"
+      "do-not-disturb"
       "knockknock"
       "ransomwhere"
       "dhs" # Dylib Hijack Scanner
