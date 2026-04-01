@@ -26,7 +26,6 @@
 
     taps = [
       "txn2/tap"
-      "jwt-rs/jwt-ui"
     ];
 
     brews = [
@@ -53,12 +52,7 @@
       "keepassxc"
       "gpg-suite"
       "protonvpn"
-      ## objectivesee
       "lulu"
-      "do-not-disturb"
-      "knockknock"
-      "ransomwhere"
-      "dhs" # Dylib Hijack Scanner
       "pareto-security" # Occasionally run security checks
 
       # Productivity & Utilities
