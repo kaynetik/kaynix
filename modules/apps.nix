@@ -42,14 +42,7 @@
       # Shell Tools
       "zinit"
       "tfenv" # wtf why isnt this in nix already?
-      "jwt-rs/jwt-ui/jwt-ui"
-
-      # Swift Development ## Migrate to nix asap
-      "swiftlint"
-      "swiftgen"
       "protobuf"
-      "swift-protobuf"
-      "protoc-gen-grpc-swift"
     ];
 
     casks = [
@@ -62,7 +55,10 @@
       "protonvpn"
       ## objectivesee
       "lulu"
-      "reikey"
+      "donotdisturb"
+      "knockknock"
+      "ransomwhere"
+      "dhs" # Dylib Hijack Scanner
       "pareto-security" # Occasionally run security checks
 
       # Productivity & Utilities
