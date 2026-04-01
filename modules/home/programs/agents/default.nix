@@ -12,6 +12,7 @@
     "c-cpp-compilers"
     "coding-guidelines"
     "devops-iac-engineer"
+    "frontend-design"
     "gh"
     "helm"
     "kustomize"
