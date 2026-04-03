@@ -44,6 +44,7 @@ in {
           autoload -Uz colors && colors
           setopt prompt_subst
           source ${config.xdg.configHome}/zsh/lib-git-prompt.zsh
+          [[ -r ${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh ]] && source ${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh
           source ${config.xdg.configHome}/zsh/lib-kube-prompt.zsh
           source ${config.xdg.configHome}/zsh/theme-bira.zsh
         '')

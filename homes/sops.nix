@@ -47,6 +47,12 @@ in {
         mode = "0600";
         format = "yaml";
       };
+      "zsh-kube-ctx-aliases" = {
+        key = "zsh_kube_ctx_aliases";
+        path = "${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh";
+        mode = "0600";
+        format = "yaml";
+      };
       "ssh-work" = {
         key = "ssh_config_work";
         path = "${config.home.homeDirectory}/.ssh/conf.d/work";
