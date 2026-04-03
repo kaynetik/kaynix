@@ -20,12 +20,13 @@ in {
 
     programs.zsh = {
       enable = true;
-      enableCompletion = true;
+      enableCompletion = false;
       dotDir = "${config.xdg.configHome}/zsh";
       initContent = lib.mkMerge [
         (lib.mkBefore ''
           eval "$(/opt/homebrew/bin/brew shellenv)"
           source /opt/homebrew/opt/zinit/zinit.zsh
+          zstyle ':autocomplete::compinit' arguments -u
           zinit light zsh-users/zsh-autosuggestions
           zinit light zdharma-continuum/fast-syntax-highlighting
           zinit light marlonrichert/zsh-autocomplete
