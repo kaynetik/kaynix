@@ -13,11 +13,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     home.sessionVariables =
-      {
-        ZSH_DISABLE_COMPFIX = "true";
-        DISABLE_MAGIC_FUNCTIONS = "true";
-        HIST_STAMPS = "dd.mm.yyyy";
-      }
+      {}
       // lib.optionalAttrs pkgs.stdenv.isDarwin {
         LUA_CPATH = "${pkgs.lua5_5}/lib/lua/5.5/?.so;${pkgs.lua5_5}/lib/lua/5.5/loadall.so;${pkgs.sbarlua}/lib/lua/5.5/?.so;./?.so";
       };
@@ -26,11 +22,6 @@ in {
       enable = true;
       enableCompletion = true;
       dotDir = "${config.xdg.configHome}/zsh";
-      "oh-my-zsh" = {
-        enable = true;
-        theme = "bira";
-        plugins = ["git"];
-      };
       initContent = lib.mkMerge [
         (lib.mkBefore ''
           eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -49,8 +40,12 @@ in {
           [[ -r ${config.xdg.configHome}/zsh/conf-sietch.zsh ]] && source ${config.xdg.configHome}/zsh/conf-sietch.zsh
         '')
         (lib.mkOrder 550 ''
-          zstyle ':omz:update' mode auto
           export GPG_TTY=$(tty)
+          autoload -Uz colors && colors
+          setopt prompt_subst
+          source ${config.xdg.configHome}/zsh/lib-git-prompt.zsh
+          source ${config.xdg.configHome}/zsh/lib-kube-prompt.zsh
+          source ${config.xdg.configHome}/zsh/theme-bira.zsh
         '')
         ''
           bindkey '^[[1;9A' beginning-of-line
@@ -82,5 +77,8 @@ in {
 
     xdg.configFile."zsh/aliases.zsh".source = "${kaynixStatic}/zsh/aliases.zsh";
     xdg.configFile."zsh/setopt-history.zsh".source = "${kaynixStatic}/zsh/setopt-history.zsh";
+    xdg.configFile."zsh/lib-git-prompt.zsh".source = "${kaynixStatic}/zsh/lib-git-prompt.zsh";
+    xdg.configFile."zsh/lib-kube-prompt.zsh".source = "${kaynixStatic}/zsh/lib-kube-prompt.zsh";
+    xdg.configFile."zsh/theme-bira.zsh".source = "${kaynixStatic}/zsh/theme-bira.zsh";
   };
 }

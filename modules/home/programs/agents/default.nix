@@ -16,6 +16,7 @@
     "gh"
     "helm"
     "kustomize"
+    "legalizer"
     "lua-projects"
     "markdown-documentation"
     "mermaid-diagrams"
