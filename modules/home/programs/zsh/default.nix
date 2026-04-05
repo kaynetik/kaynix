@@ -30,6 +30,7 @@ in {
           zinit light zsh-users/zsh-autosuggestions
           zinit light zdharma-continuum/fast-syntax-highlighting
           zinit light marlonrichert/zsh-autocomplete
+          zinit light Aloxaf/fzf-tab
           ulimit -n 65536
           source ${config.xdg.configHome}/zsh/setopt-history.zsh
           source ${config.xdg.configHome}/zsh/aliases.zsh
@@ -44,6 +45,12 @@ in {
           export GPG_TTY=$(tty)
           autoload -Uz colors && colors
           setopt prompt_subst
+
+          # fzf-tab: show variable values in preview when completing $VAR
+          zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ''${(P)word}'
+          zstyle ':fzf-tab:*' fzf-min-height 20
+          zstyle ':fzf-tab:*' switch-group '<' '>'
+
           source ${config.xdg.configHome}/zsh/lib-git-prompt.zsh
           [[ -r ${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh ]] && source ${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh
           source ${config.xdg.configHome}/zsh/lib-kube-prompt.zsh
