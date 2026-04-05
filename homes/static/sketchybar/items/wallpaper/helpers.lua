@@ -10,7 +10,8 @@ local wallpaper_root = pathguard.normalize_path(settings.wallpaper.path)
 local helpers = {}
 
 helpers.getFocusedEntryTbl = function()
-	return globals.depth == 1 and components.entries or globals.entryMap[globals.depth - 1]["DIR_FILES"]
+	return globals.depth == 1 and components.entries
+		or globals.entryMap[globals.depth - 1]["DIR_FILES"]
 end
 
 function helpers.toggleTblItem(itm, visible)
@@ -109,7 +110,8 @@ function helpers.entryToggle(tbl, locked, focused)
 			globals.lockedFilePath = locked
 			globals.selectedFilePath = target["FILE_PATH"]
 
-			local preview_path = pathguard.validate_wallpaper_path(globals.selectedFilePath, wallpaper_root)
+			local preview_path =
+				pathguard.validate_wallpaper_path(globals.selectedFilePath, wallpaper_root)
 			if preview_path then
 				local esc = pathguard.sketchybar_image_value_escape(preview_path)
 				local bar_name = os.getenv("BAR_NAME") or "sketchybar"

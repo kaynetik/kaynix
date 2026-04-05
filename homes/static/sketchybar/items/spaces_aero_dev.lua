@@ -12,7 +12,8 @@ local function workspace_bg(is_focused)
 	return colors.with_alpha(colors.bg3, 0.45)
 end
 
-local query_workspaces = "aerospace list-workspaces --all --format '%{workspace}%{monitor-id}' --json"
+local query_workspaces =
+	"aerospace list-workspaces --all --format '%{workspace}%{monitor-id}' --json"
 local query_monitor = "aerospace list-monitors --count"
 local workspace_monitor = {}
 

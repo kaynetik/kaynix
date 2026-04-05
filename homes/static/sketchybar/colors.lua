@@ -1,7 +1,8 @@
 -- Set SKETCHYBAR_THEME to switch palettes (e.g. tokyo_night, rose_pine).
 -- Reload: sketchybar --reload
 
-local theme = os.getenv("SKETCHYBAR_THEME") or "tokyo_night"
+-- Default matches flake `sketchybar.theme` when SKETCHYBAR_THEME is unset (e.g. manual `lua` run).
+local theme = os.getenv("SKETCHYBAR_THEME") or "rose_pine"
 local mod = "colors_" .. theme
 local ok, base = pcall(require, mod)
 

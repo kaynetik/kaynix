@@ -29,7 +29,12 @@ telegram:subscribe({ "routine", "workspace_change" }, function()
 			label_match = label_match:match("^%s*(.-)%s*$") -- Trim whitespace
 
 			-- Handle specific label states
-			if label_match == "" or label_match == nil or label_match == "NULL" or label_match == "kCFNULL" then
+			if
+				label_match == ""
+				or label_match == nil
+				or label_match == "NULL"
+				or label_match == "kCFNULL"
+			then
 				icon_color = colors.green -- No notifications
 				label = ""
 			elseif label_match == "•" then

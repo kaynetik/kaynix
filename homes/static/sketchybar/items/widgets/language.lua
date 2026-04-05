@@ -1,7 +1,9 @@
 local ITEM_NAME = "widgets.language"
 
 local function get_input_source_name()
-	local handle = io.popen("defaults read com.apple.HIToolbox.plist AppleCurrentKeyboardLayoutInputSourceID 2>/dev/null")
+	local handle = io.popen(
+		"defaults read com.apple.HIToolbox.plist AppleCurrentKeyboardLayoutInputSourceID 2>/dev/null"
+	)
 	if not handle then
 		return "?"
 	end

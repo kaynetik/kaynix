@@ -56,7 +56,7 @@
           homeStateVersion = "24.11";
           timeZone = "Europe/Belgrade";
           loginGreeting = "nixing";
-          sketchybar.theme = "tokyo_night";
+          sketchybar.theme = "rose_pine";
           networking = {
             knownNetworkServices = [
               "Wi-Fi"
@@ -153,36 +153,14 @@
           sops
           age
           age-plugin-yubikey
+          gh
+          nixpkgs-review
+          jq
+          curl
+          cacert
         ];
         shellHook = ''
           echo "Default dev shell: git, alejandra, nil, sops, age, age-plugin-yubikey"
-        '';
-      };
-
-      web = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          nodejs_24
-          bun
-          typescript
-          tailwindcss
-          git
-        ];
-        shellHook = ''
-          echo "Web dev shell: node $(node --version), bun $(bun --version)"
-        '';
-      };
-
-      devops = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          kubectl
-          kubernetes-helm
-          terraform
-          awscli2
-          k9s
-          git
-        ];
-        shellHook = ''
-          echo "DevOps shell: kubectl, helm, terraform, aws, k9s"
         '';
       };
 
@@ -199,21 +177,33 @@
         '';
       };
 
-      # Rust + GHC/cabal (ghcup is not wired here).
-      rust = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          rustc
-          cargo
-          rustfmt
-          rust-analyzer
-          clippy
-          ghc
-          cabal-install
-          git
-        ];
+      # SketchyBar: format Lua config (StyLua), same lua5_5 + LUA_CPATH as launchd (modules/apps.nix).
+      sketchybar = pkgs.mkShell {
+        buildInputs =
+          (with pkgs; [
+            stylua
+            git
+            gnumake
+            lua5_5
+            sbarlua
+            sketchybar
+          ])
+          ++ [pkgs."lua-language-server"];
         shellHook = ''
-          echo "Rust/Haskell shell: $(rustc --version)"
-          echo "$(ghc --version | head -n1)"
+          _repo="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+          if [ -n "$_repo" ] && [ -d "$_repo/homes/static/sketchybar" ]; then
+            export CONFIG_DIR="$_repo/homes/static/sketchybar"
+          else
+            export CONFIG_DIR="''${PWD}/homes/static/sketchybar"
+          fi
+          export SKETCHYBAR_THEME="''${SKETCHYBAR_THEME:-tokyo_night}"
+          export LUA_CPATH="${pkgs.lua5_5}/lib/lua/5.5/?.so;${pkgs.lua5_5}/lib/lua/5.5/loadall.so;${pkgs.sbarlua}/lib/lua/5.5/?.so;./?.so"
+          echo "SketchyBar dev shell: lua $(lua -v 2>&1 | head -n1), stylua $(stylua --version)"
+          echo "  CONFIG_DIR=$CONFIG_DIR"
+          echo "  check:  stylua --check \"\$CONFIG_DIR\""
+          echo "  fmt:    stylua \"\$CONFIG_DIR\""
+          echo "  make:   (cd \"\$CONFIG_DIR/helpers\" && make)"
+          echo "  reload: sketchybar --reload"
         '';
       };
     };
