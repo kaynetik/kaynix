@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  hostConfig,
+  ...
+}: let
+  sketchybarTheme = (hostConfig.sketchybar or {}).theme or "tokyo_night";
+in {
   services.sketchybar = {
     enable = true;
     extraPackages = [pkgs.lua5_5 pkgs.sbarlua];
@@ -6,6 +12,7 @@
 
   launchd.user.agents.sketchybar.environment = {
     LUA_CPATH = "${pkgs.lua5_5}/lib/lua/5.5/?.so;${pkgs.lua5_5}/lib/lua/5.5/loadall.so;${pkgs.sbarlua}/lib/lua/5.5/?.so;./?.so";
+    SKETCHYBAR_THEME = sketchybarTheme;
   };
 
   fonts.packages = with pkgs.nerd-fonts; [

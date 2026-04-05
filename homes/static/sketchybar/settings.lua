@@ -2,6 +2,10 @@ return {
 	paddings = 3.5,
 	group_paddings = 4,
 
+	item_height = 28,
+	item_corner_radius = 9,
+	tray_corner_radius = 8,
+
 	icons = "sf-symbols", -- alternatively available: NerdFont
 
 	-- This is a font configuration for SF Pro and SF Mono (installed manually)

@@ -27,10 +27,9 @@ local cal = sbar.add("item", {
 	padding_right = 1,
 	background = {
 		color = colors.bg3,
-		border_color = colors.grey,
-		border_width = 1,
-		height = 28,
-		corner_radius = 9,
+		border_width = 0,
+		height = settings.item_height,
+		corner_radius = settings.tray_corner_radius,
 	},
 })
 

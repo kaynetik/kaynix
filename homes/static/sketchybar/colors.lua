@@ -1,35 +1,31 @@
-return {
-	black = 0xff181819,
-	white = 0xffe2e2e3,
-	red = 0xfffc5d7c,
-	green = 0xff9ed072,
-	blue = 0xff76cce0,
-	yellow = 0xffe7c664,
-	orange = 0xfff39660,
-	magenta = 0xffb39df3,
-	grey = 0xff7f8490,
-	transparent = 0x00000000,
+-- Set SKETCHYBAR_THEME to switch palettes (e.g. tokyo_night, rose_pine).
+-- Reload: sketchybar --reload
 
-	bar = {
-		bg = 0x00000000,
-		border = 0x66494d64,
-	},
-	popup = {
-		bg = 0xc02c2e34,
-		border = 0xff7f8490,
-	},
-	-- bg1 = 0xff363944,
-	-- bg2 = 0xff414550,
-	bg1 = 0xff363944,
-	bg2 = 0xff414550,
-	bg3 = 0x99363944,
-	transparency = 0.5,
-	blur_radius = 20,
+local theme = os.getenv("SKETCHYBAR_THEME") or "tokyo_night"
+local mod = "colors_" .. theme
+local ok, base = pcall(require, mod)
 
-	with_alpha = function(color, alpha)
-		if alpha > 1.0 or alpha < 0.0 then
-			return color
-		end
-		return (color & 0x00ffffff) | (math.floor(alpha * 255.0) << 24)
-	end,
-}
+if not ok then
+	io.stderr:write(
+		"[sketchybar] theme '"
+			.. theme
+			.. "' failed ("
+			.. tostring(base)
+			.. "); using colors_tokyo_night\n"
+	)
+	base = require("colors_tokyo_night")
+end
+
+local colors = {}
+for k, v in pairs(base) do
+	colors[k] = v
+end
+
+colors.with_alpha = function(color, alpha)
+	if alpha > 1.0 or alpha < 0.0 then
+		return color
+	end
+	return (color & 0x00ffffff) | (math.floor(alpha * 255.0) << 24)
+end
+
+return colors

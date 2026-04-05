@@ -22,7 +22,7 @@ switch:subscribe("mouse.clicked", function(env)
 end)
 
 sbar.add("bracket", "widgets.switch.bracket", { switch.name }, {
-	background = { color = colors.bg1 },
+	background = { drawing = false },
 })
 --
 -- sbar.add("item", "widgets.switch.padding", {
