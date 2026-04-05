@@ -1,11 +1,15 @@
 local colors = require("colors")
 local settings = require("settings")
+local presets = require("items.widgets.pomodoro_config")
 
 local SOUND_PATH =
 	"/System/Library/PrivateFrameworks/ScreenReader.framework/Versions/A/Resources/Sounds/"
-local DEFAULT_DURATION = 25 * 60
 
-local active_timer_end = nil
+-- Sequencer state
+local active_preset = nil   -- currently selected preset table
+local cycle_index = 1       -- which work session we are in (1..preset.cycles)
+local phase = "idle"        -- "idle" | "work" | "break" | "long_break" | "awaiting"
+local session_end = nil     -- epoch time when the current phase ends
 
 local function play_sound(file)
 	sbar.exec("afplay " .. SOUND_PATH .. file)
@@ -17,6 +21,22 @@ local function format_time(seconds)
 	return string.format("%02d:%02d", m, s)
 end
 
+-- Returns a short status string shown as the icon badge.
+-- e.g. "W2/4" during work session 2 of 4, "B" during short break, "LB" during long break.
+local function phase_badge()
+	if phase == "work" then
+		return string.format("W%d/%d", cycle_index, active_preset.cycles)
+	elseif phase == "break" then
+		return string.format("B%d/%d", cycle_index, active_preset.cycles)
+	elseif phase == "long_break" then
+		return "LB"
+	elseif phase == "awaiting" then
+		return "▶"
+	end
+	return ""
+end
+
+-- Main bar item
 local timer = sbar.add("item", "widgets.pomodoro", {
 	position = "right",
 	icon = {
@@ -30,8 +50,52 @@ local timer = sbar.add("item", "widgets.pomodoro", {
 	popup = { align = "center" },
 })
 
-local function stop_timer()
-	active_timer_end = nil
+-- Forward declarations so phases can call each other
+local enter_work, enter_break, enter_long_break, enter_awaiting, reset_all
+
+-- Drives the countdown; also used by SketchyBar's update_freq tick.
+local function tick()
+	if not session_end then
+		return
+	end
+	local remaining = session_end - os.time()
+
+	if remaining > 0 then
+		timer:set({
+			icon = { padding_right = math.floor(settings.paddings * 0.5) },
+			label = {
+				string = phase_badge() .. " " .. format_time(remaining),
+				drawing = true,
+			},
+		})
+		return
+	end
+
+	-- Phase ended -- decide what comes next.
+	if phase == "work" then
+		play_sound("GuideSuccess.aiff")
+		if cycle_index >= active_preset.cycles then
+			enter_long_break()
+		else
+			enter_break()
+		end
+	elseif phase == "break" then
+		play_sound("TrackingOff.aiff")
+		cycle_index = cycle_index + 1
+		enter_awaiting("work")
+	elseif phase == "long_break" then
+		play_sound("TrackingOff.aiff")
+		cycle_index = 1
+		enter_awaiting("long_break_done")
+	end
+end
+
+-- Resets everything back to idle.
+reset_all = function()
+	phase = "idle"
+	active_preset = nil
+	cycle_index = 1
+	session_end = nil
 	timer:set({
 		icon = { color = colors.white, padding_right = settings.paddings },
 		label = { drawing = false },
@@ -41,128 +105,96 @@ local function stop_timer()
 	play_sound("TrackingOff.aiff")
 end
 
-local function start_timer(duration_seconds)
-	if not duration_seconds then
-		return
+-- Puts the bar into a waiting state after a break.
+-- kind: "work" (waiting to start next work session) | "long_break_done" (cycle complete)
+enter_awaiting = function(kind)
+	phase = "awaiting"
+	session_end = nil
+	local msg
+	if kind == "long_break_done" then
+		msg = "Cycle complete! Click to restart."
+	else
+		msg = string.format("Break done. Click to start session %d/%d.", cycle_index, active_preset.cycles)
 	end
-	active_timer_end = os.time() + duration_seconds
+
 	timer:set({
-		icon = { color = colors.green },
+		update_freq = 0,
+		icon = { color = colors.yellow, padding_right = settings.paddings },
+		label = { string = "▶ Ready", drawing = true },
+	})
+	play_sound("TrackingOn.aiff")
+
+	-- macOS notification so the user knows even if the bar is not in view.
+	sbar.exec(
+		'osascript -e \'display notification "'
+			.. msg
+			.. '" with title "Pomodoro" sound name "Glass"\''
+	)
+end
+
+enter_work = function()
+	phase = "work"
+	session_end = os.time() + active_preset.work * 60
+	timer:set({
+		icon = { color = colors.green, padding_right = math.floor(settings.paddings * 0.5) },
+		label = {
+			string = phase_badge() .. " " .. format_time(active_preset.work * 60),
+			drawing = true,
+		},
 		update_freq = 1,
-		popup = { drawing = false },
 	})
 	play_sound("TrackingOn.aiff")
 	timer:trigger("routine")
 end
 
-local function open_custom_input()
-	sbar.exec(
-		'osascript -e \'display dialog "Enter time (MM:SS or Minutes):" '
-			.. 'default answer "" '
-			.. 'with title "Set Timer" '
-			.. 'buttons {"Cancel", "Start"} '
-			.. 'default button "Start"\'',
-		function(result)
-			local m, s = result:match("text returned:(%d+):(%d+)")
-			if m and s then
-				start_timer(tonumber(m) * 60 + tonumber(s))
-				return
-			end
-			local m_only = result:match("text returned:(%d+)")
-			if m_only then
-				start_timer(tonumber(m_only) * 60)
-			end
-		end
-	)
-end
-
-timer:subscribe("routine", function()
-	if not active_timer_end then
-		return
-	end
-	local now = os.time()
-	local remaining = active_timer_end - now
-
-	if remaining > 0 then
-		timer:set({
-			icon = { padding_right = math.floor(settings.paddings * 0.5) },
-			label = { string = format_time(remaining), drawing = true },
-		})
-	else
-		active_timer_end = nil
-		timer:set({
-			icon = { color = colors.white, padding_right = settings.paddings },
-			label = { string = "Done!", drawing = true },
-			update_freq = 0,
-		})
-		play_sound("GuideSuccess.aiff")
-		sbar.exec(
-			'osascript -e \'tell application "System Events" to display dialog "Timer finished!" '
-				.. 'buttons {"OK"} default button "OK" with title "Pomodoro" with icon caution\''
-		)
-	end
-end)
-
--- Popup preset buttons
-local presets = { 5, 10, 25, 45 }
-
-for _, mins in ipairs(presets) do
-	local preset = sbar.add("item", "widgets.pomodoro." .. mins, {
-		position = "popup." .. timer.name,
-		icon = { drawing = false },
+enter_break = function()
+	phase = "break"
+	session_end = os.time() + active_preset.short_break * 60
+	timer:set({
+		icon = { color = colors.blue, padding_right = math.floor(settings.paddings * 0.5) },
 		label = {
-			string = string.format("%2d Minutes", mins),
-			padding_left = settings.paddings,
-			padding_right = settings.paddings,
+			string = phase_badge() .. " " .. format_time(active_preset.short_break * 60),
+			drawing = true,
 		},
+		update_freq = 1,
 	})
-
-	preset:subscribe("mouse.clicked", function()
-		start_timer(mins * 60)
-	end)
-
-	preset:subscribe("mouse.entered", function()
-		preset:set({ background = { drawing = true, color = 0x33ffffff } })
-	end)
-
-	preset:subscribe("mouse.exited", function()
-		preset:set({ background = { drawing = false } })
-	end)
+	play_sound("TrackingOn.aiff")
+	timer:trigger("routine")
 end
 
--- Custom duration input entry
-local custom = sbar.add("item", "widgets.pomodoro.custom", {
-	position = "popup." .. timer.name,
-	icon = { drawing = false },
-	label = {
-		string = "Custom...",
-		padding_left = settings.paddings,
-		padding_right = settings.paddings,
-	},
-})
+enter_long_break = function()
+	phase = "long_break"
+	session_end = os.time() + active_preset.long_break * 60
+	timer:set({
+		icon = { color = colors.magenta, padding_right = math.floor(settings.paddings * 0.5) },
+		label = {
+			string = "LB " .. format_time(active_preset.long_break * 60),
+			drawing = true,
+		},
+		update_freq = 1,
+	})
+	play_sound("TrackingOn.aiff")
+	timer:trigger("routine")
+end
 
-custom:subscribe("mouse.clicked", function()
-	timer:set({ popup = { drawing = false } })
-	open_custom_input()
-end)
+-- Subscribe to SketchyBar's per-second tick.
+timer:subscribe("routine", tick)
 
-custom:subscribe("mouse.entered", function()
-	custom:set({ background = { drawing = true, color = 0x33ffffff } })
-end)
-
-custom:subscribe("mouse.exited", function()
-	custom:set({ background = { drawing = false } })
-end)
-
--- Mouse interactions on the main item
+-- Left-click: toggle popup (idle) or advance from awaiting state.
+-- Right-click: stop/reset everything.
 timer:subscribe("mouse.clicked", function(env)
 	if env.BUTTON == "right" then
-		if active_timer_end then
-			stop_timer()
-		else
-			start_timer(DEFAULT_DURATION)
-		end
-	else
+		reset_all()
+		return
+	end
+
+	if phase == "awaiting" then
+		-- User acknowledged the break -- start next work session.
+		enter_work()
+		return
+	end
+
+	if phase == "idle" then
 		local is_drawing = timer:query().popup.drawing
 		timer:set({ popup = { drawing = (is_drawing == "off") } })
 	end
@@ -172,7 +204,59 @@ timer:subscribe("mouse.exited.global", function()
 	timer:set({ popup = { drawing = false } })
 end)
 
--- Bracket + padding to match sibling widget visual style
+-- Popup: one entry per preset + a stop button when running.
+for i, preset in ipairs(presets) do
+	local entry = sbar.add("item", "widgets.pomodoro.preset." .. i, {
+		position = "popup." .. timer.name,
+		icon = { drawing = false },
+		label = {
+			string = preset.name,
+			padding_left = settings.paddings,
+			padding_right = settings.paddings,
+		},
+	})
+
+	entry:subscribe("mouse.clicked", function()
+		active_preset = preset
+		cycle_index = 1
+		timer:set({ popup = { drawing = false } })
+		enter_work()
+	end)
+
+	entry:subscribe("mouse.entered", function()
+		entry:set({ background = { drawing = true, color = 0x33ffffff } })
+	end)
+
+	entry:subscribe("mouse.exited", function()
+		entry:set({ background = { drawing = false } })
+	end)
+end
+
+-- Stop entry (always visible in popup so user can abort mid-cycle).
+local stop_entry = sbar.add("item", "widgets.pomodoro.stop", {
+	position = "popup." .. timer.name,
+	icon = { drawing = false },
+	label = {
+		string = "Stop",
+		color = colors.red,
+		padding_left = settings.paddings,
+		padding_right = settings.paddings,
+	},
+})
+
+stop_entry:subscribe("mouse.clicked", function()
+	reset_all()
+end)
+
+stop_entry:subscribe("mouse.entered", function()
+	stop_entry:set({ background = { drawing = true, color = 0x33ffffff } })
+end)
+
+stop_entry:subscribe("mouse.exited", function()
+	stop_entry:set({ background = { drawing = false } })
+end)
+
+-- Bracket + padding to match sibling widget visual style.
 sbar.add("bracket", "widgets.pomodoro.bracket", { timer.name }, {
 	background = { color = colors.bg3 },
 })
