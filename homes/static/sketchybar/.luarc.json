@@ -1,0 +1,13 @@
+{
+	"$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+	"runtime": {
+		"version": "Lua 5.5"
+	},
+	"workspace": {
+		"library": ["~/.local/share/sketchybar_lua"],
+		"checkThirdParty": false
+	},
+	"diagnostics": {
+		"globals": ["sbar"]
+	}
+}

@@ -43,7 +43,7 @@ end
 
 -- Reject control chars and quotes that break shell or AppleScript wrapping.
 function M.path_has_unsafe_chars(p)
-	if string.find(p, "[\0\n\r\"\\]") then
+	if string.find(p, '[\0\n\r"\\]') then
 		return true
 	end
 	return false

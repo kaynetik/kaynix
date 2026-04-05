@@ -75,7 +75,9 @@ components.previewer = sbar.add("item", "widgets.background.preview", {
 })
 local bar_name = os.getenv("BAR_NAME") or "sketchybar"
 sbar.exec(
-	bar_name .. " --set widgets.background.preview background.image.scale=" .. settings.wallpaper.scale
+	bar_name
+		.. " --set widgets.background.preview background.image.scale="
+		.. settings.wallpaper.scale
 )
 
 components.entries = {}
@@ -107,7 +109,10 @@ local function genEntries(dir, name, pos, entryTbl)
 	for file in handle:lines() do
 		if file ~= "" and not pathguard.path_has_dotdot(file) and not string.find(file, "/") then
 			local filePath = pathguard.normalize_path(dir .. "/" .. file)
-			if pathguard.is_within_root(filePath, wallpaper_root) and not pathguard.path_has_unsafe_chars(filePath) then
+			if
+				pathguard.is_within_root(filePath, wallpaper_root)
+				and not pathguard.path_has_unsafe_chars(filePath)
+			then
 				count = count + 1
 				local optName = name .. "." .. file
 

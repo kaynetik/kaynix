@@ -2,7 +2,7 @@ local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
 
-local config_dir = os.getenv("CONFIG_DIR") or (os.getenv("HOME") .. "/.config/sketchybar")
+local config_dir = require("helpers.config_dir")
 
 -- Event provider: "network_update" every 2.0s on en0.
 sbar.exec(
@@ -148,7 +148,11 @@ local router = sbar.add("item", {
 	},
 })
 
-sbar.add("item", "widgets.wifi.group_padding", { position = "right", width = settings.group_paddings })
+sbar.add(
+	"item",
+	"widgets.wifi.group_padding",
+	{ position = "right", width = settings.group_paddings }
+)
 
 wifi_up:subscribe("network_update", function(env)
 	local up_color = (env.upload == "000 Bps") and colors.grey or colors.red
@@ -195,15 +199,24 @@ local function toggle_details()
 		sbar.exec("ipconfig getifaddr en0", function(result)
 			ip:set({ label = result })
 		end)
-		sbar.exec("ipconfig getsummary en0 | awk -F ' SSID : '  '/ SSID : / {print $2}'", function(result)
-			ssid:set({ label = result })
-		end)
-		sbar.exec("networksetup -getinfo Wi-Fi | awk -F 'Subnet mask: ' '/^Subnet mask: / {print $2}'", function(result)
-			mask:set({ label = result })
-		end)
-		sbar.exec("networksetup -getinfo Wi-Fi | awk -F 'Router: ' '/^Router: / {print $2}'", function(result)
-			router:set({ label = result })
-		end)
+		sbar.exec(
+			"ipconfig getsummary en0 | awk -F ' SSID : '  '/ SSID : / {print $2}'",
+			function(result)
+				ssid:set({ label = result })
+			end
+		)
+		sbar.exec(
+			"networksetup -getinfo Wi-Fi | awk -F 'Subnet mask: ' '/^Subnet mask: / {print $2}'",
+			function(result)
+				mask:set({ label = result })
+			end
+		)
+		sbar.exec(
+			"networksetup -getinfo Wi-Fi | awk -F 'Router: ' '/^Router: / {print $2}'",
+			function(result)
+				router:set({ label = result })
+			end
+		)
 	else
 		hide_details()
 	end
@@ -214,9 +227,14 @@ wifi_down:subscribe("mouse.clicked", toggle_details)
 wifi:subscribe("mouse.clicked", toggle_details)
 wifi:subscribe("mouse.exited.global", hide_details)
 
+-- POSIX single-quoted string for safe passing to sh (newlines ok; ' escaped as '"'"').
+local function shell_single_quote(s)
+	return "'" .. s:gsub("'", "'\\''") .. "'"
+end
+
 local function copy_label_to_clipboard(env)
 	local label = sbar.query(env.NAME).label.value
-	sbar.exec('echo "' .. label .. '" | pbcopy')
+	sbar.exec("printf '%s' " .. shell_single_quote(label) .. " | pbcopy")
 	sbar.set(env.NAME, { label = { string = icons.clipboard, align = "center" } })
 	sbar.delay(1, function()
 		sbar.set(env.NAME, { label = { string = label, align = "right" } })

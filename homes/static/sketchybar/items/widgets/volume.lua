@@ -138,7 +138,11 @@ end
 
 local function volume_scroll(env)
 	local delta = env.SCROLL_DELTA
-	sbar.exec('osascript -e "set volume output volume (output volume of (get volume settings) + ' .. delta .. ')"')
+	sbar.exec(
+		'osascript -e "set volume output volume (output volume of (get volume settings) + '
+			.. delta
+			.. ')"'
+	)
 end
 
 volume_icon:subscribe("mouse.clicked", volume_toggle_details)

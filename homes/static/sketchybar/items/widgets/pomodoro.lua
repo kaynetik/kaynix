@@ -6,10 +6,10 @@ local SOUND_PATH =
 	"/System/Library/PrivateFrameworks/ScreenReader.framework/Versions/A/Resources/Sounds/"
 
 -- Sequencer state
-local active_preset = nil   -- currently selected preset table
-local cycle_index = 1       -- which work session we are in (1..preset.cycles)
-local phase = "idle"        -- "idle" | "work" | "break" | "long_break" | "awaiting"
-local session_end = nil     -- epoch time when the current phase ends
+local active_preset = nil -- currently selected preset table
+local cycle_index = 1 -- which work session we are in (1..preset.cycles)
+local phase = "idle" -- "idle" | "work" | "break" | "long_break" | "awaiting"
+local session_end = nil -- epoch time when the current phase ends
 
 local function play_sound(file)
 	sbar.exec("afplay " .. SOUND_PATH .. file)
@@ -114,7 +114,8 @@ enter_awaiting = function(kind)
 	if kind == "long_break_done" then
 		msg = "Cycle complete! Click to restart."
 	else
-		msg = string.format("Break done. Click to start session %d/%d.", cycle_index, active_preset.cycles)
+		msg =
+			string.format("Break done. Click to start session %d/%d.", cycle_index, active_preset.cycles)
 	end
 
 	timer:set({
@@ -126,9 +127,7 @@ enter_awaiting = function(kind)
 
 	-- macOS notification so the user knows even if the bar is not in view.
 	sbar.exec(
-		'osascript -e \'display notification "'
-			.. msg
-			.. '" with title "Pomodoro" sound name "Glass"\''
+		"osascript -e 'display notification \"" .. msg .. '" with title "Pomodoro" sound name "Glass"\''
 	)
 end
 

@@ -2,7 +2,7 @@ local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
 
-local config_dir = os.getenv("CONFIG_DIR") or (os.getenv("HOME") .. "/.config/sketchybar")
+local config_dir = require("helpers.config_dir")
 
 -- Event provider: fires "cpu_update" every 2.0s. Use absolute path; $CONFIG_DIR is not always set in sh -c.
 sbar.exec(
@@ -11,8 +11,9 @@ sbar.exec(
 		.. "/helpers/event_providers/cpu_load/bin/cpu_load cpu_update 2.0"
 )
 
--- To get the SOC temperature, the command is
--- /Applications/Stats.app/Contents/Resources/smc list -t | grep "Tp2a" | awk '{print $2}'
+-- SOC temperature: smctemp is slower than the cpu graph; throttle to avoid spawning every 2s.
+local TEMP_INTERVAL_SEC = 5
+local last_temp_ts = 0
 
 local temp = sbar.add("graph", "widgets.temp", 42, {
 	position = "right",
@@ -20,11 +21,9 @@ local temp = sbar.add("graph", "widgets.temp", 42, {
 	background = {
 		height = 22,
 		color = { alpha = 0 },
-		-- color = colors.with_alpha(colors.bg1, colors.transparency),
 		border_color = { alpha = 0 },
 		drawing = true,
 	},
-	--   icon = { string = icons.cpu },
 	label = {
 		string = "􀇬 ??󰔄",
 		font = {
@@ -34,7 +33,6 @@ local temp = sbar.add("graph", "widgets.temp", 42, {
 		},
 		align = "right",
 		padding_right = 0,
-		-- padding_left = 2,
 		width = 0,
 		y_offset = 4,
 	},
@@ -48,7 +46,6 @@ local cpu = sbar.add("graph", "widgets.cpu", 42, {
 	background = {
 		height = 22,
 		color = { alpha = 0 },
-		-- color = colors.with_alpha(colors.bg1, colors.transparency),
 		border_color = { alpha = 0 },
 		drawing = true,
 	},
@@ -68,9 +65,18 @@ local cpu = sbar.add("graph", "widgets.cpu", 42, {
 	padding_right = -6,
 })
 
-local function updateTemperature()
+local function updateTemperature(force)
+	local now = os.time()
+	if not force and (now - last_temp_ts) < TEMP_INTERVAL_SEC then
+		return
+	end
+	last_temp_ts = now
+
 	sbar.exec("/usr/local/bin/smctemp -c", function(output)
 		local temperature = tonumber(output)
+		if not temperature then
+			return
+		end
 		temp:push({ temperature / 130. })
 
 		local color = colors.green
@@ -110,10 +116,14 @@ cpu:subscribe("cpu_update", function(env)
 		graph = { color = color },
 		label = "cpu " .. env.total_load .. "%",
 	})
-	updateTemperature()
+	updateTemperature(false)
 end)
 
-cpu:subscribe("mouse.clicked", function(env)
+cpu:subscribe({ "system_woke", "power_source_change" }, function()
+	updateTemperature(true)
+end)
+
+cpu:subscribe("mouse.clicked", function(_env)
 	sbar.exec("open -a 'Activity Monitor'")
 end)
 

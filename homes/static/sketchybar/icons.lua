@@ -9,10 +9,6 @@ local icons = {
 		cpu = "􀫥",
 		clipboard = "􀉄",
 
-		switch = {
-			on = "􁏮",
-			off = "􁏯",
-		},
 		volume = {
 			_100 = "􀊩",
 			_66 = "􀊧",
@@ -35,20 +31,10 @@ local icons = {
 			disconnected = "􀙈",
 			router = "􁓤",
 		},
-		wechat = {
-			wechat = "󰘑",
-		},
-		qq = {
-			qq = "󰘅",
-		},
 		media = {
 			back = "􀊊",
 			forward = "􀊌",
 			play_pause = "􀊈",
-		},
-		tempture = {
-			tempture_icon_1 = "󱤋",
-			tempture_icon_2 = "􀇬",
 		},
 	},
 
@@ -61,10 +47,6 @@ local icons = {
 		cpu = "",
 		clipboard = "Missing Icon",
 
-		switch = {
-			on = "󱨥",
-			off = "󱨦",
-		},
 		volume = {
 			_100 = "",
 			_66 = "",
@@ -92,14 +74,12 @@ local icons = {
 			forward = "",
 			play_pause = "",
 		},
-		social_media = {
-			qq = "󰘅",
-		},
 	},
 }
 
-if not (settings.icons == "NerdFont") then
-	return icons.sf_symbols
-else
+-- settings.icons: "sf_symbols" (default) or "nerdfont". Accepts legacy "NerdFont" / "sf-symbols".
+local set = settings.icons or "sf_symbols"
+if set == "nerdfont" or set == "NerdFont" then
 	return icons.nerdfont
 end
+return icons.sf_symbols
