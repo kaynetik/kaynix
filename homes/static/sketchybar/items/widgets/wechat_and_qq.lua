@@ -88,7 +88,7 @@ wechat:subscribe("mouse.clicked", function(env)
 end)
 
 sbar.add("bracket", "widgets.wechat.bracket", { wechat.name, qq.name }, {
-	background = { color = colors.bg3 },
+	background = { drawing = false },
 })
 
 sbar.add("item", "widgets.qq.padding", {

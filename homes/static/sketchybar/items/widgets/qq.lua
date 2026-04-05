@@ -48,7 +48,7 @@ qq:subscribe("mouse.clicked", function(env)
 end)
 
 sbar.add("bracket", "widgets.qq.bracket", { qq.name }, {
-	background = { color = colors.bg3 },
+	background = { drawing = false },
 })
 
 sbar.add("item", "widgets.qq.padding", {

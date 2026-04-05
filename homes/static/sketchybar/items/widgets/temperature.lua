@@ -57,7 +57,7 @@ temperature:subscribe({ "routine", "power_source_change", "system_woke" }, funct
 end)
 
 sbar.add("bracket", "widgets.temperature.bracket", { temperature.name }, {
-	background = { color = colors.bg1 },
+	background = { drawing = false },
 })
 
 sbar.add("item", "widgets.temperature.padding", {

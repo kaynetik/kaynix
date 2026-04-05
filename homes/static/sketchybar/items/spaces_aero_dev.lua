@@ -4,6 +4,14 @@ local settings = require("settings")
 local app_icons = require("helpers.app_icons")
 
 local max_workspaces = 10
+
+local function workspace_bg(is_focused)
+	if is_focused then
+		return colors.bg2
+	end
+	return colors.with_alpha(colors.bg3, 0.45)
+end
+
 local query_workspaces = "aerospace list-workspaces --all --format '%{workspace}%{monitor-id}' --json"
 local query_monitor = "aerospace list-monitors --count"
 local workspace_monitor = {}
@@ -21,10 +29,9 @@ sbar.add("item", {
 	},
 	background = {
 		color = colors.with_alpha(colors.bg1, colors.transparency),
-		border_width = 1,
-		height = 28,
-		border_color = colors.black,
-		corner_radius = 9,
+		border_width = 0,
+		height = settings.item_height,
+		corner_radius = settings.tray_corner_radius,
 		drawing = false,
 	},
 	padding_left = 6,
@@ -65,7 +72,10 @@ local function apply_workspace_icons(workspace_index, open_windows, focused_work
 					font = "sketchybar-app-font:Regular:16.0",
 					y_offset = -1,
 				},
-				background = { drawing = true },
+				background = {
+					drawing = true,
+					color = workspace_bg(true),
+				},
 				padding_right = 1,
 				padding_left = 1,
 			})
@@ -74,7 +84,10 @@ local function apply_workspace_icons(workspace_index, open_windows, focused_work
 		workspaces[workspace_index]:set({
 			icon = { drawing = true },
 			label = { drawing = true, string = icon_line },
-			background = { drawing = true },
+			background = {
+				drawing = true,
+				color = workspace_bg(workspace_index == focused_num),
+			},
 			padding_right = 1,
 			padding_left = 1,
 		})
@@ -167,11 +180,10 @@ for workspace_index = 1, max_workspaces do
 		padding_right = 2,
 		padding_left = 2,
 		background = {
-			color = colors.bg3,
-			border_width = 1,
-			height = 28,
-			corner_radius = 9,
-			border_color = colors.bg2,
+			color = workspace_bg(false),
+			border_width = 0,
+			height = settings.item_height,
+			corner_radius = settings.tray_corner_radius,
 		},
 		click_script = "aerospace workspace " .. workspace_index,
 	})
@@ -187,9 +199,9 @@ for workspace_index = 1, max_workspaces do
 				icon = { highlight = is_focused },
 				label = { highlight = is_focused },
 				background = {
-					border_width = is_focused and 2 or 1,
+					color = workspace_bg(is_focused),
+					border_width = 0,
 				},
-				blur_radius = 30,
 			})
 		end)
 	end)
@@ -205,7 +217,10 @@ refresh_all_workspace_windows(function(_focused_workspace)
 		workspaces[fw]:set({
 			icon = { highlight = true },
 			label = { highlight = true },
-			background = { border_width = 2 },
+			background = {
+				color = workspace_bg(true),
+				border_width = 0,
+			},
 		})
 	end
 end)

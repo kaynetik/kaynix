@@ -256,11 +256,6 @@ stop_entry:subscribe("mouse.exited", function()
 	stop_entry:set({ background = { drawing = false } })
 end)
 
--- Bracket + padding to match sibling widget visual style.
-sbar.add("bracket", "widgets.pomodoro.bracket", { timer.name }, {
-	background = { color = colors.bg3 },
-})
-
 sbar.add("item", "widgets.pomodoro.padding", {
 	position = "right",
 	width = settings.group_paddings,

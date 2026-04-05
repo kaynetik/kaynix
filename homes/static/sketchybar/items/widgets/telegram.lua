@@ -98,12 +98,6 @@ telegram:subscribe("mouse.entered", function()
 	end)
 end)
 
-sbar.add("bracket", "widgets.telegram.bracket", { telegram.name }, {
-	background = {
-		color = colors.bg3,
-	},
-})
-
 sbar.add("item", "widgets.telegram.padding", {
 	position = "right",
 	width = settings.group_paddings,

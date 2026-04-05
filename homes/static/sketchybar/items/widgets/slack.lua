@@ -60,12 +60,6 @@ slack:subscribe("mouse.clicked", function(env)
 	sbar.exec("open -a Slack")
 end)
 
-sbar.add("bracket", "widgets.slack.bracket", { slack.name }, {
-	background = {
-		color = colors.bg3,
-	},
-})
-
 sbar.add("item", "widgets.slack.padding", {
 	position = "right",
 	width = settings.group_paddings,
