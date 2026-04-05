@@ -26,11 +26,11 @@ in {
         (lib.mkBefore ''
           eval "$(/opt/homebrew/bin/brew shellenv)"
           source /opt/homebrew/opt/zinit/zinit.zsh
-          zstyle ':autocomplete::compinit' arguments -u
+          autoload -Uz compinit && compinit -u
           zinit light zsh-users/zsh-autosuggestions
           zinit light zdharma-continuum/fast-syntax-highlighting
-          zinit light marlonrichert/zsh-autocomplete
           zinit light Aloxaf/fzf-tab
+          source ${config.xdg.configHome}/zsh/fzf-tab.zsh
           ulimit -n 65536
           source ${config.xdg.configHome}/zsh/setopt-history.zsh
           source ${config.xdg.configHome}/zsh/aliases.zsh
@@ -45,11 +45,6 @@ in {
           export GPG_TTY=$(tty)
           autoload -Uz colors && colors
           setopt prompt_subst
-
-          # fzf-tab: show variable values in preview when completing $VAR
-          zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ''${(P)word}'
-          zstyle ':fzf-tab:*' fzf-min-height 20
-          zstyle ':fzf-tab:*' switch-group '<' '>'
 
           source ${config.xdg.configHome}/zsh/lib-git-prompt.zsh
           [[ -r ${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh ]] && source ${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh
@@ -89,5 +84,6 @@ in {
     xdg.configFile."zsh/lib-git-prompt.zsh".source = "${kaynixStatic}/zsh/lib-git-prompt.zsh";
     xdg.configFile."zsh/lib-kube-prompt.zsh".source = "${kaynixStatic}/zsh/lib-kube-prompt.zsh";
     xdg.configFile."zsh/theme-bira.zsh".source = "${kaynixStatic}/zsh/theme-bira.zsh";
+    xdg.configFile."zsh/fzf-tab.zsh".source = "${kaynixStatic}/zsh/fzf-tab.zsh";
   };
 }
