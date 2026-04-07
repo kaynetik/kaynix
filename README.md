@@ -24,34 +24,38 @@ Personal [nix-darwin](https://github.com/nix-darwin/nix-darwin) flake with [Home
 
 ## Prerequisites
 
-1. Install Nix: [nixos.org/download](https://nixos.org/download.html#download-nix) or [DeterminateSystems/nix-installer](https://github.com/DeterminateSystems/nix-installer).
-2. Read `flake.nix`, `modules/`, and `homes/kaynetik.nix` before switching. For flakes and nix-darwin, [ryan4yin/nixos-and-flakes-book](https://github.com/ryan4yin/nixos-and-flakes-book) is a solid intro.
-3. Install [Homebrew](https://brew.sh/) if you use the casks and brews declared in `modules/apps.nix` (GUI apps and some CLI tools not available in nixpkgs).
+1. **Install Nix** via the [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer) (recommended -- enables flakes and the `nix` CLI out of the box):
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf -L \
+  https://install.determinate.systems/nix | sh -s -- install
+```
+
+2. **Install [Homebrew](https://brew.sh/)** -- required for the casks and brews declared in `modules/apps.nix` (GUI apps and CLI tools not packaged in nixpkgs):
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+3. **Familiarize yourself** with `flake.nix`, `modules/`, and `homes/kaynetik.nix` before switching. For background on flakes and nix-darwin, [ryan4yin/nixos-and-flakes-book](https://github.com/ryan4yin/nixos-and-flakes-book) is a solid intro.
 
 ## First deploy
 
-Replace `HOSTNAME` with the hostname in `flake.nix` (`hostname` in the `let` binding, currently tied to `darwinConfigurations`).
+The flake defines per-host entries in the `hosts` attrset inside `flake.nix` (currently `knt-mbp` and `knt-mbpf`). Replace `HOSTNAME` below with whichever entry matches your machine, or add a new one first.
 
 ```bash
-nix build .#darwinConfigurations.HOSTNAME.system \
-  --extra-experimental-features 'nix-command flakes'
+# 1. Clone the repo
+git clone https://github.com/kaynetik/kaynix.git
+cd kaynix
 
+# 2. Build the system derivation
+nix build .#darwinConfigurations.HOSTNAME.system
+
+# 3. Apply (first run bootstraps nix-darwin + Home Manager)
 ./result/sw/bin/darwin-rebuild switch --flake .#HOSTNAME
 ```
 
-Optional `Makefile` at the repo root:
-
-```makefile
-# set HOSTNAME to match flake.nix
-HOSTNAME := knt-mbp
-
-deploy:
-	nix build .#darwinConfigurations.$(HOSTNAME).system \
-		--extra-experimental-features 'nix-command flakes'
-	./result/sw/bin/darwin-rebuild switch --flake .#$(HOSTNAME)
-```
-
-Then run `make deploy` from the checkout.
+Subsequent rebuilds only need step 3 (or `darwin-rebuild switch --flake .#HOSTNAME` once nix-darwin is on `$PATH`).
 
 ## Architecture
 
@@ -122,13 +126,13 @@ flowchart LR
 
 ```text
 .
-├── flake.nix          # inputs, hostname, darwinConfigurations, devShells
+├── flake.nix          # inputs, hosts, darwinConfigurations, devShells
 ├── flake.lock
-├── modules/           # nix-darwin modules (system, apps, nix, secrets, ...)
+├── modules/           # nix-darwin system modules + modules/home/ (HM programs)
 ├── homes/
-│   └── kaynetik.nix   # Home Manager user config
+│   ├── kaynetik.nix   # Home Manager user config (program toggles)
+│   ├── sops.nix       # sops-nix secret paths, activation, rekey script
+│   └── static/        # dotfiles: nvim, tmux, alacritty, sketchybar, zsh, git
 ├── secrets/           # sops-encrypted secrets (see secrets/README.md)
-├── scripts/           # helper scripts installed into home.packages
-├── USAGE.md           # commands and customization
-└── yubikey.md         # OpenSSH sk keys, PIV, age-plugin-yubikey, SOPS
+└── scripts/           # helper scripts installed into home.packages
 ```
