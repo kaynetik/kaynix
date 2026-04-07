@@ -57,34 +57,45 @@ Then run `make deploy` from the checkout.
 
 ```mermaid
 graph TD
-    F["flake.nix"]
-
-    subgraph darwin["darwinConfigurations (system)"]
-        NC["nix-core.nix<br/>nix settings, GC, caches"]
-        SYS["system.nix<br/>macOS defaults, Touch ID"]
-        APPS["apps.nix<br/>Homebrew, fonts, SketchyBar"]
-        HU["host-users.nix<br/>hostname, DNS, users"]
-        AERO["aerospace.nix<br/>tiling WM (darwin-only)"]
-        SEC["secrets.nix<br/>writable secrets dir"]
-    end
-
-    subgraph hm["Home Manager"]
-        KN["homes/kaynetik.nix<br/>packages, zsh, git, sops"]
-        STATIC["homes/static/<br/>nvim, tmux, alacritty,<br/>sketchybar, zsh"]
-    end
-
-    subgraph inputs["Flake inputs"]
-        NP["nixpkgs-unstable"]
-        DW["nix-darwin"]
+    subgraph inputs["Flake Inputs"]
+        NP["nixpkgs-darwin<br/><i>follows nixpkgs-unstable</i>"]
+        DW["darwin<br/><i>nix-darwin</i>"]
         HMI["home-manager"]
         SOPS["sops-nix"]
     end
 
-    F --> darwin
-    F --> hm
+    F["flake.nix<br/>hosts: knt-mbp, knt-mbpf<br/>+ devShells, formatter"]
+
+    subgraph darwin["darwinConfigurations (per host)"]
+        direction LR
+        NC["nix-core.nix<br/>nixpkgs, overlays, GC"]
+        SYS["system.nix<br/>macOS defaults, Touch ID"]
+        APPS["apps.nix<br/>Homebrew, fonts, SketchyBar"]
+        HU["host-users.nix<br/>hostname, DNS, users"]
+        AERO["aerospace.nix<br/>tiling WM"]
+        SEC["secrets.nix<br/>writable secrets dir"]
+    end
+
+    subgraph hm["Home Manager (embedded in darwin)"]
+        KN["homes/kaynetik.nix<br/>program toggles, session"]
+        SOPS_HM["homes/sops.nix<br/>secret paths, activation, rekey"]
+
+        subgraph hmmod["modules/home/"]
+            direction LR
+            PKG["packages.nix<br/>CLI tools, runtimes, scripts/"]
+            PROGS["programs/*<br/>zsh, git, neovim, tmux,<br/>terminals, ssh, fzf, atuin,<br/>sketchybar, lazygit, jujutsu, ..."]
+        end
+
+        STATIC["homes/static/<br/>nvim, tmux, alacritty,<br/>sketchybar, zsh, git, sops"]
+    end
+
     inputs --> F
-    KN --> STATIC
-    SOPS --> KN
+    F --> darwin
+    darwin -- "darwinModules.home-manager" --> hm
+    KN --> SOPS_HM
+    KN --> hmmod
+    PROGS --> STATIC
+    SOPS["sops-nix"] -. "sharedModules" .-> SOPS_HM
 ```
 
 ## Secrets (SOPS + YubiKey)
@@ -98,7 +109,7 @@ flowchart LR
     ID["~/.config/sops/age/<br/>identity stub"]
     SOPSF["secrets/secrets.yaml<br/>(encrypted)"]
     SOPSNIX["sops-nix<br/>(HM activation)"]
-    PLAIN["~/.config/zsh/conf-*.zsh<br/>(decrypted, 0600)"]
+    PLAIN["~/.config/zsh/conf-*.zsh<br/>~/.ssh/conf.d/work<br/>(decrypted, 0600)"]
 
     YK -- "PIV PIN + touch" --> PLUGIN
     PLUGIN --> ID
