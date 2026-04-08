@@ -115,6 +115,7 @@
     rustup
     zig
     foundry
+    slither-analyzer
   ];
 
   sshAndAge = with pkgs; [
