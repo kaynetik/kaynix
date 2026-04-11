@@ -75,7 +75,7 @@
         };
       };
 
-      knt-mbpf = {
+      mbp = {
         system = "aarch64-darwin";
         username = "kaynetik";
         config = {
