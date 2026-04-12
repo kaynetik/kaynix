@@ -81,7 +81,7 @@
         config = {
           homeStateVersion = "26.05";
           timeZone = "Europe/Belgrade";
-          sketchybar.theme = "tokyo_night";
+          sketchybar.theme = "rose_pine";
           networking = {
             knownNetworkServices = ["Wi-Fi" "Thunderbolt Bridge"];
             dns = ["1.1.1.1" "1.0.0.1" "8.8.8.8" "8.8.4.4"];
