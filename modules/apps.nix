@@ -1,5 +1,6 @@
 {
   pkgs,
+  username,
   hostConfig,
   ...
 }: let
@@ -13,6 +14,7 @@ in {
   launchd.user.agents.sketchybar.environment = {
     LUA_CPATH = "${pkgs.lua5_5}/lib/lua/5.5/?.so;${pkgs.lua5_5}/lib/lua/5.5/loadall.so;${pkgs.sbarlua}/lib/lua/5.5/?.so;./?.so";
     SKETCHYBAR_THEME = sketchybarTheme;
+    PATH = "/etc/profiles/per-user/${username}/bin:/run/current-system/sw/bin:/usr/bin:/bin:/usr/sbin:/sbin";
   };
 
   fonts.packages = with pkgs.nerd-fonts; [
