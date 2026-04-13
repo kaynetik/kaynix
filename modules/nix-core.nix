@@ -10,6 +10,19 @@
       checkov = prev.checkov.overridePythonAttrs (old: {
         pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["tabulate"];
       });
+
+      macmon = prev.rustPlatform.buildRustPackage {
+        pname = "macmon";
+        version = "0.7.0";
+        src = prev.fetchFromGitHub {
+          owner = "vladkens";
+          repo = "macmon";
+          tag = "v0.7.0";
+          hash = "sha256-OLrljN3AlsB63TSgd+UqvFKriImhFZ/xexCT30yTmuA=";
+        };
+        cargoHash = "sha256-Epj3L+db1flGNK5y6yfSig8piEiXTz15lPo/FNkqlkA=";
+        meta = prev.macmon.meta;
+      };
     })
   ];
   nix.settings = {
