@@ -13,6 +13,7 @@ local function get_input_source_name()
 
 	local input_map = {
 		["com.apple.keylayout.US"] = "en",
+		["com.apple.keylayout.ABC"] = "en-us",
 		["com.apple.keylayout.Serbian-Latin"] = "sr",
 		["com.apple.keylayout.Serbian"] = "sr-cyr",
 	}

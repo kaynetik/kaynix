@@ -85,6 +85,7 @@
     grafana-alloy
     prometheus
     prometheus.cli
+    macmon # monitor CPU, memory - freq & temps
   ];
 
   databases = with pkgs; [
