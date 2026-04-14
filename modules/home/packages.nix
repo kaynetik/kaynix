@@ -19,6 +19,7 @@
 
   terminal = with pkgs; [
     alacritty
+    zinit
     tmux
     htop
     btop

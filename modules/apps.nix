@@ -48,7 +48,6 @@ in {
       "tor"
 
       # Shell Tools
-      "zinit"
       "tfenv" # wtf why isnt this in nix already?
       "protobuf"
     ];

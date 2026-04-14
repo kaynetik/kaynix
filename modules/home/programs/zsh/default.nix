@@ -25,7 +25,7 @@ in {
       initContent = lib.mkMerge [
         (lib.mkBefore ''
           eval "$(/opt/homebrew/bin/brew shellenv)"
-          source /opt/homebrew/opt/zinit/zinit.zsh
+          source ${pkgs.zinit}/share/zinit/zinit.zsh
           autoload -Uz compinit && compinit -u
           zinit light zsh-users/zsh-autosuggestions
           zinit light zdharma-continuum/fast-syntax-highlighting
