@@ -95,21 +95,35 @@ local function apply_workspace_icons(workspace_index, open_windows, focused_work
 	end)
 end
 
--- One focused query, then per-workspace window lists (still N calls; avoids N duplicate focused queries).
+-- Two async calls instead of N+1: one for focused workspace, one for all windows.
 local function refresh_all_workspace_windows(on_focused)
 	sbar.exec("aerospace list-workspaces --focused", function(focused_workspace)
-		for workspace_index = 1, max_workspaces do
-			local get_windows = string.format(
-				"aerospace list-windows --workspace %s --format '%%{app-name}' --json",
-				workspace_index
-			)
-			sbar.exec(get_windows, function(open_windows)
-				apply_workspace_icons(workspace_index, open_windows, focused_workspace)
-			end)
-		end
-		if on_focused then
-			on_focused(focused_workspace)
-		end
+		sbar.exec(
+			"aerospace list-windows --all --format '%{workspace}%{app-name}' --json 2>/dev/null",
+			function(all_windows)
+				local by_workspace = {}
+				for i = 1, max_workspaces do
+					by_workspace[i] = {}
+				end
+
+				if type(all_windows) == "table" then
+					for _, win in ipairs(all_windows) do
+						local ws = tonumber(win.workspace)
+						if ws and ws >= 1 and ws <= max_workspaces then
+							table.insert(by_workspace[ws], win)
+						end
+					end
+				end
+
+				for i = 1, max_workspaces do
+					apply_workspace_icons(i, by_workspace[i], focused_workspace)
+				end
+
+				if on_focused then
+					on_focused(focused_workspace)
+				end
+			end
+		)
 	end)
 end
 
