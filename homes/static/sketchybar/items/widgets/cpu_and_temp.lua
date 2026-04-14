@@ -58,12 +58,19 @@ local cpu = sbar.add("graph", "widgets.cpu", 42, {
 
 local function update()
 	sbar.exec(MACMON .. " pipe -s 1 -i 500 2>/dev/null", function(output)
-		if not output or output == "" then
+		if not output then
 			return
 		end
 
-		local temperature = tonumber(output:match('"cpu_temp_avg"%s*:%s*([%d%.]+)'))
-		local cpu_pct = tonumber(output:match('"cpu_usage_pct"%s*:%s*([%d%.]+)'))
+		local temperature, cpu_pct
+		if type(output) == "table" then
+			local t = output.temp
+			temperature = t and tonumber(t.cpu_temp_avg)
+			cpu_pct = tonumber(output.cpu_usage_pct)
+		elseif type(output) == "string" and output ~= "" then
+			temperature = tonumber(output:match('"cpu_temp_avg"%s*:%s*([%d%.]+)'))
+			cpu_pct = tonumber(output:match('"cpu_usage_pct"%s*:%s*([%d%.]+)'))
+		end
 
 		if temperature then
 			temp:push({ temperature / 130.0 })
