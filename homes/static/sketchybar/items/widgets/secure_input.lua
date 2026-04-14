@@ -34,7 +34,7 @@ local secure_input = sbar.add("item", "widgets.secure_input", {
 })
 
 secure_input:subscribe({ "routine", "system_woke" }, function()
-	sbar.exec("ioreg -l -w 0 | grep -c SecureInputPID", function(output)
+	sbar.exec("ioreg -c IOHIDSystem -l | grep -c SecureInputPID", function(output)
 		local count = tonumber(output) or 0
 		local active = count > 0
 		secure_input:set({

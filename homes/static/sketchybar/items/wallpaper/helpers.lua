@@ -29,8 +29,7 @@ function helpers.setAnchorText()
 		local longest = ""
 
 		for i = minIdx, maxIdx do
-			local sbarItem = tbl[i]["SBAR_ITEM"]
-			local name = sbarItem:query().label.value
+			local name = tbl[i]["DISPLAY_NAME"] or ""
 			longest = #longest < #name and name or longest
 		end
 
@@ -65,8 +64,6 @@ function helpers.seekTbl(open)
 	for i = 1, #globals.entryMap do
 		local tbl = globals.entryMap[i]
 		local sbarItem = tbl["SBAR_ITEM"]
-
-		sbarItem:query()
 		sbarItem:set({ popup = { drawing = open } })
 
 		if tbl["DIR_FILES"] ~= nil then

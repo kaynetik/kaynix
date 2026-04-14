@@ -56,62 +56,52 @@ local cpu = sbar.add("graph", "widgets.cpu", 42, {
 	padding_right = -6,
 })
 
-local function poll_macmon()
-	local handle = io.popen(MACMON .. " pipe -s 1 -i 500 2>/dev/null")
-	if not handle then
-		return nil, nil
-	end
-	local output = handle:read("*a") or ""
-	handle:close()
-
-	local temperature = tonumber(output:match('"cpu_temp_avg"%s*:%s*([%d%.]+)'))
-	local cpu_pct = tonumber(output:match('"cpu_usage_pct"%s*:%s*([%d%.]+)'))
-	return temperature, cpu_pct
-end
-
 local function update()
-	local temperature, cpu_pct = poll_macmon()
-
-	if temperature then
-		temp:push({ temperature / 130. })
-
-		local color = colors.green
-		if temperature > 50 then
-			if temperature < 70 then
-				color = colors.yellow
-			elseif temperature < 80 then
-				color = colors.orange
-			else
-				color = colors.red
-			end
+	sbar.exec(MACMON .. " pipe -s 1 -i 500 2>/dev/null", function(output)
+		if not output or output == "" then
+			return
 		end
 
-		temp:set({
-			graph = { color = color },
-			label = "􀇬 " .. math.floor(temperature) .. "󰔄",
-		})
-	end
+		local temperature = tonumber(output:match('"cpu_temp_avg"%s*:%s*([%d%.]+)'))
+		local cpu_pct = tonumber(output:match('"cpu_usage_pct"%s*:%s*([%d%.]+)'))
 
-	if cpu_pct then
-		local load = cpu_pct * 100
-		cpu:push({ cpu_pct })
+		if temperature then
+			temp:push({ temperature / 130.0 })
 
-		local color = colors.blue
-		if load > 30 then
-			if load < 60 then
-				color = colors.yellow
-			elseif load < 80 then
-				color = colors.orange
-			else
+			local color = colors.green
+			if temperature >= 80 then
 				color = colors.red
+			elseif temperature >= 70 then
+				color = colors.orange
+			elseif temperature > 50 then
+				color = colors.yellow
 			end
+
+			temp:set({
+				graph = { color = color },
+				label = "􀇬 " .. math.floor(temperature) .. "󰔄",
+			})
 		end
 
-		cpu:set({
-			graph = { color = color },
-			label = string.format("cpu %.0f%%", load),
-		})
-	end
+		if cpu_pct then
+			local load = cpu_pct * 100
+			cpu:push({ cpu_pct })
+
+			local color = colors.blue
+			if load >= 80 then
+				color = colors.red
+			elseif load >= 60 then
+				color = colors.orange
+			elseif load > 30 then
+				color = colors.yellow
+			end
+
+			cpu:set({
+				graph = { color = color },
+				label = string.format("cpu %.0f%%", load),
+			})
+		end
+	end)
 end
 
 cpu:subscribe("routine", update)

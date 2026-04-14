@@ -124,23 +124,20 @@ local function genEntries(dir, name, pos, entryTbl)
 					label = { string = file },
 				})
 
+				local group = {}
+				entryTbl[count] = group
+				group["SBAR_ITEM"] = option
+
 				if string.find(file, "%.") then
-					-- We read in a wallpaper file
-					local group = {}
-					entryTbl[count] = group
-					group["SBAR_ITEM"] = option
+					local display = string.match(file, "(.-)%.") or file
 					group["FILE_PATH"] = filePath
-					option:set({ label = { string = string.match(option:query().label.value, "(.-)%.") } })
+					group["DISPLAY_NAME"] = display
+					option:set({ label = { string = display } })
 				else
-					-- We read in a directory
-					local group = {}
-					entryTbl[count] = group
-
-					group["SBAR_ITEM"] = option
+					local display = "􀈖 " .. file
 					group["DIR_FILES"] = {}
-
-					option:set({ label = { string = "􀈖 " .. option:query().label.value } })
-
+					group["DISPLAY_NAME"] = display
+					option:set({ label = { string = display } })
 					genEntries(filePath, optName, option.name, group["DIR_FILES"])
 				end
 			end
