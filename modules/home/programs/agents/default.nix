@@ -29,6 +29,7 @@
     "tmux-mastery"
     "ultimate-db"
     "ultimate-nixos"
+    "ultimate-rust"
     "ziglang"
     "whitepapers"
   ];
