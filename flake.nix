@@ -34,6 +34,13 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
+
+    # Declarative per-version Solidity compilers (pkgs.solc_0_8_19, etc.).
+    # Nix-native replacement for `svm install <ver>`.
+    solc-nix = {
+      url = "github:hellwolf/solc.nix";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
   };
 
   # `inputs @ { ... }` binds flake inputs by name; `self` is the flake itself.
@@ -44,8 +51,16 @@
     darwin,
     home-manager,
     sops-nix,
+    solc-nix,
     ...
   }: let
+    # Overlay that exposes solc versions from solc-nix and our custom svm-rs.
+    kaynixOverlay = final: prev:
+      (solc-nix.overlay final prev)
+      // {
+        svm-rs = final.callPackage ./pkgs/svm-rs {};
+      };
+
     # Per-host config. Add an entry here when deploying to a new machine.
     # Shared defaults live in the modules; `config` overrides per machine.
     hosts = {
@@ -102,6 +117,8 @@
       darwin.lib.darwinSystem {
         inherit system specialArgs;
         modules = [
+          {nixpkgs.overlays = [kaynixOverlay];}
+
           ./modules/nix-core.nix
           ./modules/system.nix
           ./modules/apps.nix
@@ -143,6 +160,7 @@
       pkgs = import inputs.nixpkgs-darwin {
         system = primaryHost.system;
         config.allowUnfree = true;
+        overlays = [kaynixOverlay];
       };
     in {
       default = pkgs.mkShell {

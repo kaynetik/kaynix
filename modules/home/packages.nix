@@ -119,6 +119,9 @@
     zig
     foundry
     slither-analyzer
+    solc # latest solc from nixpkgs (default `solc` on PATH)
+    solc_0_8_19 # pinned solc 0.8.19 (exposed as `solc-0.8.19`) via solc-nix overlay
+    svm-rs # alloy-rs svm CLI (`svm install 0.8.19`, `svm use 0.8.19`)
   ];
 
   sshAndAge = with pkgs; [

@@ -10,11 +10,19 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    home.activation.sshSocketDir = lib.hm.dag.entryBefore ["linkGeneration"] ''
+      run mkdir -p "${config.home.homeDirectory}/.ssh/sockets"
+      run chmod 700 "${config.home.homeDirectory}/.ssh/sockets"
+    '';
+
     programs.ssh = {
       enable = true;
       enableDefaultConfig = false;
       matchBlocks = {
         "*" = {
+          controlMaster = "auto";
+          controlPath = "~/.ssh/sockets/%r@%h-%p";
+          controlPersist = "10m";
           extraOptions = {
             IgnoreUnknown = "UseKeychain";
             UseKeychain = "yes";
