@@ -30,8 +30,11 @@
     "ultimate-db"
     "ultimate-nixos"
     "ultimate-rust"
-    "ziglang"
+    "ultimate-web3"
     "whitepapers"
+    "web3-frontend"
+    "web3-testing"
+    "ziglang"
   ];
   cursorSkillEntries = builtins.listToAttrs (map (name: {
       name = ".cursor/skills/${name}";
