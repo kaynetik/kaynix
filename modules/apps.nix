@@ -35,6 +35,7 @@ in {
 
     taps = [
       "txn2/tap"
+      "rtulke/airsnare"
     ];
 
     brews = [
@@ -50,6 +51,11 @@ in {
       # Shell Tools
       "tfenv" # wtf why isnt this in nix already?
       "protobuf"
+
+      # WPA2 tests
+      "airsnare"
+      "hashcat"
+      "hcxtools"
     ];
 
     casks = [
