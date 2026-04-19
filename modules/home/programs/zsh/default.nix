@@ -40,6 +40,7 @@ in {
           fi
           [[ -r ${config.xdg.configHome}/zsh/conf-alpha.zsh ]] && source ${config.xdg.configHome}/zsh/conf-alpha.zsh
           [[ -r ${config.xdg.configHome}/zsh/conf-bravo.zsh ]] && source ${config.xdg.configHome}/zsh/conf-bravo.zsh
+          [[ -r ${config.xdg.configHome}/zsh/conf-flowd.zsh ]] && source ${config.xdg.configHome}/zsh/conf-flowd.zsh
         '')
         (lib.mkOrder 550 ''
           export GPG_TTY=$(tty)

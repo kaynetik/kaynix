@@ -27,6 +27,7 @@
     "svg-gen"
     "tdd-red-green-refactor"
     "tmux-mastery"
+    "tokenomics"
     "ultimate-db"
     "ultimate-nixos"
     "ultimate-rust"
