@@ -47,6 +47,12 @@ in {
         mode = "0600";
         format = "yaml";
       };
+      "zsh-flowd" = {
+        key = "zsh_flowd";
+        path = "${config.xdg.configHome}/zsh/conf-flowd.zsh";
+        mode = "0600";
+        format = "yaml";
+      };
       "zsh-kube-ctx-aliases" = {
         key = "zsh_kube_ctx_aliases";
         path = "${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh";

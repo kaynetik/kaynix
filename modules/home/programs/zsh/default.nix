@@ -40,6 +40,7 @@ in {
           fi
           [[ -r ${config.xdg.configHome}/zsh/conf-seda.zsh ]] && source ${config.xdg.configHome}/zsh/conf-seda.zsh
           [[ -r ${config.xdg.configHome}/zsh/conf-sietch.zsh ]] && source ${config.xdg.configHome}/zsh/conf-sietch.zsh
+          [[ -r ${config.xdg.configHome}/zsh/conf-flowd.zsh ]] && source ${config.xdg.configHome}/zsh/conf-flowd.zsh
         '')
         (lib.mkOrder 550 ''
           export GPG_TTY=$(tty)
