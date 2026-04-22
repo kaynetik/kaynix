@@ -134,6 +134,10 @@
     dotenvx
   ];
 
+  agents = with pkgs; [
+    claude-code
+  ];
+
   darwinOnly = with pkgs; [
     jankyborders
     nowplaying-cli
@@ -167,5 +171,6 @@ in {
     ++ media
     ++ compilersAndRuntimes
     ++ sshAndAge
+    ++ agents
     ++ lib.optionals pkgs.stdenv.isDarwin darwinOnly;
 }
