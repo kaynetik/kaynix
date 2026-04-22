@@ -140,6 +140,7 @@
     sbarlua
     switchaudio-osx
     shottr
+    python314Packages.mlx-lm # Apple Silicon LLM runner (mlx_lm.* CLIs)
   ];
 in {
   targets.darwin.copyApps.enable = lib.mkIf pkgs.stdenv.isDarwin true;
