@@ -33,10 +33,7 @@ in {
       upgrade = true;
     };
 
-    taps = [
-      "txn2/tap"
-      "rtulke/airsnare"
-    ];
+    taps = [];
 
     brews = [
       # Security & GPG
@@ -53,6 +50,7 @@ in {
       "uv"
       "ollama"
 
+      "tfenv"
       "protobuf"
     ];
 
@@ -89,7 +87,6 @@ in {
       "spotify" # Ditch this crap ASAP
       "gimp"
       "transmission"
-      "unetbootin"
 
       # Communication
       "telegram"

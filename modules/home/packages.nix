@@ -26,6 +26,7 @@
     bat
     fd
     ripgrep
+    gnugrep
     tree
   ];
 
@@ -72,7 +73,6 @@
     terraform-docs
     tflint
     trivy
-    tfenv
   ];
 
   cloud = with pkgs; [
