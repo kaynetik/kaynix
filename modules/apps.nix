@@ -52,6 +52,8 @@ in {
 
       "tfenv"
       "protobuf"
+      "pandoc"
+      "typst"
     ];
 
     casks = [
@@ -63,6 +65,11 @@ in {
       "gpg-suite"
       "protonvpn"
       "lulu"
+      "knockknock"
+      "blockblock"
+      "ransomwhere"
+      "dhs"
+      "whatsyoursign"
       "pareto-security" # Occasionally run security checks
 
       # Productivity & Utilities
