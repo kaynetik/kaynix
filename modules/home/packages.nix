@@ -67,11 +67,12 @@
   iacAndCD = with pkgs; [
     bazel-buildtools
     bazelisk
-    # checkov  # temporarily disabled — ibis-framework 12.0.0 broken against duckdb 1.5.1 (nixpkgs-unstable)
+    checkov # temporarily disabled — ibis-framework 12.0.0 broken against duckdb 1.5.1 (nixpkgs-unstable)
     infracost
     terraform-docs
     tflint
     trivy
+    tfenv
   ];
 
   cloud = with pkgs; [
@@ -144,7 +145,7 @@
     sbarlua
     switchaudio-osx
     shottr
-    python314Packages.mlx-lm # Apple Silicon LLM runner (mlx_lm.* CLIs)
+    # python314Packages.mlx-lm # Apple Silicon LLM runner (mlx_lm.* CLIs)
   ];
 in {
   targets.darwin.copyApps.enable = lib.mkIf pkgs.stdenv.isDarwin true;
