@@ -48,14 +48,12 @@ in {
       "secp256k1"
       "tor"
 
-      # Shell Tools
-      "tfenv" # wtf why isnt this in nix already?
-      "protobuf"
+      # Local LLM dependencies
+      "python@3.14" # Python 3.14 from brew is required for mlx-lm to work on Apple GPU silicon.
+      "uv"
+      "ollama"
 
-      # WPA2 tests
-      "airsnare"
-      "hashcat"
-      "hcxtools"
+      "protobuf"
     ];
 
     casks = [
@@ -83,7 +81,6 @@ in {
       "font-sf-mono"
 
       # Cloud & Infrastructure
-      # "gcloud-cli"
       "lens" # Rice k9s more to reach the LENS usability levels.
 
       # Media Tools
