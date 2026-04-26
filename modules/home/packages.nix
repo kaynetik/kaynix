@@ -68,8 +68,9 @@
   iacAndCD = with pkgs; [
     bazel-buildtools
     bazelisk
-    checkov # temporarily disabled — ibis-framework 12.0.0 broken against duckdb 1.5.1 (nixpkgs-unstable)
+    checkov
     infracost
+    tfenv
     terraform-docs
     tflint
     trivy
