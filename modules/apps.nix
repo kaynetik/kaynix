@@ -50,7 +50,6 @@ in {
       "uv"
       "ollama"
 
-      "tfenv"
       "protobuf"
       "pandoc"
       "typst"

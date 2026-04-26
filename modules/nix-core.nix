@@ -1,15 +1,56 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  darwinFlakyCheckPhases = [
+    "av"
+    "imageio"
+    "scikit-image"
+    "plotly"
+    "igraph"
+  ];
+
+  disableChecks = pyPrev: name:
+    pyPrev.${name}.overridePythonAttrs (_: {
+      doCheck = false;
+      pythonImportsCheck = [];
+    });
+in {
   nixpkgs.config = {
     allowUnfree = true;
     permittedInsecurePackages = [];
   };
 
-  # nixpkgs has tabulate 0.10.0; checkov 3.2.510 declares tabulate<0.10, so pythonRuntimeDepsCheck fails.
   nixpkgs.overlays = [
     (final: prev: {
+      # nixpkgs has tabulate 0.10.0; checkov 3.2.510 declares tabulate<0.10, so pythonRuntimeDepsCheck fails.
       checkov = prev.checkov.overridePythonAttrs (old: {
         pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["tabulate"];
       });
+
+      # Extend every Python package set so overrides propagate through transitive
+      # consumers (e.g. checkov -> igraph -> plotly -> scikit-image -> imageio -> av, and pgcli -> cli-helpers).
+      pythonPackagesExtensions =
+        (prev.pythonPackagesExtensions or [])
+        ++ [
+          (pyFinal: pyPrev:
+            # cli-helpers 2.10.0 fails three pygments-based ANSI styling tests on Darwin.
+            # Tracked in https://github.com/NixOS/nixpkgs/issues/513102, fixed upstream by https://github.com/NixOS/nixpkgs/pull/493910
+            # (bump to 2.14.0). Drop after nixpkgs input bumps cli-helpers to >= 2.14.0.
+              {
+                cli-helpers = pyPrev.cli-helpers.overridePythonAttrs (old: {
+                  disabledTests =
+                    (old.disabledTests or [])
+                    ++ [
+                      "test_style_output"
+                      "test_style_output_with_newlines"
+                      "test_style_output_custom_tokens"
+                    ];
+                });
+              }
+              // builtins.listToAttrs (map (n: {
+                  name = n;
+                  value = disableChecks pyPrev n;
+                })
+                darwinFlakyCheckPhases))
+        ];
 
       macmon = prev.rustPlatform.buildRustPackage {
         pname = "macmon";
@@ -25,6 +66,7 @@
       };
     })
   ];
+
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
 
@@ -33,10 +75,10 @@
     ];
     builders-use-substitutes = false;
 
-    # gets rid of duplicate store files
-    # turned off due to
-    # https://github.com/NixOS/nix/issues/7273#issuecomment-1325073957
-    auto-optimise-store = false;
+    max-jobs = 8;
+    cores = 0;
+
+    auto-optimise-store = false; # https://github.com/NixOS/nix/issues/7273#issuecomment-1325073957
 
     warn-dirty = false;
   };
