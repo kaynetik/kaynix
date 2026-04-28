@@ -53,6 +53,7 @@
 
   k8sAndOci = with pkgs; [
     argocd
+    mimir
     cmctl
     k3d
     kubectl
