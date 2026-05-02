@@ -26,7 +26,6 @@
     bat
     fd
     ripgrep
-    gnugrep
     tree
   ];
 
@@ -66,12 +65,23 @@
     docker
   ];
 
+  # nixpkgs `tfenv` (3.0.0) on Darwin trips upstream's check_dependencies():
+  # when Homebrew is on PATH it requires GNU grep to be invocable as `ggrep`,
+  # but the nix wrapper only exposes `grep` from gnugrep. Symlink it.
+  tfenvWithGgrep = pkgs.tfenv.overrideAttrs (old: {
+    postFixup =
+      (old.postFixup or "")
+      + ''
+        ln -s ${pkgs.gnugrep}/bin/grep $out/bin/ggrep
+      '';
+  }); #TODO: Add a fix to the nixpkgs tfenv package to make it work on Darwin without this workaround.
+
   iacAndCD = with pkgs; [
     bazel-buildtools
     bazelisk
     checkov
     infracost
-    tfenv
+    tfenvWithGgrep
     terraform-docs
     tflint
     trivy
@@ -150,10 +160,18 @@ in {
   targets.darwin.linkApps.enable = lib.mkIf pkgs.stdenv.isDarwin false;
 
   # Podman / docker CLI (k8sAndOci): SSH tunnel to VM and machine socket path.
+  # tfenv (iacAndCD): TFENV_ROOT lives in the read-only nix store, so point
+  # TFENV_CONFIG_DIR at a writable HOME path for installs, pins, and locks.
   home.sessionVariables = {
     DOCKER_HOST = "ssh://root@127.0.0.1:63646";
     DOCKER_SOCK = "/run/podman/podman.sock";
+    TFENV_CONFIG_DIR = "${config.home.homeDirectory}/.tfenv";
   };
+
+  home.activation.tfenvConfigDir = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    run mkdir -p "${config.home.homeDirectory}/.tfenv/versions"
+  '';
+  # FIXME: ASAP FIX IN NIXPKGS
 
   home.packages =
     [kaynix-scripts]
