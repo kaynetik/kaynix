@@ -38,6 +38,7 @@
     java.enable = lib.mkDefault true;
     jjui.enable = lib.mkDefault true;
     jujutsu.enable = lib.mkDefault true;
+    k9s.enable = lib.mkDefault true;
     lazygit.enable = lib.mkDefault true;
     neovim.enable = lib.mkDefault true;
     sketchybar.enable = lib.mkDefault pkgs.stdenv.isDarwin;
