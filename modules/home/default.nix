@@ -10,6 +10,7 @@
     ./programs/java
     ./programs/jjui
     ./programs/jujutsu
+    ./programs/k9s
     ./programs/lazygit
     ./programs/neovim
     ./programs/sketchybar
