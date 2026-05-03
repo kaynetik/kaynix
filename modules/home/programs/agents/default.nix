@@ -25,6 +25,8 @@
     "meta-cognition-parallel"
     "podmaster"
     "practical-haskell"
+    "rca"
+    "researcher"
     "solidity-security"
     "svg-gen"
     "tdd-red-green-refactor"
