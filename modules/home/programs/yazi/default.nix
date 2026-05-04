@@ -30,7 +30,7 @@ in {
         ffmpegthumbnailer
         unar
         jq
-        poppler_utils
+        poppler-utils
         fd
         ripgrep
         fzf
