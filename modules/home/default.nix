@@ -16,6 +16,7 @@
     ./programs/sketchybar
     ./programs/ssh
     ./programs/terminals
+    ./programs/yazi
     ./programs/zoxide
     ./programs/zsh
   ];
