@@ -44,6 +44,7 @@
     sketchybar.enable = lib.mkDefault pkgs.stdenv.isDarwin;
     ssh.enable = lib.mkDefault true;
     terminals.enable = lib.mkDefault true;
+    yazi.enable = lib.mkDefault true;
     zoxide.enable = lib.mkDefault true;
     zsh.enable = lib.mkDefault true;
   };
