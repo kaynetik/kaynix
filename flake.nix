@@ -59,6 +59,12 @@
       (solc-nix.overlay final prev)
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
+
+        # Local pin to grafana-alloy 1.16.0. The locked nixpkgs-darwin still
+        # ships 1.15.1, whose vendored go-m1cpu v0.1.7 segfaults on M3 Pro / M4
+        # / M5. Drop this override (and pkgs/grafana-alloy/) once the lock
+        # contains nixpkgs commit 917ae486907dfd008c4c6ac3fa4985c942f7aaf7.
+        grafana-alloy = final.callPackage ./pkgs/grafana-alloy {};
       };
 
     # Per-host config. Add an entry here when deploying to a new machine.
