@@ -18,30 +18,28 @@ in {
     programs.ssh = {
       enable = true;
       enableDefaultConfig = false;
-      matchBlocks = {
+      settings = {
         "*" = {
-          controlMaster = "auto";
-          controlPath = "~/.ssh/sockets/%r@%h-%p";
-          controlPersist = "10m";
-          extraOptions = {
-            IgnoreUnknown = "UseKeychain";
-            UseKeychain = "yes";
-            AddKeysToAgent = "yes";
-            ServerAliveInterval = "60";
-            ServerAliveCountMax = "3";
-          };
+          ControlMaster = "auto";
+          ControlPath = "~/.ssh/sockets/%r@%h-%p";
+          ControlPersist = "10m";
+          IgnoreUnknown = "UseKeychain";
+          UseKeychain = "yes";
+          AddKeysToAgent = "yes";
+          ServerAliveInterval = 60;
+          ServerAliveCountMax = 3;
         };
         "github.com" = {
-          hostname = "github.com";
-          user = "git";
-          identityFile = "~/.ssh/prim_sk_id_ed25519";
-          identitiesOnly = true;
+          HostName = "github.com";
+          User = "git";
+          IdentityFile = "~/.ssh/prim_sk_id_ed25519";
+          IdentitiesOnly = true;
         };
         "gist.github.com" = {
-          hostname = "gist.github.com";
-          user = "git";
-          identityFile = "~/.ssh/prim_sk_id_ed25519";
-          identitiesOnly = true;
+          HostName = "gist.github.com";
+          User = "git";
+          IdentityFile = "~/.ssh/prim_sk_id_ed25519";
+          IdentitiesOnly = true;
         };
       };
       extraConfig = lib.mkBefore ''
