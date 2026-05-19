@@ -65,6 +65,14 @@
         # / M5. Drop this override (and pkgs/grafana-alloy/) once the lock
         # contains nixpkgs commit 917ae486907dfd008c4c6ac3fa4985c942f7aaf7.
         grafana-alloy = final.callPackage ./pkgs/grafana-alloy {};
+
+        # Local tfenv checkout while the Darwin ggrep + writable TFENV_CONFIG_DIR
+        # fixes are in flight upstream. Drop once the PR is merged and the lock
+        # picks it up.
+        tfenv =
+          final.callPackage
+          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/tf/tfenv/package.nix
+          {};
       };
 
     # Per-host config. Add an entry here when deploying to a new machine.
