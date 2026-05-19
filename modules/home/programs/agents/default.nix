@@ -1,4 +1,4 @@
-# Symlinks ~/.cursor/skills/* to a local checkout of kaynetik-skills.
+# Symlinks ~/.cursor/skills/* and ~/.claude/skills/* to a local checkout of kaynetik-skills.
 {
   config,
   lib,
@@ -6,8 +6,8 @@
 }: let
   cfg = config.kaynix.programs.agents;
 
-  cursorSkillsSource = "${config.home.homeDirectory}/Development/Personal/kaynetik-skills";
-  cursorSkillNames = [
+  skillsSource = "${config.home.homeDirectory}/Development/Personal/kaynetik-skills";
+  skillNames = [
     "argocd"
     "c-cpp-compilers"
     "coding-guidelines"
@@ -41,17 +41,28 @@
     "web3-testing"
     "ziglang"
   ];
-  cursorSkillEntries = builtins.listToAttrs (map (name: {
-      name = ".cursor/skills/${name}";
-      value.source = config.lib.file.mkOutOfStoreSymlink "${cursorSkillsSource}/${name}";
-    })
-    cursorSkillNames);
+
+  skillPrefixes = [".cursor" ".claude"];
+
+  skillEntries = builtins.listToAttrs (
+    lib.concatLists (
+      map
+      (prefix:
+        map
+        (name: {
+          name = "${prefix}/skills/${name}";
+          value.source = config.lib.file.mkOutOfStoreSymlink "${skillsSource}/${name}";
+        })
+        skillNames)
+      skillPrefixes
+    )
+  );
 in {
   options.kaynix.programs.agents = {
-    enable = lib.mkEnableOption "Cursor skill symlinks (kaynetik-skills)";
+    enable = lib.mkEnableOption "Cursor and Claude skill symlinks (kaynetik-skills)";
   };
 
   config = lib.mkIf cfg.enable {
-    home.file = cursorSkillEntries;
+    home.file = skillEntries;
   };
 }
