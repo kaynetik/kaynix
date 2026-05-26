@@ -19,6 +19,7 @@
     then "/Users/${username}"
     else "/home/${username}";
   home.stateVersion = hostConfig.homeStateVersion or "24.11";
+  home.enableNixpkgsReleaseCheck = false;
 
   xdg.enable = true;
 

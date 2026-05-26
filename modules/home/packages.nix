@@ -120,7 +120,7 @@
     rustup
     zig
     foundry
-    slither-analyzer
+    slither-analyzer # 26.11 - too many failures!
     solc # latest solc from nixpkgs (default `solc` on PATH)
     solc_0_8_19 # pinned solc 0.8.19 (exposed as `solc-0.8.19`) via solc-nix overlay
     svm-rs # alloy-rs svm CLI (`svm install 0.8.19`, `svm use 0.8.19`)
