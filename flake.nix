@@ -66,13 +66,39 @@
         # contains nixpkgs commit 917ae486907dfd008c4c6ac3fa4985c942f7aaf7.
         grafana-alloy = final.callPackage ./pkgs/grafana-alloy {};
 
-        # Local tfenv checkout while the Darwin ggrep + writable TFENV_CONFIG_DIR
-        # fixes are in flight upstream. Drop once the PR is merged and the lock
-        # picks it up.
-        tfenv =
-          final.callPackage
-          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/tf/tfenv/package.nix
-          {};
+        ## Root source of this requirement is `slither-analyzer`.
+        # eth-utils 6.0.0 tests expect mypy >= 1.16 output (no `builtins.` prefix on
+        # revealed types), but the mypy in this nixpkgs revision still emits the old
+        # format.  Skip checks here until nixpkgs ships a consistent pair.  Drop once
+        # `nix flake update` picks up a revision where eth-utils tests pass cleanly.
+        python3 = prev.python3.override {
+          packageOverrides = _pyFinal: pyPrev: {
+            eth-utils = pyPrev.eth-utils.overridePythonAttrs (old: {
+              doCheck = false;
+              # pydantic is a runtime dep listed in the wheel metadata but was
+              # placed in nativeCheckInputs by nixpkgs; it disappears when doCheck
+              # is false, causing pythonRuntimeDepsCheckHook to fail.
+              propagatedBuildInputs = (old.propagatedBuildInputs or []) ++ [pyPrev.pydantic];
+            });
+
+            # hypothesis found a counter-example in trie; same pydantic pattern.
+            trie = pyPrev.trie.overridePythonAttrs (old: {
+              doCheck = false;
+              propagatedBuildInputs = (old.propagatedBuildInputs or []) ++ [pyPrev.pydantic];
+            });
+
+            # py-evm is archived upstream and its hypothesis tests are flaky on
+            # nixpkgs-unstable.  pycryptodome is a real runtime dep (Crypto.Hash.keccak
+            # imported at module level in eth/consensus/ethash.py) but is misclassified
+            # in nixpkgs as nativeCheckInputs; pythonImportsCheck catches the missing
+            # module when doCheck strips the check env.
+            py-evm = pyPrev.py-evm.overridePythonAttrs (old: {
+              doCheck = false;
+              propagatedBuildInputs = (old.propagatedBuildInputs or []) ++ [pyPrev.pycryptodome];
+            });
+          };
+        };
+        python3Packages = final.python3.pkgs;
       };
 
     # Per-host config. Add an entry here when deploying to a new machine.
