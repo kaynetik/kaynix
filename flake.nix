@@ -66,6 +66,13 @@
         # contains nixpkgs commit 917ae486907dfd008c4c6ac3fa4985c942f7aaf7.
         grafana-alloy = final.callPackage ./pkgs/grafana-alloy {};
 
+        # Local podman-desktop checkout while the Darwin tray-deadlock fix is in
+        # either upstream sorce or upstream nixpkgs.
+        podman-desktop =
+          final.callPackage
+          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman-desktop/package.nix
+          {};
+
         ## Root source of this requirement is `slither-analyzer`.
         # eth-utils 6.0.0 tests expect mypy >= 1.16 output (no `builtins.` prefix on
         # revealed types), but the mypy in this nixpkgs revision still emits the old
