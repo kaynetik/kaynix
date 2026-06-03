@@ -68,10 +68,10 @@
 
         # Local podman-desktop checkout while the Darwin tray-deadlock fix is in
         # either upstream sorce or upstream nixpkgs.
-        podman-desktop =
-          final.callPackage
-          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman-desktop/package.nix
-          {};
+        # podman-desktop =
+        #   final.callPackage
+        #   /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman-desktop/package.nix
+        #   {};
 
         ## Root source of this requirement is `slither-analyzer`.
         # eth-utils 6.0.0 tests expect mypy >= 1.16 output (no `builtins.` prefix on
