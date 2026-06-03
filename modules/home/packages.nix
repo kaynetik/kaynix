@@ -48,6 +48,7 @@
     wget
     wireguard-tools
     wireguard-ui
+    netbird
   ];
 
   k8sAndOci = with pkgs; [
