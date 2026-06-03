@@ -142,6 +142,8 @@
     sbarlua
     switchaudio-osx
     shottr
+    macfuse-stubs
+    e2fsprogs
     # python314Packages.mlx-lm # Apple Silicon LLM runner (mlx_lm.* CLIs)
   ];
 in {
