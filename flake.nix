@@ -172,6 +172,7 @@
           ./modules/aerospace.nix
           ./modules/host-users.nix
           ./modules/secrets.nix
+          ./modules/netbird.nix
 
           home-manager.darwinModules.home-manager
           {
