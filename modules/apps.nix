@@ -31,6 +31,10 @@ in {
       autoUpdate = true;
       cleanup = "zap";
       upgrade = true;
+      # Homebrew >= 4.7 rejects `brew bundle --cleanup` without an explicit
+      # confirmation flag. The locked nix-darwin module emits `--cleanup --zap`
+      # but not `--force`, so activation aborts. Append it ourselves.
+      extraFlags = ["--force-cleanup"];
     };
 
     taps = [];
