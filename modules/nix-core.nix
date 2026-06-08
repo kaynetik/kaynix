@@ -15,7 +15,10 @@
 in {
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [];
+    # checkov -> python ecdsa (CVE-2024-23342, Minerva timing attack; upstream
+    # ecdsa won't fix). checkov is a CLI/CI tool, not exposed to attacker-timed
+    # signing, so the timing side-channel is not in our threat model.
+    permittedInsecurePackages = ["python3.13-ecdsa-0.19.2"];
   };
 
   nixpkgs.overlays = [
