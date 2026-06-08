@@ -39,6 +39,7 @@
     exiftool
     jq
     yq-go
+    shellcheck
   ];
 
   network = with pkgs; [
@@ -61,6 +62,7 @@
     kubernetes-helm
     kustomize
     k9s
+    kubeconform
     podman
     podman-desktop
     docker
