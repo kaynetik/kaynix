@@ -7,6 +7,7 @@
     ./programs/fzf
     ./programs/gh
     ./programs/git
+    ./programs/hunk
     ./programs/java
     ./programs/jjui
     ./programs/jujutsu

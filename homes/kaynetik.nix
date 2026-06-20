@@ -36,6 +36,7 @@
     fzf.enable = lib.mkDefault true;
     gh.enable = lib.mkDefault true;
     git.enable = lib.mkDefault true;
+    hunk.enable = lib.mkDefault true;
     java.enable = lib.mkDefault true;
     jjui.enable = lib.mkDefault true;
     jujutsu.enable = lib.mkDefault true;
@@ -48,5 +49,15 @@
     yazi.enable = lib.mkDefault true;
     zoxide.enable = lib.mkDefault true;
     zsh.enable = lib.mkDefault true;
+  };
+
+  kaynix.programs.hunk = {
+    enableGitIntegration = true;
+    settings = {
+      theme = "graphite";
+      mode = "auto";
+      line_numbers = true;
+      wrap_lines = false;
+    };
   };
 }
