@@ -60,6 +60,13 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
+        # hunk: built from the local nixpkgs checkout (branch kaynetik/tmp-hunk)
+        # rather than the locked nixpkgs-darwin, which does not ship it yet.
+        # callPackage resolves bun / fetchFromGitHub / nix-update-script /
+        # versionCheckHook / writableTmpDirAsHomeHook from the pinned nixpkgs.
+        # Drop this override once nixpkgs-darwin's lock contains `hunk`.
+        hunk = final.callPackage /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/hu/hunk/package.nix {};
+
         # Local pin to grafana-alloy 1.16.0. The locked nixpkgs-darwin still
         # ships 1.15.1, whose vendored go-m1cpu v0.1.7 segfaults on M3 Pro / M4
         # / M5. Drop this override (and pkgs/grafana-alloy/) once the lock

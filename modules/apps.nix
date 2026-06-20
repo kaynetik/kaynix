@@ -82,6 +82,8 @@ in {
       # Development Tools
       "cursor"
       "postman"
+      "figma"
+      "figma-agent"
 
       # Fonts
       "sf-symbols"
