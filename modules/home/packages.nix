@@ -52,6 +52,15 @@
     netbird
   ];
 
+  secops = with pkgs; [
+    osv-scanner
+    theharvester
+    trufflehog
+    sherlock
+    recon-ng
+    #dnstwist
+  ];
+
   k8sAndOci = with pkgs; [
     argocd
     mimir
@@ -174,5 +183,6 @@ in {
     ++ media
     ++ compilersAndRuntimes
     ++ sshAndAge
+    ++ secops
     ++ lib.optionals pkgs.stdenv.isDarwin darwinOnly;
 }
