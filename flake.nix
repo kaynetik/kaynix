@@ -75,10 +75,21 @@
 
         # Local podman-desktop checkout while the Darwin tray-deadlock fix is in
         # either upstream sorce or upstream nixpkgs.
-        # podman-desktop =
-        #   final.callPackage
-        #   /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman-desktop/package.nix
-        #   {};
+        podman-desktop =
+          final.callPackage
+          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman-desktop/package.nix
+          {};
+
+        # Local podman checkout. The locked nixpkgs-darwin carries the broken
+        # nixpkgs#536067 bump that dropped darwin from podman's meta.platforms,
+        # so evaluation on aarch64-darwin fails. The local checkout restores
+        # `platforms = lib.platforms.unix` (the nixpkgs#536759 fix). All build
+        # deps still resolve from the pinned nixpkgs (same podman 5.8.4). Drop
+        # this override once nixpkgs-darwin's lock contains commit e288608.
+        podman =
+          final.callPackage
+          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman/package.nix
+          {};
 
         ## Root source of this requirement is `slither-analyzer`.
         # eth-utils 6.0.0 tests expect mypy >= 1.16 output (no `builtins.` prefix on

@@ -83,7 +83,7 @@ in {
       "cursor"
       "postman"
       "figma"
-      "figma-agent"
+      # "figma-agent"
 
       # Fonts
       "sf-symbols"
