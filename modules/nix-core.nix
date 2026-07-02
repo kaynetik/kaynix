@@ -1,18 +1,4 @@
-{pkgs, ...}: let
-  darwinFlakyCheckPhases = [
-    "av"
-    "imageio"
-    "scikit-image"
-    "plotly"
-    "igraph"
-  ];
-
-  disableChecks = pyPrev: name:
-    pyPrev.${name}.overridePythonAttrs (_: {
-      doCheck = false;
-      pythonImportsCheck = [];
-    });
-in {
+{pkgs, ...}: {
   nixpkgs.config = {
     allowUnfree = true;
     # checkov -> python ecdsa (CVE-2024-23342, Minerva timing attack; upstream
@@ -22,49 +8,19 @@ in {
   };
 
   nixpkgs.overlays = [
-    (final: prev: {
-      # nixpkgs has tabulate 0.10.0; checkov 3.2.510 declares tabulate<0.10, so pythonRuntimeDepsCheck fails.
-      checkov = prev.checkov.overridePythonAttrs (old: {
-        pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["tabulate"];
-      });
-
-      # Extend every Python package set so overrides propagate through transitive
-      # consumers (e.g. checkov -> igraph -> plotly -> scikit-image -> imageio -> av, and pgcli -> cli-helpers).
-      pythonPackagesExtensions =
-        (prev.pythonPackagesExtensions or [])
-        ++ [
-          (pyFinal: pyPrev:
-            # cli-helpers 2.10.0 fails three pygments-based ANSI styling tests on Darwin.
-            # Tracked in https://github.com/NixOS/nixpkgs/issues/513102, fixed upstream by https://github.com/NixOS/nixpkgs/pull/493910
-            # (bump to 2.14.0). Drop after nixpkgs input bumps cli-helpers to >= 2.14.0.
-              {
-                cli-helpers = pyPrev.cli-helpers.overridePythonAttrs (old: {
-                  disabledTests =
-                    (old.disabledTests or [])
-                    ++ [
-                      "test_style_output"
-                      "test_style_output_with_newlines"
-                      "test_style_output_custom_tokens"
-                    ];
-                });
-              }
-              // builtins.listToAttrs (map (n: {
-                  name = n;
-                  value = disableChecks pyPrev n;
-                })
-                darwinFlakyCheckPhases))
-        ];
-
+    (_final: prev: {
+      # nixpkgs still ships macmon 0.6.1; track upstream releases here.
+      # Drop this override once the lock contains macmon >= 0.7.2.
       macmon = prev.rustPlatform.buildRustPackage {
         pname = "macmon";
-        version = "0.7.0";
+        version = "0.7.2";
         src = prev.fetchFromGitHub {
           owner = "vladkens";
           repo = "macmon";
-          tag = "v0.7.0";
-          hash = "sha256-OLrljN3AlsB63TSgd+UqvFKriImhFZ/xexCT30yTmuA=";
+          tag = "v0.7.2";
+          hash = "sha256-i6x4ZAh+gIG6aHEfoSifwFU/itOcPmBiQ0IrBkqz+L8=";
         };
-        cargoHash = "sha256-Epj3L+db1flGNK5y6yfSig8piEiXTz15lPo/FNkqlkA=";
+        cargoHash = "sha256-faEuoroZ/d8FntZaxkTbgVQ0nSwddxZR7KOfNPrU4Eg=";
         meta = prev.macmon.meta;
       };
     })
