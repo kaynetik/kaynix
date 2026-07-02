@@ -119,6 +119,8 @@
     audacity
     imagemagick
     languagetool
+    pandoc
+    typst
   ];
 
   compilersAndRuntimes = with pkgs; [
@@ -129,7 +131,9 @@
     lua5_5
     (lua5_5.pkgs.luarocks)
     nodejs_24
+    protobuf
     rustup
+    uv
     zig
     foundry
     slither-analyzer # 26.11 - too many failures!

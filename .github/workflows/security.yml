@@ -119,25 +119,6 @@ jobs:
           trufflehog git "file://${GITHUB_WORKSPACE}" --fail --no-update \
             -x /tmp/trufflehog-exclude.txt
 
-      - name: Install git-secrets
-        run: |
-          git clone --depth 1 https://github.com/awslabs/git-secrets.git /tmp/git-secrets
-          cd /tmp/git-secrets && sudo make install
-
-      - name: git-secrets (history scan)
-        run: |
-          git secrets --install
-          git secrets --register-aws
-          if [ -f .gitallowed ]; then
-            while IFS= read -r line || [ -n "$line" ]; do
-              case "$line" in
-                ''|'#'*) continue ;;
-              esac
-              git secrets --add --allowed "$line"
-            done < .gitallowed
-          fi
-          git secrets --scan-history
-
   nix-grype:
     name: Nix flake check + Grype (formatter closure)
     runs-on: macos-14

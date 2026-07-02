@@ -67,66 +67,20 @@
         # Drop this override once nixpkgs-darwin's lock contains `hunk`.
         hunk = final.callPackage /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/hu/hunk/package.nix {};
 
-        # Local pin to grafana-alloy 1.16.0. The locked nixpkgs-darwin still
-        # ships 1.15.1, whose vendored go-m1cpu v0.1.7 segfaults on M3 Pro / M4
-        # / M5. Drop this override (and pkgs/grafana-alloy/) once the lock
-        # contains nixpkgs commit 917ae486907dfd008c4c6ac3fa4985c942f7aaf7.
-        grafana-alloy = final.callPackage ./pkgs/grafana-alloy {};
-
-        # Local podman-desktop checkout until nixpkgs merge 1.28.2 which carries electron fixes.
+        # Local podman-desktop checkout until nixpkgs merges 1.28.2 which carries
+        # electron fixes. Drop this override once nixpkgs#531805 merges and the
+        # lock contains podman-desktop >= 1.28.2.
         podman-desktop =
           final.callPackage
           /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman-desktop/package.nix
           {};
 
-        # Local podman checkout. The locked nixpkgs-darwin carries the broken
-        # nixpkgs#536067 bump that dropped darwin from podman's meta.platforms,
-        # so evaluation on aarch64-darwin fails. The local checkout restores
-        # `platforms = lib.platforms.unix` (the nixpkgs#536759 fix). All build
-        # deps still resolve from the pinned nixpkgs (same podman 5.8.4). Drop
-        # this override once nixpkgs-darwin's lock contains commit e288608.
-        # podman =
-        #   final.callPackage
-        #   /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman/package.nix
-        #   {};
+        # Local croc checkout previewing the 10.4.5 -> 10.4.6 bump. Drop this
+        # override once nixpkgs#537754 merges and the lock contains croc 10.4.6.
         croc =
           final.callPackage
           /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/cr/croc/package.nix
           {};
-
-        ## Root source of this requirement is `slither-analyzer`.
-        # eth-utils 6.0.0 tests expect mypy >= 1.16 output (no `builtins.` prefix on
-        # revealed types), but the mypy in this nixpkgs revision still emits the old
-        # format.  Skip checks here until nixpkgs ships a consistent pair.  Drop once
-        # `nix flake update` picks up a revision where eth-utils tests pass cleanly.
-        python3 = prev.python3.override {
-          packageOverrides = _pyFinal: pyPrev: {
-            eth-utils = pyPrev.eth-utils.overridePythonAttrs (old: {
-              doCheck = false;
-              # pydantic is a runtime dep listed in the wheel metadata but was
-              # placed in nativeCheckInputs by nixpkgs; it disappears when doCheck
-              # is false, causing pythonRuntimeDepsCheckHook to fail.
-              propagatedBuildInputs = (old.propagatedBuildInputs or []) ++ [pyPrev.pydantic];
-            });
-
-            # hypothesis found a counter-example in trie; same pydantic pattern.
-            trie = pyPrev.trie.overridePythonAttrs (old: {
-              doCheck = false;
-              propagatedBuildInputs = (old.propagatedBuildInputs or []) ++ [pyPrev.pydantic];
-            });
-
-            # py-evm is archived upstream and its hypothesis tests are flaky on
-            # nixpkgs-unstable.  pycryptodome is a real runtime dep (Crypto.Hash.keccak
-            # imported at module level in eth/consensus/ethash.py) but is misclassified
-            # in nixpkgs as nativeCheckInputs; pythonImportsCheck catches the missing
-            # module when doCheck strips the check env.
-            py-evm = pyPrev.py-evm.overridePythonAttrs (old: {
-              doCheck = false;
-              propagatedBuildInputs = (old.propagatedBuildInputs or []) ++ [pyPrev.pycryptodome];
-            });
-          };
-        };
-        python3Packages = final.python3.pkgs;
       };
 
     # Per-host config. Add an entry here when deploying to a new machine.
@@ -192,7 +146,6 @@
           ./modules/apps.nix
           ./modules/aerospace.nix
           ./modules/host-users.nix
-          ./modules/secrets.nix
           ./modules/netbird.nix
 
           home-manager.darwinModules.home-manager

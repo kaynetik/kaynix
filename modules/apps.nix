@@ -42,21 +42,14 @@ in {
     brews = [
       # Security & GPG
       "keychain"
-      "gpg"
-      "gpg2"
-      "gnupg"
+      "gnupg" # gpg and gpg2 are brew aliases of gnupg; one formula is enough.
       "pinentry-mac"
       "secp256k1"
       "tor"
 
-      # Local LLM dependencies
-      "python@3.14" # Python 3.14 from brew is required for mlx-lm to work on Apple GPU silicon.
-      "uv"
-      "ollama"
-
-      "protobuf"
-      "pandoc"
-      "typst"
+      # Local LLM dependencies - temporarily avoid local LLMs
+      #"python@3.14" # Python 3.14 from brew is required for mlx-lm to work on Apple GPU silicon.
+      #"ollama"
     ];
 
     casks = [
@@ -83,7 +76,6 @@ in {
       "cursor"
       "postman"
       "figma"
-      # "figma-agent"
 
       # Fonts
       "sf-symbols"

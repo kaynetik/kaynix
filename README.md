@@ -40,7 +40,7 @@ curl -sSf -L https://install.lix.systems/lix | sh -s -- install
 
 ## First deploy
 
-The flake defines per-host entries in the `hosts` attrset inside `flake.nix` (currently `knt-mbp` and `knt-mbpf`). Replace `HOSTNAME` below with whichever entry matches your machine, or add a new one first.
+The flake defines per-host entries in the `hosts` attrset inside `flake.nix` (currently `knt-mbp` and `mbp`). Replace `HOSTNAME` below with whichever entry matches your machine, or add a new one first.
 
 ```bash
 # 1. Clone the repo
@@ -67,7 +67,7 @@ graph TD
         SOPS["sops-nix"]
     end
 
-    F["flake.nix<br/>hosts: knt-mbp, knt-mbpf<br/>+ devShells, formatter"]
+    F["flake.nix<br/>hosts: knt-mbp, mbp<br/>+ devShells, formatter"]
 
     subgraph darwin["darwinConfigurations (per host)"]
         direction LR
@@ -76,7 +76,7 @@ graph TD
         APPS["apps.nix<br/>Homebrew, fonts, SketchyBar"]
         HU["host-users.nix<br/>hostname, DNS, users"]
         AERO["aerospace.nix<br/>tiling WM"]
-        SEC["secrets.nix<br/>writable secrets dir"]
+        NETBIRD["netbird.nix<br/>NetBird daemon (LaunchDaemon)"]
     end
 
     subgraph hm["Home Manager (embedded in darwin)"]
