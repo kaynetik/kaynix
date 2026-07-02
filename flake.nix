@@ -73,8 +73,7 @@
         # contains nixpkgs commit 917ae486907dfd008c4c6ac3fa4985c942f7aaf7.
         grafana-alloy = final.callPackage ./pkgs/grafana-alloy {};
 
-        # Local podman-desktop checkout while the Darwin tray-deadlock fix is in
-        # either upstream sorce or upstream nixpkgs.
+        # Local podman-desktop checkout until nixpkgs merge 1.28.2 which carries electron fixes.
         podman-desktop =
           final.callPackage
           /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman-desktop/package.nix
@@ -86,9 +85,13 @@
         # `platforms = lib.platforms.unix` (the nixpkgs#536759 fix). All build
         # deps still resolve from the pinned nixpkgs (same podman 5.8.4). Drop
         # this override once nixpkgs-darwin's lock contains commit e288608.
-        podman =
+        # podman =
+        #   final.callPackage
+        #   /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman/package.nix
+        #   {};
+        croc =
           final.callPackage
-          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman/package.nix
+          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/cr/croc/package.nix
           {};
 
         ## Root source of this requirement is `slither-analyzer`.
