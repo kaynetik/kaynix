@@ -26,7 +26,9 @@ in
         after-login-command = [];
         after-startup-command = [
           "exec-and-forget borders style=round hidpi=on active_color=0xffe2e2e3 inactive_color=0xff414550 width=5.0"
-          "exec-and-forget /usr/local/bin/zapmenu"
+          # Each aerospace restart spawns a fresh zapmenu and the old ones never
+          # exit, so kill stale instances before starting the new one.
+          "exec-and-forget pkill zapmenu; /usr/local/bin/zapmenu"
         ];
 
         exec-on-workspace-change = [
