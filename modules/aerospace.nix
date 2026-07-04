@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  username,
   ...
 }: let
   sketchybar = "/run/current-system/sw/bin/sketchybar";
@@ -16,6 +17,12 @@ in
     services.aerospace = {
       enable = true;
       settings = {
+        # The aerospace LaunchAgent runs with the default launchd PATH
+        # (/usr/bin:/bin:/usr/sbin:/sbin), so exec callbacks cannot find nix-managed
+        # binaries (sketchybar, borders). AeroSpace expands the trailing PATH
+        # reference (rendered literally in the TOML) to its inherited value.
+        exec.env-vars.PATH = "/etc/profiles/per-user/${username}/bin:/run/current-system/sw/bin:\${PATH}";
+
         after-login-command = [];
         after-startup-command = [
           "exec-and-forget borders style=round hidpi=on active_color=0xffe2e2e3 inactive_color=0xff414550 width=5.0"
@@ -27,6 +34,10 @@ in
           "-c"
           "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
         ];
+
+        # The sketchybar workspace strip subscribes to this to refresh app icons
+        # when windows open, close, or move (items/spaces_aero_dev.lua).
+        on-focus-changed = ["exec-and-forget sketchybar --trigger aerospace_focus_change"];
 
         enable-normalization-flatten-containers = true;
         enable-normalization-opposite-orientation-for-nested-containers = true;
