@@ -4,7 +4,8 @@ package.cpath = package.cpath .. ";" .. home .. "/.local/share/sketchybar_lua/?.
 
 -- Build native helpers only when missing, or when forcing (after editing C sources).
 -- Set SKETCHYBAR_FORCE_MAKE=1 to always run `make` (e.g. after changing event_providers).
--- Paths are resolved from CONFIG_DIR when set (LaunchAgent / Nix); else cwd must be the config root.
+-- Paths resolve via helpers.config_dir (CONFIG_DIR, else ~/.config/sketchybar), so
+-- nothing here depends on the process cwd.
 local config_dir = require("helpers.config_dir")
 local cpu_probe = config_dir .. "/helpers/event_providers/cpu_load/bin/cpu_load"
 
@@ -18,5 +19,5 @@ local function helper_bin_missing()
 end
 
 if os.getenv("SKETCHYBAR_FORCE_MAKE") == "1" or helper_bin_missing() then
-	os.execute("(cd helpers && make)")
+	os.execute('cd "' .. config_dir .. '/helpers" && make')
 end

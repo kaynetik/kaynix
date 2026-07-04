@@ -2,7 +2,9 @@ local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
 
-local MACMON = "/etc/profiles/per-user/" .. (os.getenv("USER") or "kaynetik") .. "/bin/macmon"
+-- macmon comes from the per-user Nix profile, which modules/apps.nix puts on
+-- the sketchybar LaunchAgent PATH.
+local MACMON = "macmon"
 local UPDATE_FREQ = 5
 
 local temp = sbar.add("graph", "widgets.temp", 42, {
