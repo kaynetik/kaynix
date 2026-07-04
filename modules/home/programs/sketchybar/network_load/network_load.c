@@ -1,6 +1,6 @@
 #include <unistd.h>
 #include "network.h"
-#include "../sketchybar.h"
+#include "sketchybar.h"
 
 int main (int argc, char** argv) {
   float update_freq;

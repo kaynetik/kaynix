@@ -1,4 +1,3 @@
-require("items.apple")
 require("items.spaces_aero_dev")
 require("items.front_app")
 require("items.calendar")

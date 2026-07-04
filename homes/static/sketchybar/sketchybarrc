@@ -1,6 +1,7 @@
 #!/usr/bin/env lua
 
--- Load the sketchybar-package and prepare the helper binaries
+-- Load the sketchybar-package (helpers only sets up the Lua cpath; native
+-- providers like network_load are nix-packaged and arrive via PATH)
 require("helpers")
 require("init")
 

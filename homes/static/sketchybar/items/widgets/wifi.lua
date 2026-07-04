@@ -2,14 +2,9 @@ local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
 
-local config_dir = require("helpers.config_dir")
-
--- Event provider: "network_update" every 2.0s on en0.
-sbar.exec(
-	"killall network_load 2>/dev/null; "
-		.. config_dir
-		.. "/helpers/event_providers/network_load/bin/network_load en0 network_update 2.0"
-)
+-- Event provider: "network_update" every 2.0s on en0. network_load is a
+-- nix-packaged helper (modules/home/programs/sketchybar) on the agent PATH.
+sbar.exec("killall network_load 2>/dev/null; network_load en0 network_update 2.0")
 
 local popup_width = 250
 
