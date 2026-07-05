@@ -26,7 +26,6 @@ local temp = sbar.add("graph", "widgets.temp", 42, {
 		align = "right",
 		padding_right = 0,
 		width = 0,
-		y_offset = 4,
 	},
 	blur_radius = colors.blur_radius,
 	padding_right = settings.paddings + 6,
@@ -53,7 +52,6 @@ local cpu = sbar.add("graph", "widgets.cpu", 42, {
 		align = "right",
 		padding_right = 0,
 		width = 0,
-		y_offset = 4,
 	},
 	padding_right = -6,
 })

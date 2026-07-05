@@ -1,3 +1,5 @@
+local settings = require("settings")
+
 local ITEM_NAME = "widgets.language"
 
 local INPUT_MAP = {
@@ -43,7 +45,11 @@ sbar.add("event", "input.changed", "AppleSelectedInputSourcesChangedNotification
 
 local input = sbar.add("item", ITEM_NAME, {
 	icon = { drawing = false },
-	label = get_input_source_sync(),
+	label = {
+		string = get_input_source_sync(),
+		-- SF Mono, matching the numeric labels it sits between (volume, battery).
+		font = { family = settings.font.numbers },
+	},
 	position = "right",
 })
 

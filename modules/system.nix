@@ -6,6 +6,14 @@
 }: {
   time.timeZone = hostConfig.timeZone or "Europe/Belgrade";
 
+  # nix-darwin master (a1fa429, 2026-06-18) still passes --toc-depth to
+  # nixos-render-docs, which nixpkgs >= 2026-07 removed, so the HTML manual fails
+  # to build. darwin-uninstaller embeds an inner default-config system that
+  # builds that manual regardless of the option above, so it goes too. Drop both
+  # once a nix-darwin bump renders with --sidebar-depth.
+  documentation.doc.enable = false;
+  system.tools.darwin-uninstaller.enable = false;
+
   system = {
     stateVersion = 5;
     primaryUser = username;
