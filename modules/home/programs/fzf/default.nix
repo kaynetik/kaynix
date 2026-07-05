@@ -13,6 +13,9 @@ in {
     programs.fzf = {
       enable = true;
       enableZshIntegration = true;
+      # Atuin owns Ctrl-R (its integration is sourced after fzf). An empty
+      # command drops fzf's Ctrl-R binding and the home-manager ownership warning.
+      historyWidget.command = "";
       defaultOptions = [
         "--height 40%"
         "--layout=reverse"

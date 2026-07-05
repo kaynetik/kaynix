@@ -8,8 +8,8 @@ local cal = sbar.add("item", {
 		color = colors.white,
 		padding_left = 8,
 		font = {
-			style = settings.font.style_map["Black"],
-			size = 12.0,
+			style = settings.font.style_map["Semibold"],
+			size = 13.0,
 		},
 		background = { drawing = false },
 	},
