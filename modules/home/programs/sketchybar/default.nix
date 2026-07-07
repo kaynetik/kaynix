@@ -50,7 +50,7 @@ in {
       recursive = true;
     };
 
-    # Matches launchd (modules/apps.nix); set theme in flake host `config.sketchybar.theme`.
+    # Matches launchd (modules/sketchybar.nix); set theme in flake host `config.sketchybar.theme`.
     home.sessionVariables.SKETCHYBAR_THEME = hostConfig.sketchybar.theme;
   };
 }
