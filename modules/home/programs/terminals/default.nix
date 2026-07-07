@@ -19,6 +19,5 @@ in {
     xdg.configFile."tmux/tmux.conf".text =
       builtins.replaceStrings ["@HOME@"] [config.home.homeDirectory]
       (builtins.readFile "${kaynixStatic}/tmux/tmux.conf");
-    xdg.configFile."tmux/tmux.reset.conf".source = "${kaynixStatic}/tmux/tmux.reset.conf";
   };
 }

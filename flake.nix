@@ -69,7 +69,7 @@
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
         # Shared non-package values. `luaCpath` is the sketchybar Lua runtime
-        # search path consumed by modules/apps.nix (launchd agent),
+        # search path consumed by modules/sketchybar.nix (launchd agent),
         # modules/home/programs/zsh, and the sketchybar dev shell, so a
         # lua5_5/sbarlua bump lands everywhere at once.
         kaynixLib = let
@@ -145,7 +145,9 @@
 
           ./modules/nix-core.nix
           ./modules/system.nix
-          ./modules/apps.nix
+          ./modules/homebrew.nix
+          ./modules/fonts.nix
+          ./modules/sketchybar.nix
           ./modules/aerospace.nix
           ./modules/host-users.nix
           ./modules/netbird.nix
@@ -224,7 +226,7 @@
         '';
       };
 
-      # SketchyBar: format Lua config (StyLua), same lua5_5 + LUA_CPATH as launchd (modules/apps.nix).
+      # SketchyBar: format Lua config (StyLua), same lua5_5 + LUA_CPATH as launchd (modules/sketchybar.nix).
       sketchybar = pkgs.mkShell {
         buildInputs =
           (with pkgs; [

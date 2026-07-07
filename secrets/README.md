@@ -93,14 +93,14 @@ sops secrets/secrets.yaml
 Use YAML multiline values:
 
 ```yaml
-zsh_seda: |
+zsh_bar: |
   export FOO=bar
 
 ssh_config_work: |
-  Host monitoring
-      User ec2-user
+  Host svc
+      User svc-user
       HostName <internal-ip>
-      IdentityFile ~/.ssh/seda-weeee
+      IdentityFile ~/.ssh/wewe-weeee
 ```
 
 Decrypt to stdout without editing:

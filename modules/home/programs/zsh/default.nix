@@ -23,27 +23,64 @@ in {
       enableCompletion = false;
       dotDir = "${config.xdg.configHome}/zsh";
       initContent = lib.mkMerge [
-        (lib.mkBefore ''
-          eval "$(/opt/homebrew/bin/brew shellenv)"
-          source ${pkgs.zinit}/share/zinit/zinit.zsh
-          autoload -Uz compinit && compinit -u
-          zinit light zsh-users/zsh-autosuggestions
-          zinit light zdharma-continuum/fast-syntax-highlighting
-          zinit light Aloxaf/fzf-tab
-          source ${config.xdg.configHome}/zsh/fzf-tab.zsh
-          ulimit -n 65536
-          source ${config.xdg.configHome}/zsh/setopt-history.zsh
-          source ${config.xdg.configHome}/zsh/aliases.zsh
-          if [[ ! -r ${config.xdg.configHome}/zsh/conf-seda.zsh ]] && [[ -o interactive ]] && command -v sops-rekey &>/dev/null; then
-            echo "[sops] Secrets missing -- attempting re-decryption (touch YubiKey when prompted)..."
-            sops-rekey && echo "[sops] Secrets restored." || echo "[sops] Decryption failed. Check YubiKey and retry with 'sops-rekey'."
-          fi
-          [[ -r ${config.xdg.configHome}/zsh/conf-seda.zsh ]] && source ${config.xdg.configHome}/zsh/conf-seda.zsh
-          [[ -r ${config.xdg.configHome}/zsh/conf-sietch.zsh ]] && source ${config.xdg.configHome}/zsh/conf-sietch.zsh
-          [[ -r ${config.xdg.configHome}/zsh/conf-flowd.zsh ]] && source ${config.xdg.configHome}/zsh/conf-flowd.zsh
-        '')
+        (lib.mkBefore (lib.optionalString pkgs.stdenv.isDarwin ''
+            # Static expansion of `eval "$(/opt/homebrew/bin/brew shellenv)"`:
+            # saves a brew + path_helper fork on every shell. Values are fixed
+            # by the /opt/homebrew prefix; re-check with `brew shellenv` if
+            # Homebrew ever relocates.
+            export HOMEBREW_PREFIX="/opt/homebrew"
+            export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+            export HOMEBREW_REPOSITORY="/opt/homebrew"
+            export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+            export INFOPATH="/opt/homebrew/share/info:''${INFOPATH:-}"
+            [ -z "''${MANPATH-}" ] || export MANPATH=":''${MANPATH#:}"
+            fpath[1,0]="/opt/homebrew/share/zsh/site-functions"
+          ''
+          + ''
+            source ${pkgs.zinit}/share/zinit/zinit.zsh
+
+            # Deferred completion init, run by zinit turbo after the first
+            # prompt. -C reuses the dump without the compaudit pass unless the
+            # dump is missing or older than 24h; -u trusts nix-store fpath dirs.
+            _kaynix_compinit() {
+              # extendedglob is required for the (#q) age check; scoped so it
+              # does not leak into interactive globbing.
+              setopt localoptions extendedglob
+              autoload -Uz compinit
+              local zcd=''${ZDOTDIR:-$HOME}/.zcompdump
+              if [[ ! -f $zcd || -n $zcd(#qN.mh+24) ]]; then
+                compinit -u -d "$zcd"
+              else
+                compinit -C -u -d "$zcd"
+              fi
+            }
+
+            # Turbo-load plugins off the first-prompt path. Order matters:
+            # fzf-tab wants compinit before it and widget-wrapping plugins
+            # (fast-syntax-highlighting, autosuggestions) after it. zicdreplay
+            # replays compdefs queued by integrations that ran before compinit
+            # (atuin, fzf, zoxide).
+            zinit ice wait'0a' lucid atinit'_kaynix_compinit; zicdreplay'
+            zinit light Aloxaf/fzf-tab
+            zinit ice wait'0b' lucid
+            zinit light zdharma-continuum/fast-syntax-highlighting
+            zinit ice wait'0c' lucid atload'_zsh_autosuggest_start'
+            zinit light zsh-users/zsh-autosuggestions
+
+            source ${config.xdg.configHome}/zsh/fzf-tab.zsh
+            ulimit -n 65536
+            source ${config.xdg.configHome}/zsh/setopt-history.zsh
+            source ${config.xdg.configHome}/zsh/aliases.zsh
+            if [[ ! -r ${config.xdg.configHome}/zsh/conf-seda.zsh ]] && [[ -o interactive ]] && command -v sops-rekey &>/dev/null; then
+              echo "[sops] Secrets missing -- attempting re-decryption (touch YubiKey when prompted)..."
+              sops-rekey && echo "[sops] Secrets restored." || echo "[sops] Decryption failed. Check YubiKey and retry with 'sops-rekey'."
+            fi
+            [[ -r ${config.xdg.configHome}/zsh/conf-seda.zsh ]] && source ${config.xdg.configHome}/zsh/conf-seda.zsh
+            [[ -r ${config.xdg.configHome}/zsh/conf-sietch.zsh ]] && source ${config.xdg.configHome}/zsh/conf-sietch.zsh
+            [[ -r ${config.xdg.configHome}/zsh/conf-flowd.zsh ]] && source ${config.xdg.configHome}/zsh/conf-flowd.zsh
+          ''))
         (lib.mkOrder 550 ''
-          export GPG_TTY=$(tty)
+          export GPG_TTY=$TTY
           autoload -Uz colors && colors
           setopt prompt_subst
 
@@ -56,27 +93,12 @@ in {
           bindkey '^[[1;9A' beginning-of-line
           bindkey '^[[1;9B' end-of-line
         ''
-        (lib.mkAfter (''
-            export PATH="${lib.makeBinPath [pkgs.openssh pkgs.lua5_5 pkgs.lua5_5.pkgs.luarocks]}:$PATH"
-          ''
-          + lib.optionalString pkgs.stdenv.isDarwin ''
-            if [[ -o interactive ]]; then
-              export SSH_AUTH_SOCK="${config.home.homeDirectory}/.ssh/nix-ssh-agent.sock"
-              _nix_ssh_agent="${pkgs.openssh}/bin/ssh-agent"
-              _nix_ssh_add="${pkgs.openssh}/bin/ssh-add"
-              _need_agent=0
-              if [[ ! -S "$SSH_AUTH_SOCK" ]]; then
-                _need_agent=1
-              elif ! _ssh_add_out=$("$_nix_ssh_add" -l 2>&1); then
-                [[ "$_ssh_add_out" == *'The agent has no identities.'* ]] || _need_agent=1
-              fi
-              if [[ "$_need_agent" -eq 1 ]]; then
-                rm -f "$SSH_AUTH_SOCK"
-                eval "$("$_nix_ssh_agent" -s -a "$SSH_AUTH_SOCK")" >/dev/null
-              fi
-              unset _nix_ssh_agent _nix_ssh_add _need_agent _ssh_add_out
-            fi
-          ''))
+        # The ssh-agent itself is a supervised launchd agent (see
+        # modules/home/programs/ssh); SSH_AUTH_SOCK is a static session
+        # variable there, so shells no longer probe or spawn agents.
+        (lib.mkAfter ''
+          export PATH="${lib.makeBinPath [pkgs.openssh pkgs.lua5_5 pkgs.lua5_5.pkgs.luarocks]}:$PATH"
+        '')
       ];
     };
 

@@ -1,90 +1,84 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Count lines of code by file extension under the current directory.
+#
+# Usage: count-loc [ext ...]
+#   count-loc            # default extension set below
+#   count-loc nix lua    # only these extensions
+#
+# Skips VCS metadata, dependency, and build-output directories. One find pass;
+# aggregation happens in awk, so filenames with spaces are handled.
+set -euo pipefail
 
-# Script to count lines of code by file extension
-# Counts .go, .swift, .yaml, .bzl, .bazel, .sh, and .md files
-# Excludes specified directories
-
-# Set text colors
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# Directories to exclude (using find's -path pattern matching)
-EXCLUDE_PATHS=(
-  "./toothly-api-client/.build/*"
-  "./toothly-api-client/*"
-  "./engine/toothly-api-client/*"
-)
+exts=("$@")
+if [ "${#exts[@]}" -eq 0 ]; then
+  exts=(nix lua go swift sh zsh md yaml yml toml bzl bazel)
+fi
 
-# Construct the exclude arguments for find command
-EXCLUDE_ARGS=""
-for path in "${EXCLUDE_PATHS[@]}"; do
-  EXCLUDE_ARGS="$EXCLUDE_ARGS -not -path \"$path\""
+prune_dirs=(.git node_modules vendor .direnv .cache target dist build result)
+
+prune_expr=()
+for d in "${prune_dirs[@]}"; do
+  prune_expr+=(-o -name "$d")
 done
 
-echo -e "${GREEN}=== Lines of Code Counter ===${NC}"
-echo -e "${BLUE}Counting lines in .go, .swift, .yaml, .bzl, .bazel, .sh, and .md files...${NC}"
-echo -e "${BLUE}Excluding:${NC}"
-for path in "${EXCLUDE_PATHS[@]}"; do
-  echo -e "${BLUE}- ${path%/*}${NC}"
-done
-echo
-
-# Function to count lines for a specific extension
-count_lines() {
-  ext=$1
-  find_cmd="find . -type f -name \"*.$ext\""
-
-  for path in "${EXCLUDE_PATHS[@]}"; do
-    find_cmd="$find_cmd -not -path \"$path\""
-  done
-
-  if [ -z "$(eval $find_cmd 2>/dev/null)" ]; then
-    echo -e "${ext}:\t0 files,\t0 lines"
-    return
-  fi
-
-  files=$(eval $find_cmd | wc -l)
-  lines=$(eval $find_cmd -exec wc -l {} \\\; 2>/dev/null | awk '{sum += $1} END {print sum}')
-
-  printf "${ext}:\t%d files,\t%d lines\n" "$files" "$lines"
-}
-
-# Count lines for each extension
-count_lines "go"
-count_lines "swift"
-count_lines "yaml"
-count_lines "bzl"
-count_lines "bazel"
-count_lines "sh"
-count_lines "md"
-
-# Calculate total
-find_cmd="find . -type f \\( -name \"*.go\" -o -name \"*.swift\" -o -name \"*.yaml\" -o -name \"*.bzl\" -o -name \"*.bazel\" -o -name \"*.sh\" -o -name \"*.md\" \\)"
-for path in "${EXCLUDE_PATHS[@]}"; do
-  find_cmd="$find_cmd -not -path \"$path\""
+name_expr=()
+for e in "${exts[@]}"; do
+  name_expr+=(-o -name "*.$e")
 done
 
-total_files=$(eval $find_cmd | wc -l)
-total_lines=$(eval $find_cmd -exec wc -l {} \\\; 2>/dev/null | awk '{sum += $1} END {print sum}')
+printf '%b\n' "${GREEN}Lines of code under $(pwd)${NC}"
+printf 'extensions: %s\n\n' "${exts[*]}"
 
-echo "------------------------------"
-printf "${PURPLE}TOTAL:\t%d files,\t%d lines${NC}\n" "$total_files" "$total_lines"
+find . \( "${prune_expr[@]:1}" \) -prune -o -type f \( "${name_expr[@]:1}" \) -print0 |
+  xargs -0 -r wc -l 2>/dev/null |
+  awk -v purple="$PURPLE" -v nc="$NC" '
+    # Selection sort of keys[0..n-1], descending by vals[key]; small n only.
+    function sort_desc(keys, vals, n,    i, j, max, t) {
+      for (i = 0; i < n; i++) {
+        max = i
+        for (j = i + 1; j < n; j++)
+          if (vals[keys[j]] > vals[keys[max]]) max = j
+        t = keys[i]; keys[i] = keys[max]; keys[max] = t
+      }
+    }
+    {
+      lines = $1
+      $1 = ""
+      file = substr($0, 2)
+      if (file == "total" || file == "") next
 
-# Provide breakdown by directory (top 10 directories by line count)
-echo
-echo -e "${GREEN}=== Top 10 Directories by Line Count ===${NC}"
+      ext = file
+      sub(/.*\./, "", ext)
+      ext_lines[ext] += lines
+      ext_files[ext]++
 
-find_dirs_cmd="find . -type d"
-for path in "${EXCLUDE_PATHS[@]}"; do
-  find_dirs_cmd="$find_dirs_cmd -not -path \"$path\""
-done
+      dir = file
+      sub(/^\.\//, "", dir)
+      if (dir ~ /\//) sub(/\/.*/, "", dir); else dir = "."
+      dir_lines[dir] += lines
 
-eval $find_dirs_cmd | sort | while read dir; do
-  find_files_cmd="find \"$dir\" -maxdepth 1 -type f \\( -name \"*.go\" -o -name \"*.swift\" -o -name \"*.yaml\" -o -name \"*.bzl\" -o -name \"*.bazel\" -o -name \"*.sh\" -o -name \"*.md\" \\)"
-  count=$(eval $find_files_cmd -exec wc -l {} \\\; 2>/dev/null | awk '{sum += $1} END {print sum}')
-  if [ "$count" != "" ] && [ "$count" -gt 0 ]; then
-    echo "$count $dir"
-  fi
-done | sort -rn | head -10
+      total_lines += lines
+      total_files++
+    }
+    END {
+      n = 0
+      for (e in ext_lines) ekeys[n++] = e
+      sort_desc(ekeys, ext_lines, n)
+      for (i = 0; i < n; i++)
+        printf "%-8s %6d files %10d lines\n", ekeys[i] ":", ext_files[ekeys[i]], ext_lines[ekeys[i]]
+
+      printf "------------------------------\n"
+      printf "%sTOTAL:   %6d files %10d lines%s\n\n", purple, total_files, total_lines, nc
+
+      m = 0
+      for (d in dir_lines) dkeys[m++] = d
+      sort_desc(dkeys, dir_lines, m)
+      printf "Top directories by line count:\n"
+      for (i = 0; i < m && i < 10; i++)
+        printf "%10d  %s\n", dir_lines[dkeys[i]], dkeys[i]
+    }
+  '

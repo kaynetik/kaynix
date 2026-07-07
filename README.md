@@ -30,7 +30,7 @@ Personal [nix-darwin](https://github.com/nix-darwin/nix-darwin) flake with [Home
 curl -sSf -L https://install.lix.systems/lix | sh -s -- install
 ```
 
-2. **Install [Homebrew](https://brew.sh/)** -- required for the casks and brews declared in `modules/apps.nix` (GUI apps and CLI tools not packaged in nixpkgs):
+2. **Install [Homebrew](https://brew.sh/)** -- required for the casks and brews declared in `modules/homebrew.nix` (GUI apps and CLI tools not packaged in nixpkgs):
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -73,7 +73,7 @@ graph TD
         direction LR
         NC["nix-core.nix<br/>nixpkgs, overlays, GC"]
         SYS["system.nix<br/>macOS defaults, Touch ID"]
-        APPS["apps.nix<br/>Homebrew, fonts, SketchyBar"]
+        APPS["homebrew.nix + fonts.nix<br/>+ sketchybar.nix"]
         HU["host-users.nix<br/>hostname, DNS, users"]
         AERO["aerospace.nix<br/>tiling WM"]
         NETBIRD["netbird.nix<br/>NetBird daemon (LaunchDaemon)"]
