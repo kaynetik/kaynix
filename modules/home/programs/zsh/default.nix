@@ -15,7 +15,7 @@ in {
     home.sessionVariables =
       {}
       // lib.optionalAttrs pkgs.stdenv.isDarwin {
-        LUA_CPATH = "${pkgs.lua5_5}/lib/lua/5.5/?.so;${pkgs.lua5_5}/lib/lua/5.5/loadall.so;${pkgs.sbarlua}/lib/lua/5.5/?.so;./?.so";
+        LUA_CPATH = pkgs.kaynixLib.luaCpath;
       };
 
     programs.zsh = {

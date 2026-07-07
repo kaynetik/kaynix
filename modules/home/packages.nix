@@ -5,6 +5,7 @@
   ...
 }: let
   dotNixRoot = "${config.home.homeDirectory}/Development/Personal/kaynix";
+  obsidianVault = "${config.home.homeDirectory}/Documents/obsidian_vault";
 
   kaynix-scripts = pkgs.runCommand "kaynix-scripts" {} ''
     mkdir -p $out/bin
@@ -14,7 +15,11 @@
     cp ${../../scripts/nvim-lazy-update} $out/bin/nvim-lazy-update
     chmod +x $out/bin/nvim-lazy-update
     substituteInPlace $out/bin/nvim-lazy-update \
-      --replace '@DOT_NIX_ROOT@' '${dotNixRoot}'
+      --replace-fail '@DOT_NIX_ROOT@' '${dotNixRoot}'
+    substituteInPlace $out/bin/on \
+      --replace-fail '@OBSIDIAN_VAULT@' '${obsidianVault}'
+    substituteInPlace $out/bin/og \
+      --replace-fail '@OBSIDIAN_VAULT@' '${obsidianVault}'
   '';
 
   terminal = with pkgs; [

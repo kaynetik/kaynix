@@ -4,6 +4,7 @@
   ...
 }: let
   cfg = config.kaynix.programs.ssh;
+  identity = config.kaynix.identity;
 in {
   options.kaynix.programs.ssh = {
     enable = lib.mkEnableOption "ssh";
@@ -32,13 +33,13 @@ in {
         "github.com" = {
           HostName = "github.com";
           User = "git";
-          IdentityFile = "~/.ssh/prim_sk_id_ed25519";
+          IdentityFile = identity.ssh.keyFile;
           IdentitiesOnly = true;
         };
         "gist.github.com" = {
           HostName = "gist.github.com";
           User = "git";
-          IdentityFile = "~/.ssh/prim_sk_id_ed25519";
+          IdentityFile = identity.ssh.keyFile;
           IdentitiesOnly = true;
         };
       };
