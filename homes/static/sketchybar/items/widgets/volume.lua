@@ -104,6 +104,19 @@ local function volume_open_slider()
 	popup_mode = "slider"
 end
 
+-- Cap the visible label so long device names cannot overflow the popup
+-- ("ThinkPad Thunderbolt 3 Dock USB Audio" -> "ThinkPad Thunderbolt 3 Dock").
+-- Switching still uses the full untruncated name.
+local max_device_chars = 27
+
+local function device_label(name)
+	local label = name:gsub("%s+$", "")
+	if #label > max_device_chars then
+		label = label:sub(1, max_device_chars):gsub("%s+$", "")
+	end
+	return label
+end
+
 -- Build the output-device list from plain device names: one bare
 -- SwitchAudioSource call for the current device, one for the list, no parsing
 -- beyond splitting lines. Output names are unique, so match the active device
@@ -130,7 +143,7 @@ local function volume_open_devices()
 					position = "popup." .. volume_icon.name,
 					width = popup_width,
 					align = "center",
-					label = { string = device, color = color },
+					label = { string = device_label(device), color = color },
 					click_script = 'SwitchAudioSource -s "'
 						.. device
 						.. '" && sketchybar --set /volume.device\\.*/ label.color='

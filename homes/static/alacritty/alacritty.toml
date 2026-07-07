@@ -53,3 +53,9 @@ chars = "\u001b[1;9A"
 key = "Down"
 mods = "Command"
 chars = "\u001b[1;9B"
+
+# Shift+Enter sends ESC+CR so TUIs can insert a newline
+[[keyboard.bindings]]
+key = "Enter"
+mods = "Shift"
+chars = "\u001b\r"

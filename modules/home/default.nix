@@ -1,5 +1,6 @@
 {...}: {
   imports = [
+    ./identity.nix
     ./packages.nix
     ./programs/agents
     ./programs/atuin

@@ -1,7 +1,13 @@
+# Per-directory git identity template. Copy it next to a tree of checkouts and
+# wire it up with an includeIf in ~/.gitconfig, e.g.:
+#   [includeIf "gitdir:~/Development/Work/"]
+#       path = ~/Development/Work/.gitconfig
+# Canonical values live in modules/home/identity.nix (kaynix.identity); update
+# both places when the identity changes.
 [user]
     name = kaynetik
-    email = aleksandar.nesovic@magic.xyz
-    signingkey = 13F37DAF0375C97B
+    email = aleksandar@nesovic.dev
+    signingkey = FC04210D2782C032
 
 [commit]
     gpgsign = true

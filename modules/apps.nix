@@ -3,9 +3,7 @@
   username,
   hostConfig,
   ...
-}: let
-  sketchybarTheme = (hostConfig.sketchybar or {}).theme or "tokyo_night";
-in {
+}: {
   services.sketchybar = {
     enable = true;
     extraPackages = [pkgs.lua5_5 pkgs.sbarlua];
@@ -19,8 +17,8 @@ in {
     # list entries merge with the module's own.
     path = ["/etc/profiles/per-user/${username}/bin"];
     environment = {
-      LUA_CPATH = "${pkgs.lua5_5}/lib/lua/5.5/?.so;${pkgs.lua5_5}/lib/lua/5.5/loadall.so;${pkgs.sbarlua}/lib/lua/5.5/?.so;./?.so";
-      SKETCHYBAR_THEME = sketchybarTheme;
+      LUA_CPATH = pkgs.kaynixLib.luaCpath;
+      SKETCHYBAR_THEME = hostConfig.sketchybar.theme;
     };
   };
 
@@ -42,9 +40,6 @@ in {
       autoUpdate = true;
       cleanup = "zap";
       upgrade = true;
-      # Homebrew >= 4.7 rejects `brew bundle --cleanup` without an explicit
-      # confirmation flag. The locked nix-darwin module emits `--cleanup --zap`
-      # but not `--force`, so activation aborts. Append it ourselves.
       extraFlags = ["--force-cleanup"];
     };
 

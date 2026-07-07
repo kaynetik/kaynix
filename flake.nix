@@ -54,33 +54,33 @@
     solc-nix,
     ...
   }: let
+    # Default sketchybar palette; hosts override via `config.sketchybar.theme`.
+    # Mirrored by the fallback in homes/static/sketchybar/colors.lua.
+    sketchybarThemeDefault = "rose_pine";
+
+    # Reusable Home Manager modules. Another flake consumes the identity with
+    #   imports = [inputs.kaynix.homeManagerModules.kaynix-identity];
+    identityModule = import ./modules/home/identity.nix;
+
     # Overlay that exposes solc versions from solc-nix and our custom svm-rs.
     kaynixOverlay = final: prev:
       (solc-nix.overlay final prev)
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
-        # hunk: built from the local nixpkgs checkout (branch kaynetik/tmp-hunk)
-        # rather than the locked nixpkgs-darwin, which does not ship it yet.
-        # callPackage resolves bun / fetchFromGitHub / nix-update-script /
-        # versionCheckHook / writableTmpDirAsHomeHook from the pinned nixpkgs.
-        # Drop this override once nixpkgs-darwin's lock contains `hunk`.
-        hunk = final.callPackage /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/hu/hunk/package.nix {};
+        # Shared non-package values. `luaCpath` is the sketchybar Lua runtime
+        # search path consumed by modules/apps.nix (launchd agent),
+        # modules/home/programs/zsh, and the sketchybar dev shell, so a
+        # lua5_5/sbarlua bump lands everywhere at once.
+        kaynixLib = let
+          luaVer = final.lua5_5.luaversion;
+        in {
+          luaCpath = "${final.lua5_5}/lib/lua/${luaVer}/?.so;${final.lua5_5}/lib/lua/${luaVer}/loadall.so;${final.sbarlua}/lib/lua/${luaVer}/?.so;./?.so";
+        };
 
-        # Local podman-desktop checkout until nixpkgs merges 1.28.2 which carries
-        # electron fixes. Drop this override once nixpkgs#531805 merges and the
-        # lock contains podman-desktop >= 1.28.2.
-        podman-desktop =
-          final.callPackage
-          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/po/podman-desktop/package.nix
-          {};
-
-        # Local croc checkout previewing the 10.4.5 -> 10.4.6 bump. Drop this
-        # override once nixpkgs#537754 merges and the lock contains croc 10.4.6.
-        croc =
-          final.callPackage
-          /Users/kaynetik/Development/Personal/nix-foss/nixpkgs/pkgs/by-name/cr/croc/package.nix
-          {};
+        # hunk: vendored in ./pkgs/hunk because the locked nixpkgs-darwin does
+        # not ship it yet. Drop the package and this override once nixpkgs-darwin's lock contains `hunk`.
+        hunk = final.callPackage ./pkgs/hunk {};
       };
 
     # Per-host config. Add an entry here when deploying to a new machine.
@@ -93,7 +93,6 @@
           homeStateVersion = "24.11";
           timeZone = "Europe/Belgrade";
           loginGreeting = "nixing";
-          sketchybar.theme = "rose_pine";
           networking = {
             knownNetworkServices = [
               "Wi-Fi"
@@ -118,7 +117,6 @@
         config = {
           homeStateVersion = "26.05";
           timeZone = "Europe/Belgrade";
-          sketchybar.theme = "rose_pine";
           networking = {
             knownNetworkServices = ["Wi-Fi" "Thunderbolt Bridge"];
             dns = ["1.1.1.1" "1.0.0.1" "8.8.8.8" "8.8.4.4"];
@@ -129,7 +127,11 @@
 
     mkDarwin = hostname: hostCfg: let
       inherit (hostCfg) system username;
-      hostConfig = hostCfg.config or {};
+      # Shared host defaults; per-host `config` entries override them, so
+      # modules can read e.g. `hostConfig.sketchybar.theme` without fallbacks.
+      hostConfig = nixpkgs-darwin.lib.recursiveUpdate {
+        sketchybar.theme = sketchybarThemeDefault;
+      } (hostCfg.config or {});
       specialArgs =
         inputs
         // {
@@ -174,6 +176,11 @@
     primaryHost = hosts.knt-mbp;
   in {
     darwinConfigurations = builtins.mapAttrs mkDarwin hosts;
+
+    homeManagerModules = {
+      kaynix-identity = identityModule;
+      default = identityModule;
+    };
 
     # Dev shells intentionally re-declare packages that overlap with home.packages.
     # home.packages provides the always-available baseline; dev shells provide
@@ -236,8 +243,8 @@
           else
             export CONFIG_DIR="''${PWD}/homes/static/sketchybar"
           fi
-          export SKETCHYBAR_THEME="''${SKETCHYBAR_THEME:-tokyo_night}"
-          export LUA_CPATH="${pkgs.lua5_5}/lib/lua/5.5/?.so;${pkgs.lua5_5}/lib/lua/5.5/loadall.so;${pkgs.sbarlua}/lib/lua/5.5/?.so;./?.so"
+          export SKETCHYBAR_THEME="''${SKETCHYBAR_THEME:-${sketchybarThemeDefault}}"
+          export LUA_CPATH="${pkgs.kaynixLib.luaCpath}"
           echo "SketchyBar dev shell: lua $(lua -v 2>&1 | head -n1), stylua $(stylua --version)"
           echo "  CONFIG_DIR=$CONFIG_DIR"
           echo "  check:  stylua --check \"\$CONFIG_DIR\""

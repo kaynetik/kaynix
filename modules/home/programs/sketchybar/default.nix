@@ -7,7 +7,6 @@
   ...
 }: let
   cfg = config.kaynix.programs.sketchybar;
-  sketchybarTheme = (hostConfig.sketchybar or {}).theme or "tokyo_night";
 
   # Vendored FelixKratz event provider: pushes en0 throughput to sketchybar over
   # its Mach port every N seconds (spawned by items/widgets/wifi.lua, which finds
@@ -52,6 +51,6 @@ in {
     };
 
     # Matches launchd (modules/apps.nix); set theme in flake host `config.sketchybar.theme`.
-    home.sessionVariables.SKETCHYBAR_THEME = sketchybarTheme;
+    home.sessionVariables.SKETCHYBAR_THEME = hostConfig.sketchybar.theme;
   };
 }

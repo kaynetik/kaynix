@@ -6,6 +6,7 @@
   ...
 }: let
   cfg = config.kaynix.programs.git;
+  identity = config.kaynix.identity;
 in {
   options.kaynix.programs.git = {
     enable = lib.mkEnableOption "git";
@@ -20,12 +21,11 @@ in {
       signing = {
         format = "openpgp";
         signByDefault = true;
-        key = "FC04210D2782C032";
+        key = identity.pgp.signingKey;
       };
       settings = {
         user = {
-          name = "kaynetik";
-          email = "aleksandar@nesovic.dev";
+          inherit (identity) name email;
         };
         credential = lib.mkIf pkgs.stdenv.isDarwin {helper = "osxkeychain";};
         push = {autoSetupRemote = true;};

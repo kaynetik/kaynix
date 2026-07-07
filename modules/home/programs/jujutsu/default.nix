@@ -5,6 +5,7 @@
   ...
 }: let
   cfg = config.kaynix.programs.jujutsu;
+  identity = config.kaynix.identity;
 in {
   options.kaynix.programs.jujutsu = {
     enable = lib.mkEnableOption "jujutsu (jj)";
@@ -15,15 +16,14 @@ in {
       enable = true;
       settings = {
         user = {
-          name = "kaynetik";
-          email = "aleksandar@nesovic.dev";
+          inherit (identity) name email;
         };
         fetch.prune = true;
         init.default_branch = "main";
         lfs.enabled = true;
         signing = {
           backend = "ssh";
-          key = "${config.home.homeDirectory}/.ssh/prim_sk_id_ed25519";
+          key = identity.ssh.keyFile;
         };
         push = {
           autoSetupRemote = true;
