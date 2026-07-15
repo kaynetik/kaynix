@@ -121,7 +121,7 @@
   ];
 
   media = with pkgs; [
-    audacity
+    # audacity
     imagemagick
     languagetool
     pandoc
