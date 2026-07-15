@@ -28,7 +28,6 @@ in {
       # Previewer/opener helpers exposed only on yazi's PATH.
       extraPackages = with pkgs; [
         ffmpegthumbnailer
-        unar
         jq
         poppler-utils
         fd

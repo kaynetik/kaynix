@@ -68,6 +68,24 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
+        # Pin croc's Go vendor hash: the nixpkgs pin ships a stale vendorHash
+        # for 10.4.5 that no longer matches what the Go proxy serves, breaking
+        # the fixed-output `croc-*-go-modules` derivation. Upstream fix tracked
+        # in NixOS/nixpkgs#539964; drop this once that lands in our nixpkgs pin.
+        croc = prev.croc.overrideAttrs (old: {
+          goModules = old.goModules.overrideAttrs (_: {
+            outputHash = "sha256-rwGunSDIgetBsk97LxQz0WHpzMDMMESHC1OhBWRuVjI=";
+          });
+        });
+
+        # checkov 3.3.6 pins aiohttp <3.14.0 but the nixpkgs pin ships 3.14.1,
+        # so pythonRuntimeDepsCheckHook fails the build. Relax the upper bound;
+        # the 3.14.x bump is a patch-level change checkov tolerates at runtime.
+        # Drop once nixpkgs ships a checkov that allows aiohttp 3.14.x.
+        checkov = prev.checkov.overrideAttrs (old: {
+          pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["aiohttp"];
+        });
+
         # Shared non-package values. `luaCpath` is the sketchybar Lua runtime
         # search path consumed by modules/sketchybar.nix (launchd agent),
         # modules/home/programs/zsh, and the sketchybar dev shell, so a
@@ -77,10 +95,6 @@
         in {
           luaCpath = "${final.lua5_5}/lib/lua/${luaVer}/?.so;${final.lua5_5}/lib/lua/${luaVer}/loadall.so;${final.sbarlua}/lib/lua/${luaVer}/?.so;./?.so";
         };
-
-        # hunk: vendored in ./pkgs/hunk because the locked nixpkgs-darwin does
-        # not ship it yet. Drop the package and this override once nixpkgs-darwin's lock contains `hunk`.
-        hunk = final.callPackage ./pkgs/hunk {};
       };
 
     # Per-host config. Add an entry here when deploying to a new machine.
