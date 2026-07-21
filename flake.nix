@@ -72,11 +72,11 @@
         # for 10.4.5 that no longer matches what the Go proxy serves, breaking
         # the fixed-output `croc-*-go-modules` derivation. Upstream fix tracked
         # in NixOS/nixpkgs#539964; drop this once that lands in our nixpkgs pin.
-        croc = prev.croc.overrideAttrs (old: {
-          goModules = old.goModules.overrideAttrs (_: {
-            outputHash = "sha256-rwGunSDIgetBsk97LxQz0WHpzMDMMESHC1OhBWRuVjI=";
-          });
-        });
+        # croc = prev.croc.overrideAttrs (old: {
+        #   goModules = old.goModules.overrideAttrs (_: {
+        #     outputHash = "sha256-rwGunSDIgetBsk97LxQz0WHpzMDMMESHC1OhBWRuVjI=";
+        #   });
+        # });
 
         # checkov 3.3.6 pins aiohttp <3.14.0 but the nixpkgs pin ships 3.14.1,
         # so pythonRuntimeDepsCheckHook fails the build. Relax the upper bound;
