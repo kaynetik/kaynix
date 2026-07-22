@@ -126,6 +126,17 @@
     languagetool
     pandoc
     typst
+    texstudio
+    (texliveMedium.withPackages (ps:
+      with ps; [
+        clearsans
+        fontaxes # required by clearsans (ClearSans.sty loads it)
+        marvosym
+        fontawesome
+        textpos
+        ragged2e
+        ifmtarg
+      ]))
   ];
 
   compilersAndRuntimes = with pkgs; [
