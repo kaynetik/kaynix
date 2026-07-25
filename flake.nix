@@ -76,6 +76,33 @@
           pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["aiohttp"];
         });
 
+        # Two checkov dependencies fail pythonMetadataCheckPhase: their release
+        # tags still declare the previous version. Both overrides fail the build
+        # once the metadata is fixed, so they cannot silently outlive their use.
+        pythonPackagesExtensions =
+          prev.pythonPackagesExtensions
+          ++ [
+            (pyfinal: pyprev: {
+              # pycep-parser 0.7.0's pyproject.toml says 0.7.0.dev9. Drop once
+              # nixpkgs ships pycep-parser past 0.7.0 or upstream retags 0.7.0.
+              pycep-parser = pyprev.pycep-parser.overrideAttrs (old: {
+                nativeBuildInputs = (old.nativeBuildInputs or []) ++ [pyfinal.pyprojectVersionPatchHook];
+              });
+
+              # policy-sentry 0.16.0 takes its version from version.py, which
+              # upstream left at 0.15.2; patching the file fixes the runtime
+              # `__version__` too. Drop once nixpkgs ships past 0.16.0.
+              policy-sentry = pyprev.policy-sentry.overrideAttrs (old: {
+                postPatch =
+                  (old.postPatch or "")
+                  + ''
+                    substituteInPlace policy_sentry/bin/version.py \
+                      --replace-fail '0.15.2' '${old.version}'
+                  '';
+              });
+            })
+          ];
+
         # Shared non-package values. `luaCpath` is the sketchybar Lua runtime
         # search path consumed by modules/sketchybar.nix (launchd agent),
         # modules/home/programs/zsh, and the sketchybar dev shell, so a
