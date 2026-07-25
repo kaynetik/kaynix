@@ -68,30 +68,28 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
-        # checkov 3.3.6 pins aiohttp <3.14.0 but the nixpkgs pin ships 3.14.1,
-        # so pythonRuntimeDepsCheckHook fails the build. Relax the upper bound;
-        # the 3.14.x bump is a patch-level change checkov tolerates at runtime.
-        # Drop once nixpkgs ships a checkov that allows aiohttp 3.14.x.
+        # checkov 3.3.6 pins aiohttp <3.14.0 but nixpkgs ships 3.14.1, failing
+        # pythonRuntimeDepsCheckHook; checkov tolerates the patch bump at
+        # runtime. Drop once nixpkgs ships a checkov allowing aiohttp 3.14.x.
         checkov = prev.checkov.overrideAttrs (old: {
           pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["aiohttp"];
         });
 
-        # Two checkov dependencies fail pythonMetadataCheckPhase: their release
-        # tags still declare the previous version. Both overrides fail the build
-        # once the metadata is fixed, so they cannot silently outlive their use.
+        # checkov deps whose release tags still declare the previous version,
+        # failing pythonMetadataCheckPhase. Each override fails the build once
+        # upstream fixes the metadata, so neither outlives its use.
         pythonPackagesExtensions =
           prev.pythonPackagesExtensions
           ++ [
             (pyfinal: pyprev: {
-              # pycep-parser 0.7.0's pyproject.toml says 0.7.0.dev9. Drop once
-              # nixpkgs ships pycep-parser past 0.7.0 or upstream retags 0.7.0.
+              # 0.7.0's pyproject.toml says 0.7.0.dev9. Drop once nixpkgs
+              # ships past 0.7.0 or upstream retags it.
               pycep-parser = pyprev.pycep-parser.overrideAttrs (old: {
                 nativeBuildInputs = (old.nativeBuildInputs or []) ++ [pyfinal.pyprojectVersionPatchHook];
               });
 
-              # policy-sentry 0.16.0 takes its version from version.py, which
-              # upstream left at 0.15.2; patching the file fixes the runtime
-              # `__version__` too. Drop once nixpkgs ships past 0.16.0.
+              # 0.16.0 reads its version from version.py, left at 0.15.2
+              # upstream. Drop once nixpkgs ships past 0.16.0.
               policy-sentry = pyprev.policy-sentry.overrideAttrs (old: {
                 postPatch =
                   (old.postPatch or "")
@@ -103,55 +101,29 @@
             })
           ];
 
-        # Shared non-package values. `luaCpath` is the sketchybar Lua runtime
-        # search path consumed by modules/sketchybar.nix (launchd agent),
-        # modules/home/programs/zsh, and the sketchybar dev shell, so a
-        # lua5_5/sbarlua bump lands everywhere at once.
+        # Shared non-package values. `luaCpath` is the one sketchybar Lua
+        # runtime search path, so a lua5_5/sbarlua bump reaches every
+        # consumer at once.
         kaynixLib = let
-          luaVer = final.lua5_5.luaversion;
+          luaLibDir = drv: "${drv}/lib/lua/${final.lua5_5.luaversion}";
         in {
-          luaCpath = "${final.lua5_5}/lib/lua/${luaVer}/?.so;${final.lua5_5}/lib/lua/${luaVer}/loadall.so;${final.sbarlua}/lib/lua/${luaVer}/?.so;./?.so";
+          luaCpath = final.lib.concatStringsSep ";" [
+            "${luaLibDir final.lua5_5}/?.so"
+            "${luaLibDir final.lua5_5}/loadall.so"
+            "${luaLibDir final.sbarlua}/?.so"
+            "./?.so"
+          ];
         };
       };
 
     # Per-host config. Add an entry here when deploying to a new machine.
     # Shared defaults live in the modules; `config` overrides per machine.
     hosts = {
-      knt-mbp = {
-        system = "aarch64-darwin";
-        username = "kaynetik";
-        config = {
-          homeStateVersion = "24.11";
-          timeZone = "Europe/Belgrade";
-          loginGreeting = "nixing";
-          networking = {
-            knownNetworkServices = [
-              "Wi-Fi"
-              "Thunderbolt Bridge"
-              "ThinkPad TBT 3 Dock"
-              "USB 10/100 LAN"
-            ];
-            dns = [
-              "192.168.2.1"
-              "1.1.1.1"
-              "1.0.0.1"
-              "8.8.8.8"
-              "8.8.4.4"
-            ];
-          };
-        };
-      };
-
       mbp = {
         system = "aarch64-darwin";
         username = "kaynetik";
         config = {
           homeStateVersion = "26.05";
-          timeZone = "Europe/Belgrade";
-          networking = {
-            knownNetworkServices = ["Wi-Fi" "Thunderbolt Bridge"];
-            dns = ["1.1.1.1" "1.0.0.1" "8.8.8.8" "8.8.4.4"];
-          };
         };
       };
     };
@@ -206,7 +178,8 @@
         ];
       };
 
-    primaryHost = hosts.knt-mbp;
+    # Selects the devShells system, so keep it on the machine in daily use.
+    primaryHost = hosts.mbp;
   in {
     darwinConfigurations = builtins.mapAttrs mkDarwin hosts;
 
