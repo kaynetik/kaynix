@@ -29,6 +29,19 @@
     "${config.home.homeDirectory}/.local/bin"
   ];
 
+  # Working tree layout that no module owns. The zsh directory is already a
+  # side effect of linking that module's config, so this only has to hold when
+  # zsh is disabled; ordering before sops-nix keeps the decrypted fragment
+  # targets valid in that case (see homes/sops.nix).
+  home.activation.userDirectories = lib.hm.dag.entryBefore ["sops-nix"] ''
+    run mkdir -p \
+      "${config.home.homeDirectory}/Development/Work" \
+      "${config.home.homeDirectory}/Development/Personal" \
+      "${config.home.homeDirectory}/Development/Nix/flakes" \
+      "${config.home.homeDirectory}/Development/Nix/shells" \
+      "${config.xdg.configHome}/zsh"
+  '';
+
   kaynix.programs = {
     agents.enable = lib.mkDefault true;
     atuin.enable = lib.mkDefault true;

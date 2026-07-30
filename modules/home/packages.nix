@@ -10,6 +10,7 @@
   kaynix-scripts = pkgs.runCommand "kaynix-scripts" {} ''
     mkdir -p $out/bin
     install -m755 ${../../scripts/count-loc} $out/bin/count-loc
+    install -m755 ${../../scripts/objsee-check} $out/bin/objsee-check
     install -m755 ${../../scripts/on} $out/bin/on
     install -m755 ${../../scripts/og} $out/bin/og
     cp ${../../scripts/nvim-lazy-update} $out/bin/nvim-lazy-update

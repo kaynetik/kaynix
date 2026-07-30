@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+# Report drift in the Objective-See tools declared in modules/homebrew.nix.
+#
+# Nix does not manage the parts of these tools that do the work. BlockBlock and
+# RansomWhere run root LaunchDaemons planted by their cask's installer script,
+# and both are Endpoint Security clients that stop working without Full Disk
+# Access. LuLu runs a network filter system extension that only a human can
+# approve in System Settings. A rebuild reasserts none of that, so check it.
+#
+# Usage: objsee-check [-q]
+#   -q  suppress passing checks, and stay silent entirely when nothing is wrong
+#
+# Exit status: 0 no failures (warnings allowed), 1 at least one failed check.
+set -euo pipefail
+
+if [ -t 1 ]; then
+  RED='\033[0;31m'
+  YELLOW='\033[0;33m'
+  GREEN='\033[0;32m'
+  NC='\033[0m'
+else
+  RED='' YELLOW='' GREEN='' NC=''
+fi
+
+quiet=0
+case "${1:-}" in
+  '') ;;
+  -q) quiet=1 ;;
+  *)
+    printf 'objsee-check: unknown argument %s\n' "$1" >&2
+    exit 2
+    ;;
+esac
+
+failures=0
+warnings=0
+
+ok() {
+  if [ "$quiet" -eq 0 ]; then
+    printf '%bok%b    %s\n' "$GREEN" "$NC" "$1"
+  fi
+}
+
+warn() {
+  warnings=$((warnings + 1))
+  printf '%bwarn%b  %s\n' "$YELLOW" "$NC" "$1"
+}
+
+fail() {
+  failures=$((failures + 1))
+  printf '%bFAIL%b  %s\n' "$RED" "$NC" "$1"
+}
+
+bundle_version() {
+  plutil -extract CFBundleShortVersionString raw -o - "$1/Contents/Info.plist" 2>/dev/null ||
+    printf 'unknown'
+}
+
+# Reads a top-level `key = value` field out of `launchctl print` output. The
+# first match wins because the nested endpoint blocks reuse key names.
+launchd_field() {
+  awk -F' = ' -v key="$2" '$0 ~ "^[[:space:]]*" key " = " {print $2; exit}' <<<"$1"
+}
+
+running() {
+  # ps rather than pgrep: pgrep needs sysmond, which is unreachable from a
+  # sandboxed shell and would report a live process as absent. Matching on the
+  # captured output rather than through a pipe keeps grep from SIGPIPE-ing ps.
+  local procs
+  procs=$(ps -Ao comm=)
+  case $procs in
+    *"$1"*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# Menu bar helper in /Applications, privileged daemon under /Library/Objective-See.
+# The two are installed by separate steps of the same cask, so a cask upgrade
+# that half-fails leaves a new helper talking to an old daemon.
+check_daemon() {
+  local cask=$1 label=$2 helper=$3 payload=$4
+  local plist="/Library/LaunchDaemons/${label}.plist"
+  local info state program runs last_exit helper_version payload_version
+
+  if [ ! -f "$plist" ]; then
+    fail "$cask: no LaunchDaemon at $plist; the cask installer never ran"
+    return
+  fi
+
+  if ! info=$(launchctl print "system/${label}" 2>/dev/null); then
+    fail "$cask: $plist present but not loaded; launchctl bootstrap system $plist"
+    return
+  fi
+
+  state=$(launchd_field "$info" state)
+  program=$(launchd_field "$info" program)
+  runs=$(launchd_field "$info" runs)
+  last_exit=$(launchd_field "$info" 'last exit code')
+
+  if [ -n "$program" ] && [ ! -x "$program" ]; then
+    fail "$cask: daemon program $program is missing"
+  fi
+
+  if [ "$state" != "running" ]; then
+    fail "$cask: daemon state is ${state:-unknown}, expected running (Full Disk Access revoked?)"
+  elif [ "${runs:-1}" -gt 1 ] && [ "$last_exit" != "(never exited)" ]; then
+    warn "$cask: daemon restarted $runs times, last exit code $last_exit"
+  else
+    ok "$cask: daemon running"
+  fi
+
+  helper_version=$(bundle_version "$helper")
+  payload_version=$(bundle_version "$payload")
+  if [ "$helper_version" = unknown ] || [ "$payload_version" = unknown ]; then
+    fail "$cask: cannot read a version from $helper or $payload"
+  elif [ "$helper_version" != "$payload_version" ]; then
+    fail "$cask: helper is $helper_version but daemon is $payload_version; re-run the cask installer"
+  else
+    ok "$cask: helper and daemon both $helper_version"
+  fi
+}
+
+# LuLu keeps no LaunchDaemon. Its filter is a network extension activated by the
+# app on launch and approved by hand, so an upgraded app whose new extension was
+# never approved leaves the old version filtering, or nothing at all.
+check_lulu() {
+  local app="/Applications/LuLu.app"
+  local bundle_id="com.objective-see.lulu.extension"
+  local app_version listing records active stale
+
+  if [ ! -d "$app" ]; then
+    fail "lulu: $app is missing"
+    return
+  fi
+  app_version=$(bundle_version "$app")
+
+  if ! listing=$(systemextensionsctl list 2>/dev/null); then
+    warn "lulu: cannot query system extensions; run this from a terminal"
+    return
+  fi
+
+  records=$(printf '%s\n' "$listing" | awk -F'\t' -v id="$bundle_id" '
+    index($4, id " (") == 1 {
+      split($4, bundle, "(")
+      split(bundle[2], version, "/")
+      state = $NF
+      gsub(/[][]/, "", state)
+      print version[1] "|" state
+    }')
+
+  active=$(printf '%s\n' "$records" | awk -F'|' '$2 == "activated enabled" {print $1; exit}')
+  if [ -z "$active" ]; then
+    fail "lulu: no activated filter extension; launch LuLu and approve it in System Settings"
+  elif [ "$active" != "$app_version" ]; then
+    fail "lulu: extension $active is active but the app is $app_version; relaunch LuLu"
+  else
+    ok "lulu: extension $active activated and enabled"
+  fi
+
+  stale=$(printf '%s\n' "$records" | awk -F'|' '$2 != "activated enabled" {c++} END {print c + 0}')
+  if [ "$stale" -gt 0 ]; then
+    warn "lulu: $stale stale extension record(s) pending removal on reboot"
+  fi
+
+  if running "$bundle_id"; then
+    ok "lulu: filter extension process running"
+  else
+    fail "lulu: filter extension is not running, so traffic is unfiltered"
+  fi
+}
+
+# The scanners have no background component; presence is the whole check.
+check_app() {
+  local cask=$1 app=$2 note=${3:-}
+
+  if [ -d "$app" ]; then
+    ok "$cask: $(basename "$app") present, $(bundle_version "$app")"
+  elif [ -n "$note" ]; then
+    warn "$cask: $app is missing, $note"
+  else
+    fail "$cask: $app is missing"
+  fi
+}
+
+if [ "$quiet" -eq 0 ]; then
+  printf 'Objective-See state (installed by vendor installers, not by Nix)\n\n'
+fi
+
+check_daemon blockblock com.objective-see.blockblock \
+  "/Applications/BlockBlock Helper.app" \
+  /Library/Objective-See/BlockBlock/BlockBlock.app
+
+check_daemon ransomwhere com.objective-see.ransomwhere \
+  "/Applications/RansomWhere Helper.app" \
+  /Library/Objective-See/RansomWhere/RansomWhere.app
+
+check_lulu
+
+check_app knockknock /Applications/KnockKnock.app
+check_app dhs /Applications/DHS.app
+check_app whatsyoursign /Applications/WhatsYourSign.app \
+  'the cask only stages an installer that has to be run by hand'
+
+if [ "$failures" -gt 0 ]; then
+  printf '\n%b%d failed, %d warning(s)%b\n' "$RED" "$failures" "$warnings" "$NC"
+  exit 1
+fi
+if [ "$quiet" -eq 0 ]; then
+  printf '\n%bno failures, %d warning(s)%b\n' "$GREEN" "$warnings" "$NC"
+fi
