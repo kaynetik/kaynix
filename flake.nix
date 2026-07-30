@@ -154,6 +154,7 @@
           ./modules/aerospace.nix
           ./modules/host-users.nix
           ./modules/netbird.nix
+          ./modules/objective-see.nix
 
           home-manager.darwinModules.home-manager
           {
@@ -166,14 +167,6 @@
             home-manager.sharedModules = [sops-nix.homeManagerModules.sops];
             home-manager.backupFileExtension = "hm-backup";
             home-manager.users.${username} = import ./homes/kaynetik.nix;
-          }
-
-          {
-            system.activationScripts.userDirectories.text = ''
-              sudo -u ${username} mkdir -p /Users/${username}/Development/{Work,Personal}
-              sudo -u ${username} mkdir -p /Users/${username}/Development/Nix/{flakes,shells}
-              sudo -u ${username} mkdir -p /Users/${username}/.config/zsh
-            '';
           }
         ];
       };

@@ -77,6 +77,7 @@ graph TD
         HU["host-users.nix<br/>hostname, DNS, users"]
         AERO["aerospace.nix<br/>tiling WM"]
         NETBIRD["netbird.nix<br/>NetBird daemon (LaunchDaemon)"]
+        OBJSEE["objective-see.nix<br/>reinstalls BlockBlock/RansomWhere daemons"]
     end
 
     subgraph hm["Home Manager (embedded in darwin)"]
