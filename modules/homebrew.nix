@@ -17,10 +17,6 @@
       "pinentry-mac"
       "secp256k1"
       "tor"
-
-      # Local LLM dependencies - temporarily avoid local LLMs
-      #"python@3.14" # Python 3.14 from brew is required for mlx-lm to work on Apple GPU silicon.
-      #"ollama"
     ];
 
     casks = [
@@ -33,8 +29,6 @@
       "protonvpn"
       "lulu"
       "knockknock"
-      "blockblock"
-      "ransomwhere"
       "dhs"
       "whatsyoursign"
       "pareto-security" # Occasionally run security checks
