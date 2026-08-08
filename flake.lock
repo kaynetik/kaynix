@@ -45,11 +45,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785306346,
-        "narHash": "sha256-DScBkW0fOgpGPK2trNoX3ryLTlaC14+gglFo/BhGJ4g=",
+        "lastModified": 1786031233,
+        "narHash": "sha256-TIDlLTLI1/pB7IqgjzcKQjpODQsZE2oII4XGG9B6KjI=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "e705714e918c3b11affcdd15db2cbe3a070420a0",
+        "rev": "7834e82588860aaf780cec1366524456a70898d7",
         "type": "github"
       },
       "original": {
@@ -60,11 +60,11 @@
     },
     "nixpkgs-darwin": {
       "locked": {
-        "lastModified": 1785301185,
-        "narHash": "sha256-eoS3KQTO0aPWXZvIaRbRAzSSHW3l5wdMFXtT1ISfoKA=",
+        "lastModified": 1785975029,
+        "narHash": "sha256-X44cn5rzytELc3NNoQsh0aLkjWA/QzPfc6HPQmsG3sU=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "9bc02893134c733dd85de46ee4fb2fac696b5529",
+        "rev": "70ce234312134a463ba7728e94da2486a1d237ac",
         "type": "github"
       },
       "original": {
@@ -89,13 +89,13 @@
     "solc-macos-amd64-list-json": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-zzwwHA2qPotv7yp8mK7+y9BZhm7ytuFeCJVvKBBdBn4=",
+        "narHash": "sha256-Vfa5XmxKcrBfMdJX3nWo+s0YixtdZND6l4llwNp+Xl0=",
         "type": "file",
-        "url": "https://github.com/argotorg/solc-bin/raw/902dfaf/macosx-amd64/list.json"
+        "url": "https://github.com/argotorg/solc-bin/raw/97e2659/macosx-amd64/list.json"
       },
       "original": {
         "type": "file",
-        "url": "https://github.com/argotorg/solc-bin/raw/902dfaf/macosx-amd64/list.json"
+        "url": "https://github.com/argotorg/solc-bin/raw/97e2659/macosx-amd64/list.json"
       }
     },
     "solc-nix": {
@@ -107,11 +107,11 @@
         "solc-macos-amd64-list-json": "solc-macos-amd64-list-json"
       },
       "locked": {
-        "lastModified": 1777817996,
-        "narHash": "sha256-iI71iUhD7THLibl3w1JcQEhHmTwZMxChi70RTe33BAo=",
+        "lastModified": 1785919942,
+        "narHash": "sha256-U/LvMq0ZEC/BHGXSCdDs0wPLLrDYG2NBlq291spxVwA=",
         "owner": "hellwolf",
         "repo": "solc.nix",
-        "rev": "e3cf898cb804d5c0e5474b378a300fe8942e67d6",
+        "rev": "c905d68f77a7263ce1ffaf0b310f02d031e53a37",
         "type": "github"
       },
       "original": {
