@@ -34,7 +34,7 @@ in {
       };
     };
 
-    home.shellAliases = lib.mkIf pkgs.stdenv.isDarwin {
+    home.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       jj = "RAYON_NUM_THREADS=4 command jj";
     };
   };

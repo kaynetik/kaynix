@@ -63,16 +63,34 @@
     identityModule = import ./modules/home/identity.nix;
 
     # Overlay that exposes solc versions from solc-nix and our custom svm-rs.
-    kaynixOverlay = final: prev:
-      (solc-nix.overlay final prev)
+    kaynixOverlay = final: prev: let
+      # solc.nix still reads stdenv.isDarwin (eval warning). Shadow the
+      # alias with a plain bool before that overlay runs. Drop once
+      # hellwolf/solc.nix uses stdenv.hostPlatform.isDarwin.
+      solcPrev =
+        prev
+        // {
+          stdenv =
+            prev.stdenv
+            // {
+              isDarwin = prev.stdenv.hostPlatform.isDarwin;
+            };
+        };
+    in
+      (solc-nix.overlay final solcPrev)
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
-        # checkov 3.3.6 pins aiohttp <3.14.0 but nixpkgs ships 3.14.1, failing
-        # pythonRuntimeDepsCheckHook; checkov tolerates the patch bump at
-        # runtime. Drop once nixpkgs ships a checkov allowing aiohttp 3.14.x.
-        checkov = prev.checkov.overrideAttrs (old: {
-          pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["aiohttp"];
+        # checkov 3.3.9's secrets plugin finds 0 matches for the multiline
+        # fixture in the Darwin Nix sandbox (bc_integration enrichment is
+        # empty). Drop once nixpkgs disables test_multiline_finding or the
+        # check phase passes on Darwin.
+        checkov = prev.checkov.overridePythonAttrs (old: {
+          disabledTests =
+            (old.disabledTests or [])
+            ++ final.lib.optionals final.stdenv.hostPlatform.isDarwin [
+              "test_multiline_finding"
+            ];
         });
 
         # checkov deps whose release tags still declare the previous version,

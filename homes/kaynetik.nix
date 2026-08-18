@@ -15,7 +15,7 @@
 
   home.username = username;
   home.homeDirectory =
-    if pkgs.stdenv.isDarwin
+    if pkgs.stdenv.hostPlatform.isDarwin
     then "/Users/${username}"
     else "/home/${username}";
   home.stateVersion = hostConfig.homeStateVersion or "24.11";
@@ -56,7 +56,7 @@
     k9s.enable = lib.mkDefault true;
     lazygit.enable = lib.mkDefault true;
     neovim.enable = lib.mkDefault true;
-    sketchybar.enable = lib.mkDefault pkgs.stdenv.isDarwin;
+    sketchybar.enable = lib.mkDefault pkgs.stdenv.hostPlatform.isDarwin;
     ssh.enable = lib.mkDefault true;
     terminals.enable = lib.mkDefault true;
     yazi.enable = lib.mkDefault true;

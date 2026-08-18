@@ -27,7 +27,7 @@ in {
         user = {
           inherit (identity) name email;
         };
-        credential = lib.mkIf pkgs.stdenv.isDarwin {helper = "osxkeychain";};
+        credential = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {helper = "osxkeychain";};
         push = {autoSetupRemote = true;};
         init = {defaultBranch = "main";};
         core = {
