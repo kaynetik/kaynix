@@ -180,8 +180,8 @@
     # python314Packages.mlx-lm # Apple Silicon LLM runner (mlx_lm.* CLIs)
   ];
 in {
-  targets.darwin.copyApps.enable = lib.mkIf pkgs.stdenv.isDarwin true;
-  targets.darwin.linkApps.enable = lib.mkIf pkgs.stdenv.isDarwin false;
+  targets.darwin.copyApps.enable = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin true;
+  targets.darwin.linkApps.enable = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin false;
 
   # Podman / docker CLI (k8sAndOci): SSH tunnel to VM and machine socket path.
   home.sessionVariables = {
@@ -205,5 +205,5 @@ in {
     ++ compilersAndRuntimes
     ++ sshAndAge
     ++ secops
-    ++ lib.optionals pkgs.stdenv.isDarwin darwinOnly;
+    ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin darwinOnly;
 }

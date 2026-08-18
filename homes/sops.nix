@@ -74,7 +74,7 @@ in {
   '';
 
   # See secrets/README.md#darwin-activation-and-yubikey
-  home.activation.sops-nix = lib.mkIf pkgs.stdenv.isDarwin (
+  home.activation.sops-nix = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (
     lib.mkForce (
       lib.hm.dag.entryAfter ["setupLaunchAgents"] ''
         if ${sopsRekeyScript} 2>/dev/null; then

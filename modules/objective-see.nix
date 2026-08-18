@@ -65,7 +65,7 @@
   declaredCasks = map (cask: cask.name) config.homebrew.casks;
   declared = lib.filterAttrs (cask: _: lib.elem cask declaredCasks) daemons;
 in
-  lib.mkIf (pkgs.stdenv.isDarwin && config.homebrew.enable) {
+  lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && config.homebrew.enable) {
     system.activationScripts.postActivation.text =
       lib.concatStringsSep "\n" (lib.mapAttrsToList healDaemon declared);
   }

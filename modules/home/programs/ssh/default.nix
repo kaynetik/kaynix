@@ -22,7 +22,7 @@ in {
     # launchd restarts it if it dies, the socket path never changes, and shells
     # only inherit the static SSH_AUTH_SOCK below. Keys land in the agent on
     # first use via AddKeysToAgent.
-    launchd.agents.nix-ssh-agent = lib.mkIf pkgs.stdenv.isDarwin {
+    launchd.agents.nix-ssh-agent = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       enable = true;
       config = {
         ProgramArguments = [
@@ -35,7 +35,7 @@ in {
       };
     };
 
-    home.sessionVariables = lib.mkIf pkgs.stdenv.isDarwin {
+    home.sessionVariables = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       SSH_AUTH_SOCK = agentSocket;
     };
 

@@ -42,7 +42,7 @@ in {
     enable = lib.mkEnableOption "sketchybar";
   };
 
-  config = lib.mkIf (cfg.enable && pkgs.stdenv.isDarwin) {
+  config = lib.mkIf (cfg.enable && pkgs.stdenv.hostPlatform.isDarwin) {
     home.packages = [network-load];
 
     xdg.configFile."sketchybar" = {

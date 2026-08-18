@@ -11,7 +11,7 @@
     ${sketchybar} --bar hidden=toggle
   '';
 in
-  lib.mkIf pkgs.stdenv.isDarwin {
+  lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     # AeroSpace is macOS-only (nix-darwin launchd). No-op on other platforms.
     # Keep start-at-login false (module assertion). Config lives here, not ~/.config/aerospace/aerospace.toml.
     services.aerospace = {

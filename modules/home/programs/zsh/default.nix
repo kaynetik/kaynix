@@ -14,7 +14,7 @@ in {
   config = lib.mkIf cfg.enable {
     home.sessionVariables =
       {}
-      // lib.optionalAttrs pkgs.stdenv.isDarwin {
+      // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
         LUA_CPATH = pkgs.kaynixLib.luaCpath;
       };
 
@@ -23,7 +23,7 @@ in {
       enableCompletion = false;
       dotDir = "${config.xdg.configHome}/zsh";
       initContent = lib.mkMerge [
-        (lib.mkBefore (lib.optionalString pkgs.stdenv.isDarwin ''
+        (lib.mkBefore (lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
             # Static expansion of `eval "$(/opt/homebrew/bin/brew shellenv)"`:
             # saves a brew + path_helper fork on every shell. Values are fixed
             # by the /opt/homebrew prefix; re-check with `brew shellenv` if
