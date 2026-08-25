@@ -81,6 +81,18 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
+        # tmux 3.7c's configure requires --enable-jemalloc or --disable-jemalloc
+        # on Darwin (macOS calloc(3) may not zero allocations). Drop once the
+        # lock contains nixpkgs #555604 (commit 512b760850).
+        tmux = prev.tmux.overrideAttrs (old: {
+          buildInputs =
+            (old.buildInputs or [])
+            ++ final.lib.optionals final.stdenv.hostPlatform.isDarwin [final.jemalloc];
+          configureFlags =
+            (old.configureFlags or [])
+            ++ final.lib.optionals final.stdenv.hostPlatform.isDarwin ["--enable-jemalloc"];
+        });
+
         # checkov 3.3.9's secrets plugin finds 0 matches for the multiline
         # fixture in the Darwin Nix sandbox (bc_integration enrichment is
         # empty). Drop once nixpkgs disables test_multiline_finding or the
