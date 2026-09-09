@@ -1,0 +1,19 @@
+#!/bin/sh
+# Portable pre-commit wrapper. `pre-commit install` rewrites .git/hooks with
+# /nix/store shebangs; nix.gc then deletes those paths and git fails with
+# "cannot exec '.git/hooks/pre-commit': No such file or directory".
+# Git ignores hooks without the executable bit; this file must stay 100755.
+
+if [ -x "/etc/profiles/per-user/${USER}/bin/pre-commit" ]; then
+  pc="/etc/profiles/per-user/${USER}/bin/pre-commit"
+elif [ -x "${HOME}/.nix-profile/bin/pre-commit" ]; then
+  pc="${HOME}/.nix-profile/bin/pre-commit"
+elif command -v pre-commit >/dev/null 2>&1; then
+  pc="$(command -v pre-commit)"
+else
+  echo "pre-commit is not installed" >&2
+  exit 1
+fi
+
+here="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+exec "$pc" hook-impl --config=.pre-commit-config.yaml --hook-type=pre-commit --hook-dir "$here" -- "$@"
