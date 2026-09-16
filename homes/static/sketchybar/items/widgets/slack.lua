@@ -1,6 +1,8 @@
-local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
+
+-- StatusLabel is omitted from the default dump; -all is required.
+local STATUS_CMD = "lsappinfo -all info -only StatusLabel Slack"
 
 local slack = sbar.add("item", "widgets.slack", {
 	position = "right",
@@ -13,40 +15,36 @@ local slack = sbar.add("item", "widgets.slack", {
 	},
 	label = { font = { family = settings.font.numbers } },
 	update_freq = 30,
-	popup = { align = "center" },
+	updates = true,
 })
 
-slack:subscribe({ "routine", "workspace_change" }, function()
-	sbar.exec('lsappinfo info -only StatusLabel "Slack"', function(status_info)
-		local icon = "󰒱"
-		local label = ""
+local function parse_badge(raw)
+	if type(raw) ~= "string" then
+		return ""
+	end
+	local label = raw:match('"label"%s*=%s*"([^"]*)"')
+	if not label then
+		return ""
+	end
+	return label:match("^%s*(.-)%s*$") or ""
+end
+
+slack:subscribe({ "routine", "forced", "system_woke", "workspace_change" }, function()
+	sbar.exec(STATUS_CMD, function(status_info)
+		local label = parse_badge(status_info)
 		local icon_color = colors.green
 
-		-- Extract label using pattern matching
-		local label_match = status_info:match('"label"="([^"]*)"')
-
-		if label_match then
-			label = label_match
-
-			-- Determine icon color based on Slack status
-			if label == "" then
-				icon_color = colors.green -- No notifications
-			elseif label == "•" then
-				icon_color = colors.yellow -- Unread messages
-			elseif label:match("^%d+$") then
-				icon_color = colors.red -- Specific number of notifications
-			else
-				-- Unexpected status, don't update
-				return
-			end
+		if label == "•" or label == "●" then
+			icon_color = colors.yellow
+		elseif label:match("^%d+$") then
+			icon_color = colors.red
 		else
-			-- No valid status found
-			return
+			label = ""
 		end
 
 		slack:set({
 			icon = {
-				string = icon,
+				string = "󰒱",
 				color = icon_color,
 			},
 			label = {
@@ -56,7 +54,7 @@ slack:subscribe({ "routine", "workspace_change" }, function()
 	end)
 end)
 
-slack:subscribe("mouse.clicked", function(env)
+slack:subscribe("mouse.clicked", function()
 	sbar.exec("open -a Slack")
 end)
 

@@ -16,7 +16,7 @@ local telegram = sbar.add("item", "widgets.telegram", {
 })
 
 telegram:subscribe({ "routine", "workspace_change" }, function()
-	sbar.exec('lsappinfo info -only StatusLabel "Telegram"', function(status_info)
+	sbar.exec("lsappinfo -all info -only StatusLabel Telegram", function(status_info)
 		local icon = "󰘑"
 		local label = ""
 		local icon_color = colors.green
@@ -93,7 +93,7 @@ local telegram_popup = sbar.add("item", {
 })
 
 telegram:subscribe("mouse.entered", function()
-	sbar.exec('lsappinfo info -only StatusLabel "Telegram"', function(status_info)
+	sbar.exec("lsappinfo -all info -only StatusLabel Telegram", function(status_info)
 		local label_match = status_info:match('"label"="([^"]*)"')
 		if label_match and label_match ~= "" then
 			telegram_popup:set({
