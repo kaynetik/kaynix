@@ -81,6 +81,7 @@
     podman
     podman-desktop
     docker
+    cosign
   ];
 
   iacAndCD = with pkgs; [
