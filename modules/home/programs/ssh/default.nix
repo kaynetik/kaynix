@@ -65,9 +65,17 @@ in {
           IdentityFile = identity.ssh.keyFile;
           IdentitiesOnly = true;
         };
+        "ksvnas" = {
+          HostName = "10.10.100.248";
+          User = "kaynas";
+          IdentityFile = "~/.ssh/id_srv";
+          IdentitiesOnly = true;
+        };
       };
       extraConfig = lib.mkBefore ''
         Include ~/.ssh/conf.d/work
+        Include ~/.ssh/conf.d/ksvnas
+        Include ~/.ssh/conf.d/kayws
       '';
     };
   };

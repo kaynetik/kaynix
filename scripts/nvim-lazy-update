@@ -7,15 +7,26 @@ setopt errexit nounset pipefail
 
 local tmp
 tmp=$(mktemp -d)
+trap 'rm -rf ${tmp}' EXIT
 
-cp -r "${HOME}/.config/nvim" "${tmp}/nvim"
+# Home Manager links each file under ~/.config/nvim into the nix store.
+# cp -R keeps those symlinks, and Lazy cannot rewrite lazy-lock.json there.
+mkdir -p "${tmp}/nvim"
+cp -RL "${HOME}/.config/nvim/." "${tmp}/nvim/"
 chmod -R u+w "${tmp}/nvim"
 
-NVIM_APPNAME=nvim XDG_CONFIG_HOME=$tmp nvim --headless "+Lazy! update" +qa
+if [[ -L ${tmp}/nvim/lazy-lock.json || ! -w ${tmp}/nvim/lazy-lock.json ]]; then
+  print -r -- "lazy-lock.json in the temp config is not a writable file" >&2
+  exit 1
+fi
+
+# A Lua error in "+Lazy! update" still lets a later "+qa" exit 0.
+NVIM_APPNAME=nvim XDG_CONFIG_HOME="${tmp}" nvim --headless \
+  '+Lazy! update' \
+  '+lua if vim.v.errmsg ~= "" then vim.cmd("cquit 1") end' \
+  +qa
 
 local repo='@DOT_NIX_ROOT@'
 cp "${tmp}/nvim/lazy-lock.json" "${repo}/homes/static/nvim/lazy-lock.json"
-
-rm -rf "${tmp}"
 
 print -r -- "lazy-lock.json updated -- commit and darwin-rebuild switch when ready"

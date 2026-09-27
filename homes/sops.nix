@@ -65,6 +65,18 @@ in {
         mode = "0600";
         format = "yaml";
       };
+      "ssh-ksvnas" = {
+        key = "ssh_config_ksvnas";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/ksvnas";
+        mode = "0600";
+        format = "yaml";
+      };
+      "ssh-kayws" = {
+        key = "ssh_config_kayws";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/kayws";
+        mode = "0600";
+        format = "yaml";
+      };
     };
   };
 
