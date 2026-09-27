@@ -65,6 +65,18 @@ in {
         mode = "0600";
         format = "yaml";
       };
+      "ssh-charlie" = {
+        key = "ssh_config_charlie";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/charlie";
+        mode = "0600";
+        format = "yaml";
+      };
+      "ssh-delta" = {
+        key = "ssh_config_delta";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/delta";
+        mode = "0600";
+        format = "yaml";
+      };
     };
   };
 

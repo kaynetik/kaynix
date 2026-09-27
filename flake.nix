@@ -226,6 +226,7 @@
           git
           alejandra
           nil # Nix LSP
+          nixos-rebuild
           sops
           age
           age-plugin-yubikey
@@ -236,7 +237,9 @@
           cacert
         ];
         shellHook = ''
-          echo "Default dev shell: git, alejandra, nil, sops, age, age-plugin-yubikey"
+          echo "Default dev shell:"
+          echo "  sops, age, age-plugin-yubikey"
+          echo "  nixpkgs-review, nixos-rebuild"
         '';
       };
 
