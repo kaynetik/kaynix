@@ -81,18 +81,6 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
-        # tmux 3.7c's configure requires --enable-jemalloc or --disable-jemalloc
-        # on Darwin (macOS calloc(3) may not zero allocations). Drop once the
-        # lock contains nixpkgs #555604 (commit 512b760850).
-        tmux = prev.tmux.overrideAttrs (old: {
-          buildInputs =
-            (old.buildInputs or [])
-            ++ final.lib.optionals final.stdenv.hostPlatform.isDarwin [final.jemalloc];
-          configureFlags =
-            (old.configureFlags or [])
-            ++ final.lib.optionals final.stdenv.hostPlatform.isDarwin ["--enable-jemalloc"];
-        });
-
         # checkov 3.3.9's secrets plugin finds 0 matches for the multiline
         # fixture in the Darwin Nix sandbox (bc_integration enrichment is
         # empty). Drop once nixpkgs disables test_multiline_finding or the
@@ -105,21 +93,14 @@
             ];
         });
 
-        # checkov deps whose release tags still declare the previous version,
-        # failing pythonMetadataCheckPhase. Each override fails the build once
-        # upstream fixes the metadata, so neither outlives its use.
+        # policy-sentry 0.16.0 still ships version.py as 0.15.2. nixpkgs'
+        # pyprojectVersionPatchHook fixes the wheel metadata; this keeps the
+        # runtime version in sync. The substitute fails the build once
+        # upstream retags version.py. Drop once nixpkgs ships past 0.16.0.
         pythonPackagesExtensions =
           prev.pythonPackagesExtensions
           ++ [
-            (pyfinal: pyprev: {
-              # 0.7.0's pyproject.toml says 0.7.0.dev9. Drop once nixpkgs
-              # ships past 0.7.0 or upstream retags it.
-              pycep-parser = pyprev.pycep-parser.overrideAttrs (old: {
-                nativeBuildInputs = (old.nativeBuildInputs or []) ++ [pyfinal.pyprojectVersionPatchHook];
-              });
-
-              # 0.16.0 reads its version from version.py, left at 0.15.2
-              # upstream. Drop once nixpkgs ships past 0.16.0.
+            (_pyfinal: pyprev: {
               policy-sentry = pyprev.policy-sentry.overrideAttrs (old: {
                 postPatch =
                   (old.postPatch or "")
