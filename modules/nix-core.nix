@@ -7,39 +7,6 @@
     permittedInsecurePackages = ["python3.14-ecdsa-0.19.2"];
   };
 
-  nixpkgs.overlays = [
-    (_final: prev: {
-      # py-evm 0.12.1-beta.1 (slither dep) does not support python 3.14, the
-      # default since nixpkgs 2026-07-13. Drop this override once
-      # `nix eval nixpkgs#slither-analyzer.drvPath` succeeds on the locked rev.
-      slither-analyzer = prev.python313Packages.slither-analyzer;
-
-      # cctools ld crashes (SIGTRAP) linking sketchybar on the locked rev
-      # (nixpkgs #536365). Upstream fix links with lld instead (nixpkgs commit
-      # 174bd66b76, 2026-07-13, landed hours after the locked rev). Drop this
-      # override once the lock contains that commit and stock sketchybar builds.
-      sketchybar = prev.sketchybar.overrideAttrs (old: {
-        nativeBuildInputs = (old.nativeBuildInputs or []) ++ [prev.llvmPackages.lld];
-        env = (old.env or {}) // {NIX_CFLAGS_LINK = "-fuse-ld=lld";};
-      });
-
-      # nixpkgs still ships macmon 0.6.1; track upstream releases here.
-      # Drop this override once the lock contains macmon >= 0.7.2.
-      macmon = prev.rustPlatform.buildRustPackage {
-        pname = "macmon";
-        version = "0.7.2";
-        src = prev.fetchFromGitHub {
-          owner = "vladkens";
-          repo = "macmon";
-          tag = "v0.7.2";
-          hash = "sha256-i6x4ZAh+gIG6aHEfoSifwFU/itOcPmBiQ0IrBkqz+L8=";
-        };
-        cargoHash = "sha256-faEuoroZ/d8FntZaxkTbgVQ0nSwddxZR7KOfNPrU4Eg=";
-        meta = prev.macmon.meta;
-      };
-    })
-  ];
-
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
 
