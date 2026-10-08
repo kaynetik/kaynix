@@ -16,6 +16,7 @@
     "flowd-rules"
     "frontend-design"
     "gh"
+    "grafana-dashboards"
     "helm"
     "kustomize"
     "legalizer"
