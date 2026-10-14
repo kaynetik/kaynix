@@ -30,7 +30,6 @@ sops-nix decrypts `secrets.yaml` during Home Manager activation into generationa
 | YAML key | sops.secrets name | Decrypted to |
 |:---|:---|:---|
 | `zsh_alpha` | `zsh-alpha` | `~/.config/zsh/conf-alpha.zsh` |
-| `zsh_bravo` | `zsh-bravo` | `~/.config/zsh/conf-bravo.zsh` |
 | `ssh_config_work` | `ssh-work` | `~/.ssh/conf.d/work` |
 
 The zsh secret files contain `export` statements and are sourced by `.zshrc` at shell startup.
@@ -47,7 +46,7 @@ The zsh secret files contain `export` statements and are sourced by `.zshrc` at 
 
 ~/.config/zsh/
     conf-alpha.zsh                       symlink to secrets/zsh-alpha
-    conf-bravo.zsh                     symlink to secrets/zsh-bravo
+    conf-exmp.zsh                       symlink to secrets/zsh-exmp
 
 ~/.ssh/conf.d/
     work                                symlink to secrets/ssh-work
@@ -201,7 +200,7 @@ Cursor's integrated terminal is not a real TTY. YubiKey PIN/touch prompts cannot
 
 **Secrets decrypted but env vars missing**
 
-The `conf-*.zsh` files are sourced at shell startup. If secrets were restored after the current shell started, run `source ~/.config/zsh/conf-alpha.zsh` (and `conf-bravo.zsh`) or open a new terminal.
+The `conf-*.zsh` files are sourced at shell startup. If secrets were restored after the current shell started, run `source ~/.config/zsh/conf-alpha.zsh`, or open a new terminal.
 
 ## Security notes
 
