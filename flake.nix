@@ -81,22 +81,15 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
-        # checkov 3.3.9's secrets plugin finds 0 matches for the multiline
-        # fixture in the Darwin Nix sandbox (bc_integration enrichment is
-        # empty). Drop once nixpkgs disables test_multiline_finding or the
-        # check phase passes on Darwin.
-        checkov = prev.checkov.overridePythonAttrs (old: {
-          disabledTests =
-            (old.disabledTests or [])
-            ++ final.lib.optionals final.stdenv.hostPlatform.isDarwin [
-              "test_multiline_finding"
-            ];
-        });
-
         # policy-sentry 0.16.0 still ships version.py as 0.15.2. nixpkgs'
         # pyprojectVersionPatchHook fixes the wheel metadata; this keeps the
         # runtime version in sync. The substitute fails the build once
         # upstream retags version.py. Drop once nixpkgs ships past 0.16.0.
+        #
+        # unidiff 1.0.1 rejects test_data/sample.diff: the last git header
+        # names setup.py and the ---/+++ lines name .secrets.baseline.
+        # TestScanDiff expects the baseline path. Drop once detect-secrets
+        # or nixpkgs fixes that fixture.
         pythonPackagesExtensions =
           prev.pythonPackagesExtensions
           ++ [
@@ -107,6 +100,16 @@
                   + ''
                     substituteInPlace policy_sentry/bin/version.py \
                       --replace-fail '0.15.2' '${old.version}'
+                  '';
+              });
+
+              bc-detect-secrets = pyprev.bc-detect-secrets.overridePythonAttrs (old: {
+                postPatch =
+                  (old.postPatch or "")
+                  + ''
+                    substituteInPlace test_data/sample.diff \
+                      --replace-fail $'diff --git a/setup.py b/setup.py\nindex 12ce201..02fcca5 200644' \
+                      $'diff --git a/.secrets.baseline b/.secrets.baseline\nindex 12ce201..02fcca5 100644'
                   '';
               });
             })
