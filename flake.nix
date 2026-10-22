@@ -45,8 +45,6 @@
 
   # `inputs @ { ... }` binds flake inputs by name; `self` is the flake itself.
   outputs = inputs @ {
-    self,
-    nixpkgs,
     nixpkgs-darwin,
     darwin,
     home-manager,
@@ -187,6 +185,22 @@
 
     # Selects the devShells system, so keep it on the machine in daily use.
     primaryHost = hosts.mbp;
+
+    # CI lints on Linux; the flake's other outputs stay darwin-only.
+    ciSystem = "x86_64-linux";
+    ciPkgs = nixpkgs-darwin.legacyPackages.${ciSystem};
+
+    # Tools the pre-commit hooks call (see .pre-commit-config.yaml).
+    lintTools = pkgs:
+      with pkgs; [
+        alejandra
+        statix
+        deadnix
+        gitleaks
+        shellcheck
+        stylua
+        pre-commit
+      ];
   in {
     darwinConfigurations = builtins.mapAttrs mkDarwin hosts;
 
@@ -200,28 +214,30 @@
     # version-isolated, project-scoped environments activated via `nix develop .#<name>`.
     devShells.${primaryHost.system} = let
       pkgs = import inputs.nixpkgs-darwin {
-        system = primaryHost.system;
+        inherit (primaryHost) system;
         config.allowUnfree = true;
         overlays = [kaynixOverlay];
       };
     in {
       default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          git
-          alejandra
-          nil # Nix LSP
-          nixos-rebuild
-          sops
-          age
-          age-plugin-yubikey
-          gh
-          nixpkgs-review
-          jq
-          curl
-          cacert
-        ];
+        buildInputs =
+          lintTools pkgs
+          ++ (with pkgs; [
+            git
+            nil # Nix LSP
+            nixos-rebuild
+            sops
+            age
+            age-plugin-yubikey
+            gh
+            nixpkgs-review
+            jq
+            curl
+            cacert
+          ]);
         shellHook = ''
           echo "Default dev shell:"
+          echo "  lint:   pre-commit run --all-files (alejandra, statix, deadnix, shellcheck, stylua, gitleaks)"
           echo "  sops, age, age-plugin-yubikey"
           echo "  nixpkgs-review, nixos-rebuild"
         '';
@@ -271,6 +287,11 @@
       };
     };
 
+    devShells.${ciSystem}.default = ciPkgs.mkShell {
+      buildInputs = lintTools ciPkgs;
+    };
+
     formatter.${primaryHost.system} = inputs.nixpkgs-darwin.legacyPackages.${primaryHost.system}.alejandra;
+    formatter.${ciSystem} = ciPkgs.alejandra;
   };
 }

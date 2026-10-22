@@ -93,6 +93,7 @@
     terraform-docs
     tflint
     trivy
+    gitleaks
   ];
 
   cloud = with pkgs; [
@@ -144,11 +145,14 @@
 
   compilersAndRuntimes = with pkgs; [
     alejandra
+    statix
+    deadnix
+    stylua
     bun
     go
     hugo
     lua5_5
-    (lua5_5.pkgs.luarocks)
+    lua5_5.pkgs.luarocks
     nodejs_24
     protobuf
     rustup
