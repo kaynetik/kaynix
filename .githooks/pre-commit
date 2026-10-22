@@ -15,5 +15,5 @@ else
   exit 1
 fi
 
-here="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+here="$(CDPATH='' cd -- "$(dirname "$0")" && pwd)"
 exec "$pc" hook-impl --config=.pre-commit-config.yaml --hook-type=pre-commit --hook-dir "$here" -- "$@"

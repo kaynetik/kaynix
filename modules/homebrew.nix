@@ -1,4 +1,4 @@
-{...}: {
+_: {
   homebrew = {
     enable = true;
     # Note: Analytics still needs to be disabled manually with: brew analytics off

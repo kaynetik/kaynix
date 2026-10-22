@@ -1,52 +1,79 @@
+# Tools for the local hooks come from the dev shell (`nix develop`) or the
+# home.packages baseline (modules/home/packages.nix).
+# Hooks run through .githooks/pre-commit (core.hooksPath), not .git/hooks.
 repos:
-  # Standard pre-commit hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: check-merge-conflict
+      - id: check-case-conflict
       - id: check-added-large-files
-        args: ['--maxkb=500']
+        args: ["--maxkb=500"]
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
-        args: ['--allow-multiple-documents']
+        args: ["--allow-multiple-documents"]
       - id: check-json
         exclude: ^zed/settings\.json$
       - id: check-toml
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
       - id: mixed-line-ending
-        args: ['--fix=lf']
+        args: ["--fix=lf"]
       - id: detect-private-key
 
-  # Nix formatting with Alejandra (using system binary)
   - repo: local
     hooks:
+      - id: sops-encrypted
+        name: Secrets are sops-encrypted
+        entry: .pre-commit-hooks/sops-encrypted.sh
+        language: script
+        files: ^secrets/.*\.ya?ml$
+
+      - id: gitleaks
+        name: gitleaks
+        entry: gitleaks git --pre-commit --staged --redact --verbose
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
       - id: alejandra
-        name: alejandra
-        description: Format Nix files with Alejandra
-        entry: alejandra
+        name: alejandra (format)
+        entry: alejandra --quiet
         language: system
         files: \.nix$
-        pass_filenames: true
 
-  # Nix flake checker
-  - repo: local
-    hooks:
-      - id: nix-flake-check
-        name: nix flake check
-        entry: bash -c 'nix flake check --no-build'
+      - id: statix
+        name: statix (lint)
+        entry: statix check
         language: system
-        files: \.nix$|^flake\.lock$
+        files: \.nix$
         pass_filenames: false
 
-  # Security scanning with checkov
-  - repo: https://github.com/bridgecrewio/checkov.git
-    rev: 3.2.510
-    hooks:
-      - id: checkov
-        args: [-d ., --quiet, --compact]
+      - id: deadnix
+        name: deadnix (unused code)
+        entry: deadnix --fail
+        language: system
+        files: \.nix$
 
-  # Secret scanning
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.24.0
-    hooks:
-      - id: gitleaks
+      - id: nix-flake-check
+        name: nix flake check
+        entry: nix flake check --no-build
+        language: system
+        files: (\.nix|^flake\.lock)$
+        pass_filenames: false
+
+      # shellcheck has no zsh support; zsh scripts are skipped by type.
+      - id: shellcheck
+        name: shellcheck
+        entry: shellcheck
+        language: system
+        types: [shell]
+        exclude_types: [zsh]
+        exclude: ^homes/static/(nvim|tmux)/
+
+      - id: stylua
+        name: stylua (format Lua)
+        entry: stylua
+        language: system
+        files: ^homes/static/(sketchybar|nvim)/.*\.lua$
