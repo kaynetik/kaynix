@@ -59,6 +59,7 @@
   ];
 
   secops = with pkgs; [
+    clamav
     osv-scanner
     theharvester
     trufflehog
