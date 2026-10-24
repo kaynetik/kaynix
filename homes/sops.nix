@@ -77,6 +77,24 @@ in {
         mode = "0600";
         format = "yaml";
       };
+      "ssh-echo" = {
+        key = "ssh_config_echo";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/echo";
+        mode = "0600";
+        format = "yaml";
+      };
+      "ssh-foxtrot" = {
+        key = "ssh_config_foxtrot";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/foxtrot";
+        mode = "0600";
+        format = "yaml";
+      };
+      "ssh-golf" = {
+        key = "ssh_config_golf";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/golf";
+        mode = "0600";
+        format = "yaml";
+      };
     };
   };
 

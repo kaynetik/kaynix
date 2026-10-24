@@ -2,8 +2,8 @@ local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
 
--- macmon comes from the per-user Nix profile, which modules/apps.nix puts on
--- the sketchybar LaunchAgent PATH.
+-- macmon is on the per-user profile. modules/sketchybar.nix adds that bin dir
+-- to the sketchybar LaunchAgent PATH.
 local MACMON = "macmon"
 local UPDATE_FREQ = 5
 

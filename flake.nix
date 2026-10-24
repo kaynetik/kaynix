@@ -79,28 +79,14 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
-        # policy-sentry 0.16.0 still ships version.py as 0.15.2. nixpkgs'
-        # pyprojectVersionPatchHook fixes the wheel metadata; this keeps the
-        # runtime version in sync. The substitute fails the build once
-        # upstream retags version.py. Drop once nixpkgs ships past 0.16.0.
-        #
-        # unidiff 1.0.1 rejects test_data/sample.diff: the last git header
-        # names setup.py and the ---/+++ lines name .secrets.baseline.
-        # TestScanDiff expects the baseline path. Drop once detect-secrets
-        # or nixpkgs fixes that fixture.
+        # checkov pulls bc-detect-secrets. unidiff rejects test_data/sample.diff:
+        # the last git header names setup.py and the ---/+++ lines name
+        # .secrets.baseline. TestScanDiff expects the baseline path. Drop once
+        # detect-secrets or nixpkgs fixes that fixture.
         pythonPackagesExtensions =
           prev.pythonPackagesExtensions
           ++ [
             (_pyfinal: pyprev: {
-              policy-sentry = pyprev.policy-sentry.overrideAttrs (old: {
-                postPatch =
-                  (old.postPatch or "")
-                  + ''
-                    substituteInPlace policy_sentry/bin/version.py \
-                      --replace-fail '0.15.2' '${old.version}'
-                  '';
-              });
-
               bc-detect-secrets = pyprev.bc-detect-secrets.overridePythonAttrs (old: {
                 postPatch =
                   (old.postPatch or "")
@@ -166,7 +152,6 @@
           ./modules/aerospace.nix
           ./modules/host-users.nix
           ./modules/netbird.nix
-          ./modules/objective-see.nix
 
           home-manager.darwinModules.home-manager
           {
@@ -262,7 +247,6 @@
           (with pkgs; [
             stylua
             git
-            gnumake
             lua5_5
             sbarlua
             sketchybar
@@ -281,7 +265,6 @@
           echo "  CONFIG_DIR=$CONFIG_DIR"
           echo "  check:  stylua --check \"\$CONFIG_DIR\""
           echo "  fmt:    stylua \"\$CONFIG_DIR\""
-          echo "  make:   (cd \"\$CONFIG_DIR/helpers\" && make)"
           echo "  reload: sketchybar --reload"
         '';
       };

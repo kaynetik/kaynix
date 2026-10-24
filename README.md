@@ -1,7 +1,7 @@
 <h3 align="center">
  <br/>
  <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="30" width="0px"/>
-  NixOS Config for <a href="https://github.com/kaynetik">kaynetik</a>
+  nix-darwin config for <a href="https://github.com/kaynetik">kaynetik</a>
  <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="30" width="0px"/>
 </h3>
 
@@ -40,7 +40,7 @@ curl -sSf -L https://install.lix.systems/lix | sh -s -- install
 
 ## First deploy
 
-The flake defines per-host entries in the `hosts` attrset inside `flake.nix` (currently `knt-mbp` and `mbp`). Replace `HOSTNAME` below with whichever entry matches your machine, or add a new one first.
+The flake defines per-host entries in the `hosts` attrset inside `flake.nix` (currently `mbp`). Replace `HOSTNAME` below with whichever entry matches your machine, or add a new one first.
 
 ```bash
 # 1. Clone the repo
@@ -67,7 +67,7 @@ graph TD
         SOPS["sops-nix"]
     end
 
-    F["flake.nix<br/>hosts: knt-mbp, mbp<br/>+ devShells, formatter"]
+    F["flake.nix<br/>hosts: mbp<br/>+ devShells, formatter"]
 
     subgraph darwin["darwinConfigurations (per host)"]
         direction LR
@@ -77,7 +77,6 @@ graph TD
         HU["host-users.nix<br/>hostname, DNS, users"]
         AERO["aerospace.nix<br/>tiling WM"]
         NETBIRD["netbird.nix<br/>NetBird daemon (LaunchDaemon)"]
-        OBJSEE["objective-see.nix<br/>reinstalls BlockBlock/RansomWhere daemons"]
     end
 
     subgraph hm["Home Manager (embedded in darwin)"]

@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 # Report drift in the Objective-See tools declared in modules/homebrew.nix.
 #
-# Nix does not manage the parts of these tools that do the work. BlockBlock and
-# RansomWhere run root LaunchDaemons planted by their cask's installer script,
-# and both are Endpoint Security clients that stop working without Full Disk
-# Access. LuLu runs a network filter system extension that only a human can
-# approve in System Settings. A rebuild reasserts none of that, so check it.
+# Nix does not manage the parts of these tools that do the work. LuLu runs a
+# network filter system extension that only a human can approve in System
+# Settings. KnockKnock, DHS, and WhatsYourSign are scanner apps. A rebuild
+# reasserts none of that, so check it.
 #
 # Usage: objsee-check [-q]
 #   -q  suppress passing checks, and stay silent entirely when nothing is wrong
@@ -56,12 +55,6 @@ bundle_version() {
     printf 'unknown'
 }
 
-# Reads a top-level `key = value` field out of `launchctl print` output. The
-# first match wins because the nested endpoint blocks reuse key names.
-launchd_field() {
-  awk -F' = ' -v key="$2" '$0 ~ "^[[:space:]]*" key " = " {print $2; exit}' <<<"$1"
-}
-
 running() {
   # ps rather than pgrep: pgrep needs sysmond, which is unreachable from a
   # sandboxed shell and would report a live process as absent. Matching on the
@@ -72,52 +65,6 @@ running() {
     *"$1"*) return 0 ;;
     *) return 1 ;;
   esac
-}
-
-# Menu bar helper in /Applications, privileged daemon under /Library/Objective-See.
-# The two are installed by separate steps of the same cask, so a cask upgrade
-# that half-fails leaves a new helper talking to an old daemon.
-check_daemon() {
-  local cask=$1 label=$2 helper=$3 payload=$4
-  local plist="/Library/LaunchDaemons/${label}.plist"
-  local info state program runs last_exit helper_version payload_version
-
-  if [ ! -f "$plist" ]; then
-    fail "$cask: no LaunchDaemon at $plist; the cask installer never ran"
-    return
-  fi
-
-  if ! info=$(launchctl print "system/${label}" 2>/dev/null); then
-    fail "$cask: $plist present but not loaded; launchctl bootstrap system $plist"
-    return
-  fi
-
-  state=$(launchd_field "$info" state)
-  program=$(launchd_field "$info" program)
-  runs=$(launchd_field "$info" runs)
-  last_exit=$(launchd_field "$info" 'last exit code')
-
-  if [ -n "$program" ] && [ ! -x "$program" ]; then
-    fail "$cask: daemon program $program is missing"
-  fi
-
-  if [ "$state" != "running" ]; then
-    fail "$cask: daemon state is ${state:-unknown}, expected running (Full Disk Access revoked?)"
-  elif [ "${runs:-1}" -gt 1 ] && [ "$last_exit" != "(never exited)" ]; then
-    warn "$cask: daemon restarted $runs times, last exit code $last_exit"
-  else
-    ok "$cask: daemon running"
-  fi
-
-  helper_version=$(bundle_version "$helper")
-  payload_version=$(bundle_version "$payload")
-  if [ "$helper_version" = unknown ] || [ "$payload_version" = unknown ]; then
-    fail "$cask: cannot read a version from $helper or $payload"
-  elif [ "$helper_version" != "$payload_version" ]; then
-    fail "$cask: helper is $helper_version but daemon is $payload_version; re-run the cask installer"
-  else
-    ok "$cask: helper and daemon both $helper_version"
-  fi
 }
 
 # LuLu keeps no LaunchDaemon. Its filter is a network extension activated by the
@@ -185,14 +132,6 @@ check_app() {
 if [ "$quiet" -eq 0 ]; then
   printf 'Objective-See state (installed by vendor installers, not by Nix)\n\n'
 fi
-
-check_daemon blockblock com.objective-see.blockblock \
-  "/Applications/BlockBlock Helper.app" \
-  /Library/Objective-See/BlockBlock/BlockBlock.app
-
-check_daemon ransomwhere com.objective-see.ransomwhere \
-  "/Applications/RansomWhere Helper.app" \
-  /Library/Objective-See/RansomWhere/RansomWhere.app
 
 check_lulu
 

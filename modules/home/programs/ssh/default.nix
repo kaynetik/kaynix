@@ -65,17 +65,14 @@ in {
           IdentityFile = identity.ssh.keyFile;
           IdentitiesOnly = true;
         };
-        "charlie" = {
-          HostName = "10.10.100.248";
-          User = "kaynas";
-          IdentityFile = "~/.ssh/id_srv";
-          IdentitiesOnly = true;
-        };
       };
       extraConfig = lib.mkBefore ''
         Include ~/.ssh/conf.d/work
         Include ~/.ssh/conf.d/charlie
         Include ~/.ssh/conf.d/delta
+        Include ~/.ssh/conf.d/echo
+        Include ~/.ssh/conf.d/foxtrot
+        Include ~/.ssh/conf.d/golf
       '';
     };
   };
