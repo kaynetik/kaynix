@@ -28,6 +28,7 @@
     "practical-haskell"
     "rca"
     "researcher"
+    "security-audit"
     "solidity-security"
     "svg-gen"
     "tdd-red-green-refactor"
