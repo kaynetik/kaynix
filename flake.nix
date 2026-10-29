@@ -146,6 +146,7 @@
 
           ./modules/nix-core.nix
           ./modules/system.nix
+          ./modules/pki.nix
           ./modules/homebrew.nix
           ./modules/fonts.nix
           ./modules/sketchybar.nix
