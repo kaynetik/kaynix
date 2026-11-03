@@ -83,6 +83,7 @@
     podman-desktop
     docker
     cosign
+    rabbitmqadmin-ng
   ];
 
   iacAndCD = with pkgs; [
