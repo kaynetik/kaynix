@@ -79,6 +79,25 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
+        # nixpkgs patchShebangs the hook template, so every `pre-commit install`
+        # writes a /nix/store/...-bash shebang into .git/hooks/pre-commit. After
+        # garbage collection or a bash bump the path is gone and git fails with
+        # "cannot exec '.git/hooks/pre-commit': No such file or directory".
+        # Restore the portable shebang. Tests are skipped: they assert the
+        # patched shebang. Drop once nixpkgs stops embedding a store bash in
+        # the hook template.
+        pre-commit = prev.pre-commit.overridePythonAttrs (old: {
+          doCheck = false;
+          doInstallCheck = false;
+          dontUsePytestCheck = true;
+          postFixup =
+            (old.postFixup or "")
+            + ''
+              sed -i '1s|^#!.*|#!/usr/bin/env bash|' \
+                "$(find "$out" -path '*pre_commit/resources/hook-tmpl')"
+            '';
+        });
+
         # checkov pulls bc-detect-secrets. unidiff rejects test_data/sample.diff:
         # the last git header names setup.py and the ---/+++ lines name
         # .secrets.baseline. TestScanDiff expects the baseline path. Drop once
