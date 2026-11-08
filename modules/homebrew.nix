@@ -22,6 +22,7 @@ _: {
     casks = [
       # Browsers
       "brave-browser"
+      "google-chrome" # Used just for automated testing by agents
 
       # Security & Privacy
       "keepassxc"
