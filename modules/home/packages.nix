@@ -167,6 +167,12 @@
     svm-rs # alloy-rs svm CLI (`svm install 0.8.19`, `svm use 0.8.19`)
   ];
 
+  nixRebuildTools = with pkgs; [
+    nil # Nix LSP
+    nixos-rebuild
+    nixpkgs-review
+  ];
+
   sshAndAge = with pkgs; [
     age
     sops
@@ -212,6 +218,7 @@ in {
     ++ media
     ++ compilersAndRuntimes
     ++ sshAndAge
+    ++ nixRebuildTools
     ++ secops
     ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin darwinOnly;
 }
