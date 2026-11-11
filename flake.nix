@@ -214,9 +214,9 @@
       default = identityModule;
     };
 
-    # Dev shells intentionally re-declare packages that overlap with home.packages.
-    # home.packages provides the always-available baseline; dev shells provide
-    # version-isolated, project-scoped environments activated via `nix develop .#<name>`.
+    # home.packages is the always-available baseline. Dev shells exist only where
+    # they add something it does not: the lint set pinned to this flake's nixpkgs
+    # (what CI runs), a python toolchain, and the sketchybar Lua environment.
     devShells.${primaryHost.system} = let
       pkgs = import inputs.nixpkgs-darwin {
         inherit (primaryHost) system;
@@ -224,28 +224,9 @@
         overlays = [kaynixOverlay];
       };
     in {
+      # Same tool set CI uses; everything else comes from home.packages.
       default = pkgs.mkShell {
-        buildInputs =
-          lintTools pkgs
-          ++ (with pkgs; [
-            git
-            nil # Nix LSP
-            nixos-rebuild
-            sops
-            age
-            age-plugin-yubikey
-            gh
-            nixpkgs-review
-            jq
-            curl
-            cacert
-          ]);
-        shellHook = ''
-          echo "Default dev shell:"
-          echo "  lint:   pre-commit run --all-files (alejandra, statix, deadnix, shellcheck, stylua, gitleaks)"
-          echo "  sops, age, age-plugin-yubikey"
-          echo "  nixpkgs-review, nixos-rebuild"
-        '';
+        buildInputs = lintTools pkgs;
       };
 
       python = pkgs.mkShell {
