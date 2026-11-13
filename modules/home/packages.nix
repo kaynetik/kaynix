@@ -66,7 +66,6 @@
     sherlock
     recon-ng
     #dnstwist
-    lazytrivy
   ];
 
   k8sAndOci = with pkgs; [
