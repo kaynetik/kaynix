@@ -121,7 +121,7 @@ jobs:
 
   nix-grype:
     name: Nix flake check + Grype (formatter closure)
-    runs-on: macos-14
+    runs-on: macos-latest
     timeout-minutes: 60
     steps:
       - name: Checkout
