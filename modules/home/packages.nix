@@ -46,6 +46,8 @@
     jq
     yq-go
     shellcheck
+    # https://github.com/anomalyco/hex
+    anomaly-hex # local voice transcriber
   ];
 
   network = with pkgs; [

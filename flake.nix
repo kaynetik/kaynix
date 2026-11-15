@@ -79,6 +79,11 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
+        # nixpkgs anomaly-hex is x86_64-linux only. The local package repackages
+        # the notarized macOS release zip (see pkgs/anomaly-hex). Drop this
+        # override once nixpkgs anomaly-hex supports aarch64-darwin.
+        anomaly-hex = final.callPackage ./pkgs/anomaly-hex {};
+
         # nixpkgs patchShebangs the hook template, so every `pre-commit install`
         # writes a /nix/store/...-bash shebang into .git/hooks/pre-commit. After
         # garbage collection or a bash bump the path is gone and git fails with
@@ -117,27 +122,6 @@
               });
             })
           ];
-
-        # cargoSetupHook sets AWS_LC_SYS_USE_SYSTEM=1. aws-lc-sys 0.44 then
-        # requires a system AWS-LC and rejects openssl (no openssl/base.h).
-        # Drop once nixpkgs#587267 is in nixpkgs-unstable.
-        rabbitmqadmin-ng = prev.rabbitmqadmin-ng.overrideAttrs (old: {
-          buildInputs = (old.buildInputs or []) ++ [final.aws-lc];
-        });
-
-        # Same hook: foundry's aws-lc-sys, zstd-sys, libsqlite3-sys, and
-        # jemalloc-sys are told to use system libraries that the package
-        # does not provide. Drop once nixpkgs#587157 is in nixpkgs-unstable.
-        foundry = prev.foundry.overrideAttrs (old: {
-          buildInputs =
-            (old.buildInputs or [])
-            ++ [
-              final.aws-lc
-              final.rust-jemalloc-sys
-              final.sqlite
-              final.zstd
-            ];
-        });
 
         # Shared non-package values. `luaCpath` is the one sketchybar Lua
         # runtime search path, so a lua5_5/sbarlua bump reaches every
