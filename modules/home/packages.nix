@@ -46,6 +46,8 @@
     jq
     yq-go
     shellcheck
+    sox # Sample Rate Converter for audio files
+    ffmpeg # Audio/Video Converter
     # https://github.com/anomalyco/hex
     anomaly-hex # local voice transcriber
   ];
@@ -157,7 +159,7 @@
     hugo
     lua5_5
     lua5_5.pkgs.luarocks
-    nodejs_24
+    nodejs_26
     protobuf
     rustup
     uv
