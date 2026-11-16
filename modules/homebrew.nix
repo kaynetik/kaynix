@@ -35,7 +35,6 @@ _: {
       "pareto-security" # Occasionally run security checks
 
       # Productivity & Utilities
-      "raycast"
       "obsidian"
 
       # Development Tools

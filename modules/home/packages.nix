@@ -192,6 +192,7 @@
     nowplaying-cli
     sbarlua
     switchaudio-osx
+    raycast
     shottr
     macfuse-stubs
     e2fsprogs
