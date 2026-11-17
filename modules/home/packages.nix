@@ -130,7 +130,7 @@
   ];
 
   media = with pkgs; [
-    # audacity
+    audacity
     imagemagick
     languagetool
     ## LaTeX: ocassionally used; disabled for now.
@@ -196,6 +196,7 @@
     shottr
     macfuse-stubs
     e2fsprogs
+    fluidaudiocli # local TTS/ASR CLI (CoreML), built from the FluidAudio release tag
     # python314Packages.mlx-lm # Apple Silicon LLM runner (mlx_lm.* CLIs)
   ];
 in {

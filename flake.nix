@@ -84,6 +84,10 @@
         # override once nixpkgs anomaly-hex supports aarch64-darwin.
         anomaly-hex = final.callPackage ./pkgs/anomaly-hex {};
 
+        # Not in nixpkgs; upstream ships no binary. Built from the release tag
+        # (see pkgs/fluidaudiocli for the update routine).
+        fluidaudiocli = final.callPackage ./pkgs/fluidaudiocli {};
+
         # nixpkgs patchShebangs the hook template, so every `pre-commit install`
         # writes a /nix/store/...-bash shebang into .git/hooks/pre-commit. After
         # garbage collection or a bash bump the path is gone and git fails with
@@ -196,6 +200,12 @@
     # Selects the devShells system, so keep it on the machine in daily use.
     primaryHost = hosts.mbp;
 
+    primaryPkgs = import inputs.nixpkgs-darwin {
+      inherit (primaryHost) system;
+      config.allowUnfree = true;
+      overlays = [kaynixOverlay];
+    };
+
     # CI lints on Linux; the flake's other outputs stay darwin-only.
     ciSystem = "x86_64-linux";
     ciPkgs = nixpkgs-darwin.legacyPackages.${ciSystem};
@@ -219,15 +229,16 @@
       default = identityModule;
     };
 
+    # Locally packaged tools, buildable on their own: `nix build .#fluidaudiocli`.
+    packages.${primaryHost.system} = {
+      inherit (primaryPkgs) fluidaudiocli;
+    };
+
     # home.packages is the always-available baseline. Dev shells exist only where
     # they add something it does not: the lint set pinned to this flake's nixpkgs
     # (what CI runs), a python toolchain, and the sketchybar Lua environment.
     devShells.${primaryHost.system} = let
-      pkgs = import inputs.nixpkgs-darwin {
-        inherit (primaryHost) system;
-        config.allowUnfree = true;
-        overlays = [kaynixOverlay];
-      };
+      pkgs = primaryPkgs;
     in {
       # Same tool set CI uses; everything else comes from home.packages.
       default = pkgs.mkShell {
