@@ -21,6 +21,8 @@
       --replace-fail '@OBSIDIAN_VAULT@' '${obsidianVault}'
     substituteInPlace $out/bin/og \
       --replace-fail '@OBSIDIAN_VAULT@' '${obsidianVault}'
+    substituteInPlace $out/bin/objsee-check \
+      --replace-fail '@PYTHON3@' '${pkgs.python3.interpreter}'
   '';
 
   terminal = with pkgs; [
@@ -88,6 +90,7 @@
     docker
     cosign
     rabbitmqadmin-ng
+    kubectl-cnpg
   ];
 
   iacAndCD = with pkgs; [

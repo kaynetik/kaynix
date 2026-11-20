@@ -58,6 +58,7 @@
     neovim.enable = lib.mkDefault true;
     sketchybar.enable = lib.mkDefault pkgs.stdenv.hostPlatform.isDarwin;
     ssh.enable = lib.mkDefault true;
+    ssh.commandcenter.enable = true;
     terminals.enable = lib.mkDefault true;
     yazi.enable = lib.mkDefault true;
     zoxide.enable = lib.mkDefault true;

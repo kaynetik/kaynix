@@ -31,6 +31,10 @@ sops-nix decrypts `secrets.yaml` during Home Manager activation into generationa
 |:---|:---|:---|
 | `zsh_alpha` | `zsh-alpha` | `~/.config/zsh/conf-alpha.zsh` |
 | `ssh_config_work` | `ssh-work` | `~/.ssh/conf.d/work` |
+| `ssh_config_cc` | `ssh-cc-config` | `~/.ssh/cc/config` (needs `kaynix.programs.ssh.commandcenter.enable`) |
+| `ssh_key_cc_observe` | `ssh-cc-observe` | `~/.ssh/cc/cc_observe` (same) |
+| `ssh_key_cc_router_observer` | `ssh-cc-router-observer` | `~/.ssh/cc/cc_router_observer` (same) |
+| `ssh_key_cc_router_admin` | `ssh-cc-router-admin` | `~/.ssh/cc/cc_router_admin` (same) |
 
 The zsh secret files contain `export` statements and are sourced by `.zshrc` at shell startup.
 

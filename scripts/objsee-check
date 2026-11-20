@@ -114,6 +114,69 @@ check_lulu() {
   else
     fail "lulu: filter extension is not running, so traffic is unfiltered"
   fi
+
+  check_lulu_nix_rules
+}
+
+# Nix binaries are ad-hoc signed, so LuLu keys their rules by store path and
+# every upgrade raises a fresh alert. The allow list cannot cover them: it
+# matches hostnames, and libcurl connects to bare IPs. Without a /nix/store/*
+# directory rule, one stray "Block" on that alert silently breaks nix fetches.
+check_lulu_nix_rules() {
+  local rules_file="/Library/Objective-See/LuLu/rules.plist"
+  local report line path have_dir=0
+
+  if [ ! -r "$rules_file" ]; then
+    warn "lulu: cannot read $rules_file"
+    return
+  fi
+
+  if ! report=$(
+    '@PYTHON3@' - "$rules_file" <<'EOF'
+import plistlib
+import sys
+
+with open(sys.argv[1], "rb") as f:
+    objs = plistlib.load(f)["$objects"]
+
+
+def val(x):
+    if isinstance(x, plistlib.UID):
+        x = objs[x.data]
+    return None if x == "$null" else x
+
+
+for o in objs:
+    if not (isinstance(o, dict) and "path" in o and "action" in o):
+        continue
+    path, action = val(o["path"]), val(o["action"])
+    if not isinstance(path, str) or val(o.get("isDisabled")):
+        continue
+    if path == "/nix/store/*" and action == 1 and val(o.get("endpointAddr")) == "*":
+        print("dir")
+    elif path.startswith("/nix/") and action == 0:
+        print("block " + path)
+EOF
+  ); then
+    warn "lulu: cannot parse $rules_file"
+    return
+  fi
+
+  while IFS= read -r line; do
+    case $line in
+      dir) have_dir=1 ;;
+      block\ *)
+        path=${line#block }
+        fail "lulu: block rule for $path; delete it in LuLu > Rules"
+        ;;
+    esac
+  done <<<"$report"
+
+  if [ "$have_dir" -eq 1 ]; then
+    ok "lulu: /nix/store/* allow rule present"
+  else
+    warn "lulu: no /nix/store/* allow rule; every nix upgrade will prompt again"
+  fi
 }
 
 # The scanners have no background component; presence is the whole check.

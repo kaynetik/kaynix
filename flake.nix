@@ -30,8 +30,11 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
+    # Fork of Mic92/sops-nix (branch main): decrypts each sops file once, so one
+    # YubiKey touch per activation instead of one per secret. Point this back at
+    # github:Mic92/sops-nix once upstream fixes Mic92/sops-nix#956 and merges #911.
     sops-nix = {
-      url = "github:Mic92/sops-nix";
+      url = "github:kaynetik/sops-nix/main";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 

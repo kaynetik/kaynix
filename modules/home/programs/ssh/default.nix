@@ -10,9 +10,24 @@
 in {
   options.kaynix.programs.ssh = {
     enable = lib.mkEnableOption "ssh";
+
+    commandcenter.enable = lib.mkEnableOption ''
+      the commandcenter credentials: a separate ssh config and three dedicated
+      keys under ~/.ssh/cc, decrypted by sops (homes/sops.nix). The secrets
+      must exist in secrets/secrets.yaml before this is switched on
+    '';
   };
 
   config = lib.mkIf cfg.enable {
+    # Same ssh, pointed at the commandcenter config only. The main config is
+    # not involved: its connection sharing and agent keys would leak into the
+    # observer identities.
+    home.packages = lib.mkIf cfg.commandcenter.enable [
+      (pkgs.writeShellScriptBin "ccssh" ''
+        exec ${pkgs.openssh}/bin/ssh -F "$HOME/.ssh/cc/config" "$@"
+      '')
+    ];
+
     home.activation.sshSocketDir = lib.hm.dag.entryBefore ["linkGeneration"] ''
       run mkdir -p "${config.home.homeDirectory}/.ssh/sockets"
       run chmod 700 "${config.home.homeDirectory}/.ssh/sockets"

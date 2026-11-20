@@ -21,3 +21,6 @@ CLAUDE.md
 lulu_allowlist
 
 Untitled-*
+
+secrets/secrets.yaml
+sops/sops.nix
