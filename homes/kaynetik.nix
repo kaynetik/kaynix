@@ -8,8 +8,11 @@
 }: {
   imports = [
     ../modules/home
-    ./sops.nix
   ];
+
+  # Secret names, paths, and activation come from the kaynix-vault input
+  # (home-manager.sharedModules in flake.nix); see secrets/README.md.
+  xdg.configFile."sops/age/README.md".source = ./static/sops/README.md;
 
   programs.home-manager.enable = true;
 
@@ -32,7 +35,7 @@
   # Working tree layout that no module owns. The zsh directory is already a
   # side effect of linking that module's config, so this only has to hold when
   # zsh is disabled; ordering before sops-nix keeps the decrypted fragment
-  # targets valid in that case (see homes/sops.nix).
+  # targets valid in that case (the sops module lives in kaynix-vault).
   home.activation.userDirectories = lib.hm.dag.entryBefore ["sops-nix"] ''
     run mkdir -p \
       "${config.home.homeDirectory}/Development/Work" \

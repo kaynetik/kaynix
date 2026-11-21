@@ -28,7 +28,7 @@ in
           "exec-and-forget borders style=round hidpi=on active_color=0xffe2e2e3 inactive_color=0xff414550 width=5.0"
           # Each aerospace restart spawns a fresh zapmenu and the old ones never
           # exit, so kill stale instances before starting the new one.
-          "exec-and-forget pkill zapmenu; /usr/local/bin/zapmenu"
+          "exec-and-forget pkill zapmenu; ${lib.getExe pkgs.zapmenu}"
         ];
 
         exec-on-workspace-change = [

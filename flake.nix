@@ -38,11 +38,25 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
+    # Private companion repo: sops wiring (sops.nix) and ciphertext (secrets.yaml),
+    # see secrets/README.md. Needs ssh access to the repo whenever the lock entry
+    # is (re)fetched. No inputs of its own, so no `follows` is needed. CI and
+    # fresh clones substitute a stub built by scripts/vault-stub via
+    # `--override-input kaynix-vault`.
+    kaynix-vault.url = "git+ssh://git@github.com/kaynetik/kaynix-vault";
+
     # Declarative per-version Solidity compilers (pkgs.solc_0_8_19, etc.).
     # Nix-native replacement for `svm install <ver>`.
     solc-nix = {
       url = "github:hellwolf/solc.nix";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
+
+    # Plain source tree (no flake.nix upstream); pkgs/zapmenu builds it.
+    # Update with `nix flake update zapmenu`.
+    zapmenu = {
+      url = "github:kaynetik/zapmenu";
+      flake = false;
     };
   };
 
@@ -52,7 +66,9 @@
     darwin,
     home-manager,
     sops-nix,
+    kaynix-vault,
     solc-nix,
+    zapmenu,
     ...
   }: let
     # Default sketchybar palette; hosts override via `config.sketchybar.theme`.
@@ -90,6 +106,28 @@
         # Not in nixpkgs; upstream ships no binary. Built from the release tag
         # (see pkgs/fluidaudiocli for the update routine).
         fluidaudiocli = final.callPackage ./pkgs/fluidaudiocli {};
+
+        # Not in nixpkgs. Built from the `zapmenu` flake input; bump it with
+        # `nix flake update zapmenu`.
+        zapmenu = final.callPackage ./pkgs/zapmenu {src = zapmenu;};
+
+        # nixpkgs swift-collections 1.7.6 (a13fb37d9) links libswiftCompatibilitySpan,
+        # which turns on its Darwin postInstall `install_name_tool -add_rpath` step.
+        # The dylibs have no header padding, so it fails with "larger updated load
+        # commands do not fit" and takes swiftpm and fluidaudiocli down with it.
+        # swiftpm, swift-build, swift-driver and swiftc already set this flag.
+        # Same change as nixpkgs 5b0748384 (2026-11-20), which is not in
+        # nixpkgs-unstable yet. Drop this override once `nix flake update
+        # nixpkgs-darwin` lands a rev that contains that commit.
+        swiftPackages = prev.swiftPackages.overrideScope (_swiftFinal: swiftPrev: {
+          swift-collections = swiftPrev.swift-collections.overrideAttrs (old: {
+            env =
+              (old.env or {})
+              // {
+                NIX_LDFLAGS = final.lib.optionalString prev.stdenv.hostPlatform.isDarwin "-headerpad_max_install_names";
+              };
+          });
+        });
 
         # nixpkgs patchShebangs the hook template, so every `pre-commit install`
         # writes a /nix/store/...-bash shebang into .git/hooks/pre-commit. After
@@ -193,7 +231,10 @@
               inherit username hostConfig;
               kaynixStatic = ./homes/static;
             };
-            home-manager.sharedModules = [sops-nix.homeManagerModules.sops];
+            home-manager.sharedModules = [
+              sops-nix.homeManagerModules.sops
+              kaynix-vault.homeManagerModules.default
+            ];
             home-manager.backupFileExtension = "hm-backup";
             home-manager.users.${username} = import ./homes/kaynetik.nix;
           }
@@ -234,7 +275,7 @@
 
     # Locally packaged tools, buildable on their own: `nix build .#fluidaudiocli`.
     packages.${primaryHost.system} = {
-      inherit (primaryPkgs) fluidaudiocli;
+      inherit (primaryPkgs) fluidaudiocli zapmenu;
     };
 
     # home.packages is the always-available baseline. Dev shells exist only where

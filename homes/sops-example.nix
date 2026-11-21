@@ -4,102 +4,62 @@
   pkgs,
   ...
 }: let
-  sopsAgeIdentityYubikey = "${config.xdg.configHome}/sops/age/age-yubikey-identity-nix-sops.txt";
+  sopsAgeIdentityYubikey = "${config.xdg.configHome}/sops/age/age-yubikey-identity-example.txt";
   sopsLaunchAgentPlist = "${config.home.homeDirectory}/Library/LaunchAgents/org.nix-community.home.sops-nix.plist";
 
-  # commandcenter: one ssh config plus three keys (nix hosts, router observer,
-  # router admin), all under ~/.ssh/cc. Not included from ~/.ssh/config; used
-  # only through `ccssh` or `ssh -F ~/.ssh/cc/config`.
-  # Public keys are not managed: re-derived with `ssh-keygen -y -f ~/.ssh/cc/<file>`.
-  ccEnabled = config.kaynix.programs.ssh.commandcenter.enable;
-  ccFiles = {
-    "ssh-cc-config" = {
-      key = "ssh_config_cc";
+  # Optional group of ssh material: one ssh config plus a few keys, all under
+  # ~/.ssh/extra. Not included from ~/.ssh/config; used with `ssh -F ~/.ssh/extra/config`.
+  # Public keys are not managed: re-derive with `ssh-keygen -y -f ~/.ssh/extra/<file>`.
+  # Replace this flag with a module option if the group should be host-specific.
+  extraEnabled = false;
+  extraFiles = {
+    "ssh-extra-config" = {
+      key = "ssh_config_extra";
       file = "config";
     };
-    "ssh-cc-observe" = {
-      key = "ssh_key_cc_observe";
-      file = "cc_observe";
+    "ssh-extra-key-a" = {
+      key = "ssh_key_extra_a";
+      file = "extra_a";
     };
-    "ssh-cc-router-observer" = {
-      key = "ssh_key_cc_router_observer";
-      file = "cc_router_observer";
-    };
-    "ssh-cc-router-admin" = {
-      key = "ssh_key_cc_router_admin";
-      file = "cc_router_admin";
+    "ssh-extra-key-b" = {
+      key = "ssh_key_extra_b";
+      file = "extra_b";
     };
   };
-  ccSecrets = lib.optionalAttrs ccEnabled (
+  extraSecrets = lib.optionalAttrs extraEnabled (
     lib.mapAttrs (_: v: {
       inherit (v) key;
-      path = "${config.home.homeDirectory}/.ssh/cc/${v.file}";
+      path = "${config.home.homeDirectory}/.ssh/extra/${v.file}";
       mode = "0600";
       format = "yaml";
     })
-    ccFiles
+    extraFiles
   );
 
   secrets =
-    ccSecrets
+    extraSecrets
     // {
-      "zsh-alpha" = {
-        key = "zsh_alpha";
-        path = "${config.xdg.configHome}/zsh/conf-alpha.zsh";
+      "zsh-example-a" = {
+        key = "zsh_example_a";
+        path = "${config.xdg.configHome}/zsh/conf-example-a.zsh";
         mode = "0600";
         format = "yaml";
       };
-      "zsh-bravo" = {
-        key = "zsh_bravo";
-        path = "${config.xdg.configHome}/zsh/conf-bravo.zsh";
+      "zsh-example-b" = {
+        key = "zsh_example_b";
+        path = "${config.xdg.configHome}/zsh/conf-example-b.zsh";
         mode = "0600";
         format = "yaml";
       };
-      "zsh-flowd" = {
-        key = "zsh_flowd";
-        path = "${config.xdg.configHome}/zsh/conf-flowd.zsh";
+      "ssh-host-a" = {
+        key = "ssh_config_host_a";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/host-a";
         mode = "0600";
         format = "yaml";
       };
-      "zsh-kube-ctx-aliases" = {
-        key = "zsh_kube_ctx_aliases";
-        path = "${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh";
-        mode = "0600";
-        format = "yaml";
-      };
-      "ssh-work" = {
-        key = "ssh_config_work";
-        path = "${config.home.homeDirectory}/.ssh/conf.d/work";
-        mode = "0600";
-        format = "yaml";
-      };
-      "ssh-charlie" = {
-        key = "ssh_config_charlie";
-        path = "${config.home.homeDirectory}/.ssh/conf.d/charlie";
-        mode = "0600";
-        format = "yaml";
-      };
-      "ssh-delta" = {
-        key = "ssh_config_delta";
-        path = "${config.home.homeDirectory}/.ssh/conf.d/delta";
-        mode = "0600";
-        format = "yaml";
-      };
-      "ssh-echo" = {
-        key = "ssh_config_echo";
-        path = "${config.home.homeDirectory}/.ssh/conf.d/echo";
-        mode = "0600";
-        format = "yaml";
-      };
-      "ssh-foxtrot" = {
-        key = "ssh_config_foxtrot";
-        path = "${config.home.homeDirectory}/.ssh/conf.d/foxtrot";
-        mode = "0600";
-        format = "yaml";
-      };
-      "ssh-golf" = {
-        key = "ssh_config_golf";
-        path = "${config.home.homeDirectory}/.ssh/conf.d/golf";
+      "ssh-host-b" = {
+        key = "ssh_config_host_b";
+        path = "${config.home.homeDirectory}/.ssh/conf.d/host-b";
         mode = "0600";
         format = "yaml";
       };
@@ -118,7 +78,7 @@
   sopsStampFile = "${config.xdg.stateHome}/sops-nix/last-activated";
   sopsDestinations = lib.concatMapStringsSep " " (s: lib.escapeShellArg s.path) (lib.attrValues secrets);
 
-  # See secrets/README.md#sops-rekey
+  # See README.md#sops-rekey in the vault
   sopsRekeyScript = pkgs.writeShellScript "sops-rekey" ''
     set -euo pipefail
     _plist=${lib.escapeShellArg sopsLaunchAgentPlist}
@@ -146,7 +106,7 @@
   '';
 in {
   sops = {
-    defaultSopsFile = ../secrets/secrets.yaml;
+    defaultSopsFile = ./secrets.yaml;
     age = {
       keyFile = sopsAgeIdentityYubikey;
       plugins = [pkgs.age-plugin-yubikey];
@@ -159,12 +119,12 @@ in {
     chmod 700 "${config.home.homeDirectory}/.ssh/conf.d"
   '';
 
-  home.activation.sshCcDir = lib.mkIf ccEnabled (lib.hm.dag.entryBefore ["sops-nix"] ''
-    mkdir -p "${config.home.homeDirectory}/.ssh/cc"
-    chmod 700 "${config.home.homeDirectory}/.ssh/cc"
+  home.activation.sshExtraDir = lib.mkIf extraEnabled (lib.hm.dag.entryBefore ["sops-nix"] ''
+    mkdir -p "${config.home.homeDirectory}/.ssh/extra"
+    chmod 700 "${config.home.homeDirectory}/.ssh/extra"
   '');
 
-  # See secrets/README.md#darwin-activation-and-yubikey
+  # See README.md#darwin-activation-and-yubikey in the vault
   home.activation.sops-nix = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (
     lib.mkForce (
       lib.hm.dag.entryAfter ["setupLaunchAgents"] ''
@@ -179,14 +139,12 @@ in {
     )
   );
 
-  # See secrets/README.md#sops-rekey
+  # See README.md#sops-rekey in the vault
   home.packages = [
     (pkgs.writeShellScriptBin "sops-rekey" ''
       exec ${sopsRekeyScript} "$@"
     '')
   ];
-
-  xdg.configFile."sops/age/README.md".source = ./static/sops/README.md;
 
   home.sessionVariables = {
     SOPS_AGE_KEY_FILE = sopsAgeIdentityYubikey;

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Build a throwaway flake that stands in for the private kaynix-vault input.
+# It is assembled from the public example files, so public CI and fresh clones
+# can evaluate the flake without access to the private repo:
+#
+#   nix flake check --no-build --no-write-lock-file \
+#     --override-input kaynix-vault "path:$(scripts/vault-stub)"
+#
+# Usage: scripts/vault-stub [output-dir]   (default: a new temp dir)
+# Prints the directory it wrote.
+set -euo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+out="${1:-$(mktemp -d)}"
+mkdir -p "$out"
+
+cp "$root/homes/sops-example.nix" "$out/sops.nix"
+cp "$root/secrets/secrets-example.yaml" "$out/secrets.yaml"
+
+cat > "$out/flake.nix" <<'EOF'
+{
+  outputs = _: {
+    homeManagerModules.default = ./sops.nix;
+  };
+}
+EOF
+
+printf '%s\n' "$out"

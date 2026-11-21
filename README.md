@@ -81,7 +81,7 @@ graph TD
 
     subgraph hm["Home Manager (embedded in darwin)"]
         KN["homes/kaynetik.nix<br/>program toggles, session"]
-        SOPS_HM["homes/sops.nix<br/>secret paths, activation, rekey"]
+        SOPS_HM["kaynix-vault (private)<br/>secret paths, activation, rekey"]
 
         subgraph hmmod["modules/home/"]
             direction LR
@@ -95,7 +95,6 @@ graph TD
     inputs --> F
     F --> darwin
     darwin -- "darwinModules.home-manager" --> hm
-    KN --> SOPS_HM
     KN --> hmmod
     PROGS --> STATIC
     SOPS["sops-nix"] -. "sharedModules" .-> SOPS_HM
@@ -105,14 +104,14 @@ graph TD
 
 ## Secrets (SOPS + YubiKey)
 
-Secrets are encrypted at rest in `secrets/secrets.yaml`, decrypted at Home Manager activation by sops-nix. See `secrets/README.md` for editing and `yubikey.md` for the full YubiKey setup.
+Secrets are encrypted at rest in a separate private repo, `kaynix-vault`, consumed as a flake input and decrypted at Home Manager activation by sops-nix. See `secrets/README.md` for how the two repos fit together and `yubikey.md` for the full YubiKey setup. `homes/sops-example.nix` and `secrets/secrets-example.yaml` show the shape of the vault with placeholder values.
 
 ```mermaid
 flowchart LR
     YK["YubiKey (PIV slot)"]
     PLUGIN["age-plugin-yubikey"]
     ID["~/.config/sops/age/<br/>identity stub"]
-    SOPSF["secrets/secrets.yaml<br/>(encrypted)"]
+    SOPSF["kaynix-vault secrets.yaml<br/>(encrypted)"]
     SOPSNIX["sops-nix<br/>(HM activation)"]
     PLAIN["~/.config/zsh/conf-*.zsh<br/>~/.ssh/conf.d/work<br/>(decrypted, 0600)"]
 
@@ -133,8 +132,8 @@ flowchart LR
 ├── modules/           # nix-darwin system modules + modules/home/ (HM programs)
 ├── homes/
 │   ├── kaynetik.nix   # Home Manager user config (program toggles)
-│   ├── sops.nix       # sops-nix secret paths, activation, rekey script
+│   ├── sops-example.nix  # placeholder copy of the vault's sops module
 │   └── static/        # dotfiles: nvim, tmux, alacritty, sketchybar, zsh, git
-├── secrets/           # sops-encrypted secrets (see secrets/README.md)
-└── scripts/           # helper scripts installed into home.packages
+├── secrets/           # vault docs and placeholder ciphertext (see secrets/README.md)
+└── scripts/           # helper scripts installed into home.packages; vault-stub for CI
 ```

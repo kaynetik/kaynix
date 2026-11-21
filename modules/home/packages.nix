@@ -200,6 +200,7 @@
     macfuse-stubs
     e2fsprogs
     fluidaudiocli # local TTS/ASR CLI (CoreML), built from the FluidAudio release tag
+    zapmenu # blocks the auto-hide menu bar at the top edge (flake input `zapmenu`)
     # python314Packages.mlx-lm # Apple Silicon LLM runner (mlx_lm.* CLIs)
   ];
 in {

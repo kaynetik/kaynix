@@ -130,11 +130,20 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v21
 
+      # kaynix-vault is a private sibling repo; CI evaluates against a stub
+      # assembled from the public example files.
+      - name: Vault stub
+        run: echo "VAULT_STUB=$(scripts/vault-stub)" >> "$GITHUB_ENV"
+
       - name: Flake check (no build)
-        run: nix flake check --no-build --accept-flake-config
+        run: |
+          nix flake check --no-build --accept-flake-config --no-write-lock-file \
+            --override-input kaynix-vault "path:${VAULT_STUB}"
 
       - name: Build formatter output
-        run: nix build .#formatter.aarch64-darwin -L --accept-flake-config -o result
+        run: |
+          nix build .#formatter.aarch64-darwin -L --accept-flake-config --no-write-lock-file \
+            --override-input kaynix-vault "path:${VAULT_STUB}" -o result
 
       - name: Install Grype and Syft
         run: brew install grype syft

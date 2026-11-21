@@ -13,8 +13,9 @@ in {
 
     commandcenter.enable = lib.mkEnableOption ''
       the commandcenter credentials: a separate ssh config and three dedicated
-      keys under ~/.ssh/cc, decrypted by sops (homes/sops.nix). The secrets
-      must exist in secrets/secrets.yaml before this is switched on
+      keys under ~/.ssh/cc, decrypted by sops (module in the kaynix-vault
+      input). The secrets must exist in the vault's secrets.yaml before this
+      is switched on
     '';
   };
 
