@@ -71,13 +71,18 @@ in {
             ulimit -n 65536
             source ${config.xdg.configHome}/zsh/setopt-history.zsh
             source ${config.xdg.configHome}/zsh/aliases.zsh
-            if [[ ! -r ${config.xdg.configHome}/zsh/conf-alpha.zsh ]] && [[ -o interactive ]] && command -v sops-rekey &>/dev/null; then
+            # The kaynix-vault module decrypts fragments to conf-*.zsh; source
+            # whatever is present so no secret names live in this repo. The `-.`
+            # glob qualifier rejects dangling symlinks (the decrypted tree sits in
+            # a temp dir that a reboot clears), so an empty match means "missing".
+            _kaynix_secrets=(${config.xdg.configHome}/zsh/conf-*.zsh(N-.))
+            if (( ''${#_kaynix_secrets} == 0 )) && [[ -o interactive ]] && command -v sops-rekey &>/dev/null; then
               echo "[sops] Secrets missing -- attempting re-decryption (touch YubiKey when prompted)..."
               sops-rekey && echo "[sops] Secrets restored." || echo "[sops] Decryption failed. Check YubiKey and retry with 'sops-rekey'."
+              _kaynix_secrets=(${config.xdg.configHome}/zsh/conf-*.zsh(N-.))
             fi
-            [[ -r ${config.xdg.configHome}/zsh/conf-alpha.zsh ]] && source ${config.xdg.configHome}/zsh/conf-alpha.zsh
-            [[ -r ${config.xdg.configHome}/zsh/conf-bravo.zsh ]] && source ${config.xdg.configHome}/zsh/conf-bravo.zsh
-            [[ -r ${config.xdg.configHome}/zsh/conf-flowd.zsh ]] && source ${config.xdg.configHome}/zsh/conf-flowd.zsh
+            for _kaynix_f in "''${_kaynix_secrets[@]}"; do source "$_kaynix_f"; done
+            unset _kaynix_secrets _kaynix_f
           ''))
         (lib.mkOrder 550 ''
           export GPG_TTY=$TTY
@@ -85,7 +90,6 @@ in {
           setopt prompt_subst
 
           source ${config.xdg.configHome}/zsh/lib-git-prompt.zsh
-          [[ -r ${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh ]] && source ${config.xdg.configHome}/zsh/conf-kube-ctx-aliases.zsh
           source ${config.xdg.configHome}/zsh/lib-kube-prompt.zsh
           source ${config.xdg.configHome}/zsh/theme-bira.zsh
         '')

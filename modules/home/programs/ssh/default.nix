@@ -82,13 +82,12 @@ in {
           IdentitiesOnly = true;
         };
       };
+      # Per-host fragments are decrypted into conf.d by the kaynix-vault module.
+      # A glob keeps host names out of this repo; ssh reads matches in lexical
+      # order and the first value for an option wins, so name fragments with a
+      # numeric prefix in the vault if two of them overlap.
       extraConfig = lib.mkBefore ''
-        Include ~/.ssh/conf.d/work
-        Include ~/.ssh/conf.d/charlie
-        Include ~/.ssh/conf.d/delta
-        Include ~/.ssh/conf.d/echo
-        Include ~/.ssh/conf.d/foxtrot
-        Include ~/.ssh/conf.d/golf
+        Include ~/.ssh/conf.d/*
       '';
     };
   };
