@@ -25,133 +25,84 @@
       --replace-fail '@PYTHON3@' '${pkgs.python3.interpreter}'
   '';
 
-  terminal = with pkgs; [
+  shellTools = with pkgs; [
     alacritty
-    zinit
     tmux
-    htop
-    btop
+    zinit
     bat
     fd
     ripgrep
     tree
   ];
 
-  gitTools = with pkgs; [
+  systemMonitors = with pkgs; [
+    htop
+    btop
+    macmon # CPU, memory, frequency and temperatures
+  ];
+
+  dataTools = with pkgs; [
+    jq
+    yq-go
+    exiftool
+    shellcheck
+  ];
+
+  networkTools = with pkgs; [
+    curl
+    wget
+    grpcurl
+    croc
+    netbird
+    wireguard-tools
+    wireguard-ui
+  ];
+
+  mediaTools = with pkgs; [
+    ffmpeg # audio/video converter
+    sox # sample rate converter for audio files
+    imagemagick
+    audacity
+    languagetool
+    anomaly-hex # local voice transcriber (https://github.com/anomalyco/hex)
+  ];
+
+  vcsTools = with pkgs; [
     git-filter-repo
     lazyjj
     pre-commit
   ];
 
-  dataParsing = with pkgs; [
-    exiftool
-    jq
-    yq-go
-    shellcheck
-    sox # Sample Rate Converter for audio files
-    ffmpeg # Audio/Video Converter
-    # https://github.com/anomalyco/hex
-    anomaly-hex # local voice transcriber
-  ];
-
-  network = with pkgs; [
-    croc
-    curl
-    grpcurl
-    wget
-    wireguard-tools
-    wireguard-ui
-    netbird
-  ];
-
-  secops = with pkgs; [
-    clamav
-    osv-scanner
-    theharvester
-    trufflehog
-    sherlock
-    recon-ng
-  ];
-
-  k8sAndOci = with pkgs; [
-    argocd
-    mimir
-    cmctl
-    k3d
-    kubectl
-    kubefwd
-    kubernetes-helm
-    kustomize
-    k9s
-    kubeconform
-    podman
-    podman-desktop
-    docker
-    cosign
-    rabbitmqadmin-ng
-    kubectl-cnpg
-  ];
-
-  iacAndCD = with pkgs; [
-    bazel-buildtools
-    bazelisk
-    checkov
-    infracost
-    tfenv
-    terraform-docs
-    tflint
-    trivy
-    gitleaks
-  ];
-
-  cloud = with pkgs; [
-    awscli2
-    (google-cloud-sdk.withExtraComponents [
-      google-cloud-sdk.components.gke-gcloud-auth-plugin
-    ])
-    hcloud
-  ];
-
-  observability = with pkgs; [
-    grafana-alloy
-    prometheus
-    prometheus.cli
-    macmon # monitor CPU, memory - freq & temps
-  ];
-
-  databases = with pkgs; [
-    pgcli
-    postgresql_18
-    stripe-cli
-  ];
-
-  goTools = with pkgs; [
-    crane
-    goose
+  languageToolchains = with pkgs; [
+    go
     tparse
+    rustup
+    zig
+    nodejs_26
+    bun
+    uv
+    lua5_5
+    lua5_5.pkgs.luarocks
+    stylua
+    protobuf
+    hugo
   ];
 
-  media = with pkgs; [
-    audacity
-    imagemagick
-    languagetool
+  buildTools = with pkgs; [
+    bazelisk
+    bazel-buildtools
   ];
 
-  compilersAndRuntimes = with pkgs; [
+  nixTools = with pkgs; [
+    nil # Nix LSP
     alejandra
     statix
     deadnix
-    stylua
-    bun
-    go
-    hugo
-    lua5_5
-    lua5_5.pkgs.luarocks
-    nodejs_26
-    protobuf
-    rustup
-    uv
-    zig
+    nixos-rebuild
+    nixpkgs-review
+  ];
+
+  web3Tools = with pkgs; [
     foundry
     slither-analyzer # 26.11 - too many failures!
     solc # latest solc from nixpkgs (default `solc` on PATH)
@@ -159,60 +110,133 @@
     svm-rs # alloy-rs svm CLI (`svm install 0.8.19`, `svm use 0.8.19`)
   ];
 
-  nixRebuildTools = with pkgs; [
-    nil # Nix LSP
-    nixos-rebuild
-    nixpkgs-review
+  kubernetesTools = with pkgs; [
+    kubectl
+    kubectl-cnpg
+    kubernetes-helm
+    kustomize
+    kubeconform
+    k9s
+    k3d
+    kubefwd
+    cmctl
+    argocd
   ];
 
-  sshAndAge = with pkgs; [
+  containerTools = with pkgs; [
+    docker
+    podman
+    podman-desktop
+    crane
+  ];
+
+  iacTools = with pkgs; [
+    tfenv
+    terraform-docs
+    tflint
+    checkov
+    infracost
+  ];
+
+  cloudTools = with pkgs; [
+    awscli2
+    (google-cloud-sdk.withExtraComponents [
+      google-cloud-sdk.components.gke-gcloud-auth-plugin
+    ])
+    hcloud
+  ];
+
+  observabilityTools = with pkgs; [
+    grafana-alloy
+    prometheus
+    prometheus.cli
+    mimir
+  ];
+
+  dataAndServices = with pkgs; [
+    postgresql_18
+    pgcli
+    goose
+    rabbitmqadmin-ng
+    stripe-cli
+  ];
+
+  secretsAndKeys = with pkgs; [
     age
-    sops
     age-plugin-yubikey
+    sops
+    dotenvx
     openssh
     yubikey-agent
     yubikey-manager
-    dotenvx
   ];
 
-  darwinOnly = with pkgs; [
+  securityScanners = with pkgs; [
+    trivy
+    cosign
+    osv-scanner
+    trufflehog
+    gitleaks
+    clamav
+  ];
+
+  osintTools = with pkgs; [
+    theharvester
+    sherlock
+    recon-ng
+  ];
+
+  darwinDesktop = with pkgs; [
     jankyborders
-    nowplaying-cli
     sbarlua
+    nowplaying-cli
     switchaudio-osx
     raycast
     shottr
+    zapmenu
+  ];
+
+  darwinTools = with pkgs; [
     macfuse-stubs
     e2fsprogs
     fluidaudiocli
-    zapmenu
   ];
 in {
   targets.darwin.copyApps.enable = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin true;
   targets.darwin.linkApps.enable = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin false;
 
-  # Podman / docker CLI (k8sAndOci): SSH tunnel to VM and machine socket path.
+  # Podman / docker CLI (containerTools): SSH tunnel to VM and machine socket path.
   home.sessionVariables = {
     DOCKER_HOST = "ssh://root@127.0.0.1:63646";
     DOCKER_SOCK = "/run/podman/podman.sock";
   };
 
-  home.packages =
+  home.packages = lib.concatLists [
     [kaynix-scripts]
-    ++ terminal
-    ++ gitTools
-    ++ dataParsing
-    ++ network
-    ++ k8sAndOci
-    ++ iacAndCD
-    ++ cloud
-    ++ observability
-    ++ databases
-    ++ goTools
-    ++ media
-    ++ compilersAndRuntimes
-    ++ sshAndAge
-    ++ nixRebuildTools
-    ++ secops
-    ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin darwinOnly;
+
+    shellTools
+    systemMonitors
+    dataTools
+    networkTools
+    mediaTools
+    vcsTools
+
+    languageToolchains
+    buildTools
+    nixTools
+    web3Tools
+
+    kubernetesTools
+    containerTools
+    iacTools
+    cloudTools
+    observabilityTools
+    dataAndServices
+
+    secretsAndKeys
+    securityScanners
+    osintTools
+
+    (lib.optionals pkgs.stdenv.hostPlatform.isDarwin (darwinDesktop ++ darwinTools))
+  ];
 }
