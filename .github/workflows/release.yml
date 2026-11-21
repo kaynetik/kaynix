@@ -26,8 +26,15 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v21
 
+      # kaynix-vault is a private repo the runner cannot fetch over ssh; evaluate
+      # against a stub assembled from the public example files.
+      - name: Vault stub
+        run: echo "VAULT_STUB=$(scripts/vault-stub)" >> "$GITHUB_ENV"
+
       - name: Flake check
-        run: nix flake check --no-build --accept-flake-config
+        run: |
+          nix flake check --no-build --accept-flake-config --no-write-lock-file \
+            --override-input kaynix-vault "path:${VAULT_STUB}"
 
   release:
     name: Create GitHub Release
