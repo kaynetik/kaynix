@@ -1,7 +1,7 @@
 _: {
   homebrew = {
     enable = true;
-    # Note: Analytics still needs to be disabled manually with: brew analytics off
+    # Analytics must be disabled manually: brew analytics off
 
     onActivation = {
       autoUpdate = true;
@@ -11,20 +11,17 @@ _: {
     };
 
     brews = [
-      # Security & GPG
       "keychain"
-      "gnupg" # gpg and gpg2 are brew aliases of gnupg; one formula is enough.
+      "gnupg"
       "pinentry-mac"
       "secp256k1"
       "tor"
     ];
 
     casks = [
-      # Browsers
       "brave-browser"
-      "google-chrome" # Used just for automated testing by agents
+      "google-chrome" # agent test automation
 
-      # Security & Privacy
       "keepassxc"
       "gpg-suite"
       "protonvpn"
@@ -32,32 +29,26 @@ _: {
       "knockknock"
       "dhs"
       "whatsyoursign"
-      "pareto-security" # Occasionally run security checks
+      "pareto-security" # periodic security checks
 
-      # Productivity & Utilities
       "obsidian"
 
-      # Development Tools
       "cursor"
       "postman"
       "figma"
 
-      # Fonts
       "sf-symbols"
       "font-sf-pro"
       "font-sf-mono"
 
-      # Cloud & Infrastructure
-      "lens" # Rice k9s more to reach the LENS usability levels.
+      "lens"
 
-      # Media Tools
       "calibre"
       "vlc"
       "spotify" # Ditch this crap ASAP
       "gimp"
       "transmission"
 
-      # Communication
       "telegram"
       "slack"
     ];

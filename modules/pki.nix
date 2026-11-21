@@ -3,18 +3,11 @@
   pkgs,
   ...
 }: {
-  # Apple ships /etc/ssl/cert.pem. A macOS update replaces it, so strip the
-  # roots from CVE-2026-111943 and the eMudhra G3 leak on each activation.
-  #
-  # security.pki.caCertificateBlacklist is the wrong knob on this lock.
-  # nix-darwin already distrusts "Comodo AAA Services root". It forwards the
-  # emSign names to buildcatrust only when cacert is older than 3.131.1.
-  # This nixpkgs has 3.131.1, which removed those roots; blacklisting an
-  # absent name fails the build (nixpkgs#249080).
-  #
-  # /nix/var/nix/profiles/default is the installer profile (Lix + nss-cacert),
-  # not the nix-darwin system profile. darwin-rebuild does not upgrade it.
-  # Replace its bundle when it drifts from pkgs.cacert.
+  # A macOS update replaces Apple's /etc/ssl/cert.pem, so strip the distrusted
+  # roots on each activation. security.pki.caCertificateBlacklist fails the
+  # build here: cacert >= 3.131.1 no longer has the emSign roots (nixpkgs#249080).
+  # The default Nix profile is the installer's, not the system one, so
+  # darwin-rebuild does not upgrade its nss-cacert; sync it below.
   system.activationScripts.postActivation.text = lib.mkAfter ''
     cert=/etc/ssl/cert.pem
     if [[ -f $cert ]] && grep -q -E '/CN=(AAA Certificate Services|emSign ECC Root CA - G3)$' "$cert"; then

@@ -5,16 +5,11 @@
   darwin,
   src,
 }:
-# zapmenu (https://github.com/kaynetik/zapmenu), built from the `zapmenu` flake
-# input (flake = false). Nothing to maintain here; update with:
-#
-#   nix flake update zapmenu
-#
-# Grant Device Control and Data Access to Zapmenu.app, not the bare binary.
-# The bundle is ad-hoc signed, so the grant is pinned to this build: re-toggle it in System Settings after each update.
+# Update with: nix flake update zapmenu
+# Grant Device Control and Data Access to Zapmenu.app, not the bare binary. The
+# bundle is ad-hoc signed, so re-toggle the grant in System Settings after each update.
 let
-  # build.zig.zon is the single version source (upstream stamps Info.plist from
-  # it), so read it instead of repeating the version here.
+  # build.zig.zon is the single version source (upstream stamps Info.plist from it).
   zonVersion = line: builtins.match ''[[:space:]]*\.version = "([^"]+)",'' line;
   version = lib.head (lib.concatMap (l: lib.optionals (zonVersion l != null) (zonVersion l)) (
     lib.splitString "\n" (builtins.readFile "${src}/build.zig.zon")
@@ -24,14 +19,12 @@ in
     pname = "zapmenu";
     inherit version src;
 
-    # zig.hook supplies the `zig build` phases; sigtool provides the
-    # `codesign` that build.zig runs on the bundle.
+    # sigtool provides the `codesign` that build.zig runs on the bundle.
     nativeBuildInputs = [zig.hook darwin.sigtool];
 
-    # Match upstream release builds (the hook default is ReleaseSafe).
     zigBuildFlags = ["--release=fast"];
 
-    # strip runs after build.zig signed the bundle and would invalidate it.
+    # strip would invalidate the signature build.zig applied.
     dontStrip = true;
 
     postInstall = ''

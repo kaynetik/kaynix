@@ -5,17 +5,11 @@
   unzip,
   makeWrapper,
 }:
-# Local Darwin adapter for Hex (https://github.com/anomalyco/hex).
+# Repackages the notarized release zip of Hex (https://github.com/anomalyco/hex).
+# A source build is not possible in the sandbox: build.rs needs xcode-select and
+# the Speech, EventKit, ScreenCaptureKit and FoundationModels frameworks.
 #
-# nixpkgs builds anomaly-hex from source for x86_64-linux only. A source build
-# on Darwin is not practical: build.rs calls xcode-select and compiles Swift
-# bridges against Speech, EventKit, ScreenCaptureKit and FoundationModels, none
-# of which exist inside the Nix sandbox. Upstream documents the notarized
-# release zip (and the Homebrew cask) as the macOS install path, so this
-# repackages that zip unchanged.
-#
-# Drop this override once nixpkgs anomaly-hex lists aarch64-darwin in
-# meta.platforms, or once upstream ships an aarch64-darwin flake package.
+# Drop this once nixpkgs anomaly-hex lists aarch64-darwin in meta.platforms.
 let
   version = "3.4.0";
 in
@@ -30,13 +24,11 @@ in
 
     nativeBuildInputs = [unzip makeWrapper];
 
-    # The zip holds Hex.app at its top level.
     sourceRoot = ".";
 
     dontBuild = true;
 
-    # The bundle is signed and notarized. Stripping or rewriting its Mach-O
-    # files would invalidate the signature, so skip the fixup phase.
+    # Fixup would invalidate the bundle's signature.
     dontFixup = true;
 
     installPhase = ''
@@ -45,8 +37,7 @@ in
       mkdir -p $out/Applications $out/bin
       cp -R Hex.app $out/Applications/Hex.app
 
-      # A wrapper rather than a symlink: the binary locates its bundle from
-      # its own executable path.
+      # Wrapper, not a symlink: the binary finds its bundle via its own path.
       makeWrapper $out/Applications/Hex.app/Contents/MacOS/hex $out/bin/hex
 
       runHook postInstall

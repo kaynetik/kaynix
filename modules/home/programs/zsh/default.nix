@@ -24,10 +24,7 @@ in {
       dotDir = "${config.xdg.configHome}/zsh";
       initContent = lib.mkMerge [
         (lib.mkBefore (lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
-            # Static expansion of `eval "$(/opt/homebrew/bin/brew shellenv)"`:
-            # saves a brew + path_helper fork on every shell. Values are fixed
-            # by the /opt/homebrew prefix; re-check with `brew shellenv` if
-            # Homebrew ever relocates.
+            # Static expansion of `brew shellenv` (saves a fork per shell).
             export HOMEBREW_PREFIX="/opt/homebrew"
             export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
             export HOMEBREW_REPOSITORY="/opt/homebrew"
@@ -39,12 +36,10 @@ in {
           + ''
             source ${pkgs.zinit}/share/zinit/zinit.zsh
 
-            # Deferred completion init, run by zinit turbo after the first
-            # prompt. -C reuses the dump without the compaudit pass unless the
-            # dump is missing or older than 24h; -u trusts nix-store fpath dirs.
+            # Deferred by zinit turbo. -C skips compaudit unless the dump is
+            # missing or older than 24h; -u trusts nix-store fpath dirs.
             _kaynix_compinit() {
-              # extendedglob is required for the (#q) age check; scoped so it
-              # does not leak into interactive globbing.
+              # Needed for the (#q) age check.
               setopt localoptions extendedglob
               autoload -Uz compinit
               local zcd=''${ZDOTDIR:-$HOME}/.zcompdump
@@ -55,11 +50,9 @@ in {
               fi
             }
 
-            # Turbo-load plugins off the first-prompt path. Order matters:
-            # fzf-tab wants compinit before it and widget-wrapping plugins
-            # (fast-syntax-highlighting, autosuggestions) after it. zicdreplay
-            # replays compdefs queued by integrations that ran before compinit
-            # (atuin, fzf, zoxide).
+            # Order matters: fzf-tab needs compinit before it, widget-wrapping
+            # plugins after it. zicdreplay replays compdefs queued before
+            # compinit (atuin, fzf, zoxide).
             zinit ice wait'0a' lucid atinit'_kaynix_compinit; zicdreplay'
             zinit light Aloxaf/fzf-tab
             zinit ice wait'0b' lucid
@@ -71,10 +64,8 @@ in {
             ulimit -n 65536
             source ${config.xdg.configHome}/zsh/setopt-history.zsh
             source ${config.xdg.configHome}/zsh/aliases.zsh
-            # The kaynix-vault module decrypts fragments to conf-*.zsh; source
-            # whatever is present so no secret names live in this repo. The `-.`
-            # glob qualifier rejects dangling symlinks (the decrypted tree sits in
-            # a temp dir that a reboot clears), so an empty match means "missing".
+            # Fragments from kaynix-vault; `-.` rejects dangling symlinks (the
+            # decrypted tree is cleared on reboot), so empty means "missing".
             _kaynix_secrets=(${config.xdg.configHome}/zsh/conf-*.zsh(N-.))
             if (( ''${#_kaynix_secrets} == 0 )) && [[ -o interactive ]] && command -v sops-rekey &>/dev/null; then
               echo "[sops] Secrets missing -- attempting re-decryption (touch YubiKey when prompted)..."
@@ -97,9 +88,7 @@ in {
           bindkey '^[[1;9A' beginning-of-line
           bindkey '^[[1;9B' end-of-line
         ''
-        # The ssh-agent itself is a supervised launchd agent (see
-        # modules/home/programs/ssh); SSH_AUTH_SOCK is a static session
-        # variable there, so shells no longer probe or spawn agents.
+        # ssh-agent runs under launchd (modules/home/programs/ssh).
         (lib.mkAfter ''
           export PATH="${lib.makeBinPath [pkgs.openssh pkgs.lua5_5 pkgs.lua5_5.pkgs.luarocks]}:$PATH"
         '')

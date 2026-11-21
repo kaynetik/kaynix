@@ -12,22 +12,18 @@
   '';
 in
   lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
-    # AeroSpace is macOS-only (nix-darwin launchd). No-op on other platforms.
-    # Keep start-at-login false (module assertion). Config lives here, not ~/.config/aerospace/aerospace.toml.
+    # start-at-login must stay false (module assertion).
     services.aerospace = {
       enable = true;
       settings = {
-        # The aerospace LaunchAgent runs with the default launchd PATH
-        # (/usr/bin:/bin:/usr/sbin:/sbin), so exec callbacks cannot find nix-managed
-        # binaries (sketchybar, borders). AeroSpace expands the trailing PATH
-        # reference (rendered literally in the TOML) to its inherited value.
+        # The LaunchAgent has the default launchd PATH, which lacks nix binaries
+        # (sketchybar, borders). AeroSpace expands the literal ${PATH} itself.
         exec.env-vars.PATH = "/etc/profiles/per-user/${username}/bin:/run/current-system/sw/bin:\${PATH}";
 
         after-login-command = [];
         after-startup-command = [
           "exec-and-forget borders style=round hidpi=on active_color=0xffe2e2e3 inactive_color=0xff414550 width=5.0"
-          # Each aerospace restart spawns a fresh zapmenu and the old ones never
-          # exit, so kill stale instances before starting the new one.
+          # Old zapmenu instances never exit on restart, so kill them first.
           "exec-and-forget pkill zapmenu; ${lib.getExe pkgs.zapmenu}"
         ];
 
@@ -37,8 +33,7 @@ in
           "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
         ];
 
-        # The sketchybar workspace strip subscribes to this to refresh app icons
-        # when windows open, close, or move (items/spaces_aero_dev.lua).
+        # Consumed by items/spaces_aero_dev.lua.
         on-focus-changed = ["exec-and-forget sketchybar --trigger aerospace_focus_change"];
 
         enable-normalization-flatten-containers = true;

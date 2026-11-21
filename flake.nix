@@ -16,8 +16,6 @@
   inputs = {
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    # Alias so transitive inputs that expect "nixpkgs" by name (darwin,
-    # home-manager, sops-nix) all resolve to the same evaluated nixpkgs.
     nixpkgs.follows = "nixpkgs-darwin";
 
     darwin = {
@@ -30,37 +28,29 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    # Fork of Mic92/sops-nix (branch main): decrypts each sops file once, so one
-    # YubiKey touch per activation instead of one per secret. Point this back at
-    # github:Mic92/sops-nix once upstream fixes Mic92/sops-nix#956 and merges #911.
+    # Fork: decrypts each sops file once (one YubiKey touch per activation).
+    # Point back at github:Mic92/sops-nix once #956 is fixed and #911 merged.
     sops-nix = {
       url = "github:kaynetik/sops-nix/main";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    # Private companion repo: sops wiring (sops.nix) and ciphertext (secrets.yaml),
-    # see secrets/README.md. Needs ssh access to the repo whenever the lock entry
-    # is (re)fetched. No inputs of its own, so no `follows` is needed. CI and
-    # fresh clones substitute a stub built by scripts/vault-stub via
-    # `--override-input kaynix-vault`.
+    # Private repo, see secrets/README.md. CI and fresh clones use the stub from
+    # scripts/vault-stub via `--override-input kaynix-vault`.
     kaynix-vault.url = "git+ssh://git@github.com/kaynetik/kaynix-vault";
 
-    # Declarative per-version Solidity compilers (pkgs.solc_0_8_19, etc.).
-    # Nix-native replacement for `svm install <ver>`.
     solc-nix = {
       url = "github:hellwolf/solc.nix";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    # Plain source tree (no flake.nix upstream); pkgs/zapmenu builds it.
-    # Update with `nix flake update zapmenu`.
+    # Plain source tree, built by pkgs/zapmenu.
     zapmenu = {
       url = "github:kaynetik/zapmenu";
       flake = false;
     };
   };
 
-  # `inputs @ { ... }` binds flake inputs by name; `self` is the flake itself.
   outputs = inputs @ {
     nixpkgs-darwin,
     darwin,
@@ -71,18 +61,14 @@
     zapmenu,
     ...
   }: let
-    # Default sketchybar palette; hosts override via `config.sketchybar.theme`.
     # Mirrored by the fallback in homes/static/sketchybar/colors.lua.
     sketchybarThemeDefault = "rose_pine";
 
-    # Reusable Home Manager modules. Another flake consumes the identity with
-    #   imports = [inputs.kaynix.homeManagerModules.kaynix-identity];
+    # Consumers: imports = [inputs.kaynix.homeManagerModules.kaynix-identity];
     identityModule = import ./modules/home/identity.nix;
 
-    # Overlay that exposes solc versions from solc-nix and our custom svm-rs.
     kaynixOverlay = final: prev: let
-      # solc.nix still reads stdenv.isDarwin (eval warning). Shadow the
-      # alias with a plain bool before that overlay runs. Drop once
+      # solc.nix reads stdenv.isDarwin (eval warning). Drop once
       # hellwolf/solc.nix uses stdenv.hostPlatform.isDarwin.
       solcPrev =
         prev
@@ -98,27 +84,19 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
-        # nixpkgs anomaly-hex is x86_64-linux only. The local package repackages
-        # the notarized macOS release zip (see pkgs/anomaly-hex). Drop this
-        # override once nixpkgs anomaly-hex supports aarch64-darwin.
+        # nixpkgs anomaly-hex is x86_64-linux only. Drop this override once it
+        # supports aarch64-darwin.
         anomaly-hex = final.callPackage ./pkgs/anomaly-hex {};
 
-        # Not in nixpkgs; upstream ships no binary. Built from the release tag
-        # (see pkgs/fluidaudiocli for the update routine).
         fluidaudiocli = final.callPackage ./pkgs/fluidaudiocli {};
 
-        # Not in nixpkgs. Built from the `zapmenu` flake input; bump it with
-        # `nix flake update zapmenu`.
         zapmenu = final.callPackage ./pkgs/zapmenu {src = zapmenu;};
 
-        # nixpkgs swift-collections 1.7.6 (a13fb37d9) links libswiftCompatibilitySpan,
-        # which turns on its Darwin postInstall `install_name_tool -add_rpath` step.
-        # The dylibs have no header padding, so it fails with "larger updated load
-        # commands do not fit" and takes swiftpm and fluidaudiocli down with it.
-        # swiftpm, swift-build, swift-driver and swiftc already set this flag.
-        # Same change as nixpkgs 5b0748384 (2026-11-20), which is not in
-        # nixpkgs-unstable yet. Drop this override once `nix flake update
-        # nixpkgs-darwin` lands a rev that contains that commit.
+        # swift-collections 1.7.6 links libswiftCompatibilitySpan, which enables
+        # an install_name_tool -add_rpath step that fails without header padding
+        # ("larger updated load commands do not fit"). Same fix as nixpkgs
+        # 5b0748384. Drop this override once `nix flake update nixpkgs-darwin`
+        # lands a rev containing that commit.
         swiftPackages = prev.swiftPackages.overrideScope (_swiftFinal: swiftPrev: {
           swift-collections = swiftPrev.swift-collections.overrideAttrs (old: {
             env =
@@ -129,13 +107,10 @@
           });
         });
 
-        # nixpkgs patchShebangs the hook template, so every `pre-commit install`
-        # writes a /nix/store/...-bash shebang into .git/hooks/pre-commit. After
-        # garbage collection or a bash bump the path is gone and git fails with
-        # "cannot exec '.git/hooks/pre-commit': No such file or directory".
-        # Restore the portable shebang. Tests are skipped: they assert the
-        # patched shebang. Drop once nixpkgs stops embedding a store bash in
-        # the hook template.
+        # patchShebangs bakes a /nix/store bash path into installed git hooks,
+        # which breaks after GC. Restore the portable shebang; tests assert the
+        # patched one, so skip them. Drop once nixpkgs stops patching the hook
+        # template.
         pre-commit = prev.pre-commit.overridePythonAttrs (old: {
           doCheck = false;
           doInstallCheck = false;
@@ -148,10 +123,9 @@
             '';
         });
 
-        # checkov pulls bc-detect-secrets. unidiff rejects test_data/sample.diff:
-        # the last git header names setup.py and the ---/+++ lines name
-        # .secrets.baseline. TestScanDiff expects the baseline path. Drop once
-        # detect-secrets or nixpkgs fixes that fixture.
+        # checkov dependency: unidiff rejects test_data/sample.diff because the
+        # last git header and its ---/+++ lines disagree. Drop once the fixture
+        # is fixed upstream or in nixpkgs.
         pythonPackagesExtensions =
           prev.pythonPackagesExtensions
           ++ [
@@ -168,9 +142,7 @@
             })
           ];
 
-        # Shared non-package values. `luaCpath` is the one sketchybar Lua
-        # runtime search path, so a lua5_5/sbarlua bump reaches every
-        # consumer at once.
+        # Single sketchybar Lua search path shared by every consumer.
         kaynixLib = let
           luaLibDir = drv: "${drv}/lib/lua/${final.lua5_5.luaversion}";
         in {
@@ -183,8 +155,7 @@
         };
       };
 
-    # Per-host config. Add an entry here when deploying to a new machine.
-    # Shared defaults live in the modules; `config` overrides per machine.
+    # Per-host config; `config` overrides module defaults.
     hosts = {
       mbp = {
         system = "aarch64-darwin";
@@ -197,8 +168,7 @@
 
     mkDarwin = hostname: hostCfg: let
       inherit (hostCfg) system username;
-      # Shared host defaults; per-host `config` entries override them, so
-      # modules can read e.g. `hostConfig.sketchybar.theme` without fallbacks.
+      # Defaults, so modules can read hostConfig without fallbacks.
       hostConfig = nixpkgs-darwin.lib.recursiveUpdate {
         sketchybar.theme = sketchybarThemeDefault;
       } (hostCfg.config or {});
@@ -273,18 +243,14 @@
       default = identityModule;
     };
 
-    # Locally packaged tools, buildable on their own: `nix build .#fluidaudiocli`.
     packages.${primaryHost.system} = {
       inherit (primaryPkgs) fluidaudiocli zapmenu;
     };
 
-    # home.packages is the always-available baseline. Dev shells exist only where
-    # they add something it does not: the lint set pinned to this flake's nixpkgs
-    # (what CI runs), a python toolchain, and the sketchybar Lua environment.
     devShells.${primaryHost.system} = let
       pkgs = primaryPkgs;
     in {
-      # Same tool set CI uses; everything else comes from home.packages.
+      # Same tool set CI uses.
       default = pkgs.mkShell {
         buildInputs = lintTools pkgs;
       };

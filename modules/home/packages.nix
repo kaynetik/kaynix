@@ -71,7 +71,6 @@
     trufflehog
     sherlock
     recon-ng
-    #dnstwist
   ];
 
   k8sAndOci = with pkgs; [
@@ -136,20 +135,6 @@
     audacity
     imagemagick
     languagetool
-    ## LaTeX: ocassionally used; disabled for now.
-    # pandoc
-    # typst
-    # texstudio
-    # (texliveMedium.withPackages (ps:
-    #   with ps; [
-    #     clearsans
-    #     fontaxes # required by clearsans (ClearSans.sty loads it)
-    #     marvosym
-    #     fontawesome
-    #     textpos
-    #     ragged2e
-    #     ifmtarg
-    #   ]))
   ];
 
   compilersAndRuntimes = with pkgs; [
@@ -199,9 +184,8 @@
     shottr
     macfuse-stubs
     e2fsprogs
-    fluidaudiocli # local TTS/ASR CLI (CoreML), built from the FluidAudio release tag
-    zapmenu # blocks the auto-hide menu bar at the top edge (flake input `zapmenu`)
-    # python314Packages.mlx-lm # Apple Silicon LLM runner (mlx_lm.* CLIs)
+    fluidaudiocli
+    zapmenu
   ];
 in {
   targets.darwin.copyApps.enable = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin true;

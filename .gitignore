@@ -22,8 +22,6 @@ lulu_allowlist
 
 Untitled-*
 
-# Real sops wiring and ciphertext live in the private kaynix-vault repo. These
-# entries stop them from being re-added here; *-example files are the public reference.
 secrets/secrets.yaml
 homes/sops.nix
 .sops.yaml

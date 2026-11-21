@@ -20,9 +20,8 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    # Same ssh, pointed at the commandcenter config only. The main config is
-    # not involved: its connection sharing and agent keys would leak into the
-    # observer identities.
+    # Uses only the commandcenter config; the main config would leak
+    # connection sharing and agent keys into the observer identities.
     home.packages = lib.mkIf cfg.commandcenter.enable [
       (pkgs.writeShellScriptBin "ccssh" ''
         exec ${pkgs.openssh}/bin/ssh -F "$HOME/.ssh/cc/config" "$@"
@@ -34,9 +33,7 @@ in {
       run chmod 700 "${config.home.homeDirectory}/.ssh/sockets"
     '';
 
-    # One supervised nix ssh-agent per login instead of per-shell probe/spawn:
-    # launchd restarts it if it dies, the socket path never changes, and shells
-    # only inherit the static SSH_AUTH_SOCK below. Keys land in the agent on
+    # One launchd-supervised agent with a fixed socket path; keys are added on
     # first use via AddKeysToAgent.
     launchd.agents.nix-ssh-agent = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       enable = true;
@@ -82,10 +79,8 @@ in {
           IdentitiesOnly = true;
         };
       };
-      # Per-host fragments are decrypted into conf.d by the kaynix-vault module.
-      # A glob keeps host names out of this repo; ssh reads matches in lexical
-      # order and the first value for an option wins, so name fragments with a
-      # numeric prefix in the vault if two of them overlap.
+      # Fragments from kaynix-vault. ssh reads them in lexical order and the
+      # first value wins, so use numeric prefixes if two overlap.
       extraConfig = lib.mkBefore ''
         Include ~/.ssh/conf.d/*
       '';

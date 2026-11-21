@@ -3,14 +3,8 @@
   lib,
   ...
 }: {
-  # Single source of truth for who commits, signs, and authenticates from this
-  # machine. Consumers: git, jujutsu, ssh (modules/home/programs/) and the
-  # static template homes/static/git/template.gitconfig (kept in sync by hand).
-  #
-  # Exported from the flake as `homeManagerModules.kaynix-identity`, so another
-  # flake can reuse it with:
-  #   imports = [inputs.kaynix.homeManagerModules.kaynix-identity];
-  # and override any value via `kaynix.identity.* = ...;`.
+  # Identity for git, jujutsu and ssh. homes/static/git/template.gitconfig is
+  # kept in sync by hand. Exported as `homeManagerModules.kaynix-identity`.
   options.kaynix.identity = {
     name = lib.mkOption {
       type = lib.types.str;
