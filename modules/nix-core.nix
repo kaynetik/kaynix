@@ -10,6 +10,9 @@
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
 
+    # The user is not in trusted-users (that is root-equivalent through the
+    # daemon), so caches from the flake's nixConfig must be declared here.
+    extra-substituters = ["https://nix-community.cachix.org"];
     trusted-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];

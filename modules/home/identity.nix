@@ -4,7 +4,7 @@
   ...
 }: {
   # Identity for git, jujutsu and ssh. homes/static/git/template.gitconfig is
-  # kept in sync by hand. Exported as `homeManagerModules.kaynix-identity`.
+  # kept in sync by hand. Exported as `homeModules.kaynix-identity`.
   options.kaynix.identity = {
     name = lib.mkOption {
       type = lib.types.str;

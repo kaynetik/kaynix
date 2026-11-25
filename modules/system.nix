@@ -31,7 +31,7 @@
       };
 
       screencapture.location = "~/Pictures/screenshots";
-      screensaver.askForPasswordDelay = 15;
+      screensaver.askForPasswordDelay = 0;
 
       finder = {
         ShowStatusBar = true;
@@ -42,8 +42,13 @@
       };
 
       loginwindow.LoginwindowText = hostConfig.loginGreeting or "nixing";
+      loginwindow.GuestEnabled = false;
     };
   };
+
+  # Pinned in /etc/ssh/ssh_known_hosts so a first connection is not
+  # trust-on-first-use. Source: https://api.github.com/meta (ssh_keys).
+  programs.ssh.knownHosts."github.com".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
 
   security.pam.services.sudo_local.touchIdAuth = true;
 

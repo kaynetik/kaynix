@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Report whether FileVault is on. nix-darwin cannot declare disk encryption,
+# so a rebuild never reasserts it.
+#
+# Usage: filevault-check [-q]
+#   -q  stay silent when FileVault is on
+#
+# Exit status: 0 on, 1 off or unknown.
+set -euo pipefail
+
+quiet=0
+case "${1:-}" in
+  '') ;;
+  -q) quiet=1 ;;
+  *)
+    printf 'filevault-check: unknown argument %s\n' "$1" >&2
+    exit 2
+    ;;
+esac
+
+if ! status=$(/usr/bin/fdesetup status 2>/dev/null); then
+  printf 'FAIL  filevault: cannot query fdesetup\n'
+  exit 1
+fi
+
+case $status in
+  *'FileVault is On'*)
+    if [ "$quiet" -eq 0 ]; then
+      printf 'ok    filevault: on\n'
+    fi
+    ;;
+  *)
+    printf 'FAIL  filevault: %s; enable it in System Settings > Privacy & Security\n' "$status"
+    exit 1
+    ;;
+esac

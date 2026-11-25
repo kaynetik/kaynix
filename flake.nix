@@ -64,7 +64,7 @@
     # Mirrored by the fallback in homes/static/sketchybar/colors.lua.
     sketchybarThemeDefault = "rose_pine";
 
-    # Consumers: imports = [inputs.kaynix.homeManagerModules.kaynix-identity];
+    # Consumers: imports = [inputs.kaynix.homeModules.kaynix-identity];
     identityModule = import ./modules/home/identity.nix;
 
     kaynixOverlay = final: prev: let
@@ -238,7 +238,7 @@
   in {
     darwinConfigurations = builtins.mapAttrs mkDarwin hosts;
 
-    homeManagerModules = {
+    homeModules = {
       kaynix-identity = identityModule;
       default = identityModule;
     };

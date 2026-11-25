@@ -9,6 +9,13 @@ in {
   networking.hostName = hostname;
   networking.computerName = hostname;
 
+  # Stealth mode drops unsolicited probes (ping, closed-port scans). Signed
+  # apps keep their default allowance, so LuLu stays the per-app filter.
+  networking.applicationFirewall = {
+    enable = true;
+    enableStealthMode = true;
+  };
+
   # Retrieved from: networksetup -listallnetworkservices
   # VPN services (like ProtonVPN) intentionally excluded to let them manage their own DNS.
   networking.knownNetworkServices =
@@ -29,6 +36,4 @@ in {
     home = "/Users/${username}";
     description = username;
   };
-
-  nix.settings.trusted-users = [username];
 }

@@ -29,6 +29,8 @@ concurrency:
 env:
   GITLEAKS_VERSION: "8.24.2"
   TRUFFLEHOG_VERSION: "3.88.4"
+  # linux_amd64 tarball, from the release's checksums.txt. Bump with the version.
+  TRUFFLEHOG_SHA256: "ba4b1135098a22e7ac55e0c11d8991a8735adaa51e3eb4e6035a3cb0256d4195"
   OSV_SCANNER_VERSION: "1.9.2"
   # Third-party actions still on @actions/core Node 20 (e.g. nix-installer-action): opt into Node 24 early.
   # https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
@@ -41,12 +43,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
 
@@ -99,14 +101,17 @@ jobs:
           always() && hashFiles('gitleaks-results.sarif') != '' &&
           (github.event_name != 'pull_request' ||
            github.event.pull_request.head.repo.full_name == github.repository)
-        uses: github/codeql-action/upload-sarif@v4.34.1
+        uses: github/codeql-action/upload-sarif@38697555549f1db7851b81482ff19f1fa5c4fedc # v4.34.1
         with:
           sarif_file: gitleaks-results.sarif
 
       - name: Install TruffleHog
         run: |
-          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh \
-            | sudo sh -s -- -b /usr/local/bin "v${TRUFFLEHOG_VERSION}"
+          tarball="trufflehog_${TRUFFLEHOG_VERSION}_linux_amd64.tar.gz"
+          curl -sSfL -o "$tarball" \
+            "https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}/${tarball}"
+          echo "${TRUFFLEHOG_SHA256}  ${tarball}" | sha256sum -c -
+          sudo tar -xz -C /usr/local/bin -f "$tarball" trufflehog
 
       - name: TruffleHog (git, full history)
         run: |
@@ -125,10 +130,10 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v21
+        uses: DeterminateSystems/nix-installer-action@c5a866b6ab867e88becbed4467b93592bce69f8a # v21
 
       # kaynix-vault is a private sibling repo; CI evaluates against a stub
       # assembled from the public example files.
