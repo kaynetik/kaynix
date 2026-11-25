@@ -129,6 +129,16 @@
         pythonPackagesExtensions =
           prev.pythonPackagesExtensions
           ++ [
+            # virtualenv 21.14.12 imports `packaging` without declaring it, so
+            # pre-commit cannot create hook environments ("No module named
+            # 'packaging'"). Drop once nixpkgs lists it in virtualenv's
+            # dependencies. Tests are skipped to keep the CI rebuild short.
+            (pyfinal: pyprev: {
+              virtualenv = pyprev.virtualenv.overridePythonAttrs (old: {
+                dependencies = (old.dependencies or []) ++ [pyfinal.packaging];
+                doCheck = false;
+              });
+            })
             (_pyfinal: pyprev: {
               bc-detect-secrets = pyprev.bc-detect-secrets.overridePythonAttrs (old: {
                 postPatch =
@@ -222,7 +232,11 @@
 
     # CI lints on Linux; the flake's other outputs stay darwin-only.
     ciSystem = "x86_64-linux";
-    ciPkgs = nixpkgs-darwin.legacyPackages.${ciSystem};
+    # Same overlay as the hosts, so CI runs the pre-commit it runs locally.
+    ciPkgs = import nixpkgs-darwin {
+      system = ciSystem;
+      overlays = [kaynixOverlay];
+    };
 
     # Tools the pre-commit hooks call (see .pre-commit-config.yaml).
     lintTools = pkgs:
