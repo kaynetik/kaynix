@@ -100,8 +100,6 @@ graph TD
     SOPS["sops-nix"] -. "sharedModules" .-> SOPS_HM
 ```
 
-
-
 ## Secrets (SOPS + YubiKey)
 
 Secrets are encrypted at rest in a separate private repo, `kaynix-vault`, consumed as a flake input and decrypted at Home Manager activation by sops-nix. See `secrets/README.md` for how the two repos fit together and `yubikey.md` for the full YubiKey setup. `homes/sops-example.nix` and `secrets/secrets-example.yaml` show the shape of the vault with placeholder values.
@@ -122,18 +120,17 @@ flowchart LR
     SOPSNIX --> PLAIN
 ```
 
-
 ## Layout
 
 ```text
 .
-├── flake.nix          # inputs, hosts, darwinConfigurations, devShells
-├── flake.lock
-├── modules/           # nix-darwin system modules + modules/home/ (HM programs)
-├── homes/
-│   ├── kaynetik.nix   # Home Manager user config (program toggles)
-│   ├── sops-example.nix  # placeholder copy of the vault's sops module
-│   └── static/        # dotfiles: nvim, tmux, alacritty, sketchybar, zsh, git
-├── secrets/           # vault docs and placeholder ciphertext (see secrets/README.md)
-└── scripts/           # helper scripts installed into home.packages; vault-stub for CI
+|-- flake.nix          # inputs, hosts, darwinConfigurations, devShells
+|-- flake.lock
+|-- modules/           # nix-darwin system modules + modules/home/ (HM programs)
+|-- homes/
+|   |-- kaynetik.nix   # Home Manager user config (program toggles)
+|   |-- sops-example.nix  # placeholder copy of the vault's sops module
+|   `-- static/        # dotfiles: nvim, tmux, alacritty, sketchybar, zsh, git
+|-- secrets/           # vault docs and placeholder ciphertext (see secrets/README.md)
+`-- scripts/           # helper scripts installed into home.packages; vault-stub for CI
 ```

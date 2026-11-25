@@ -21,14 +21,11 @@ telegram:subscribe({ "routine", "workspace_change" }, function()
 		local label = ""
 		local icon_color = colors.green
 
-		-- Extract label using pattern matching
 		local label_match = status_info:match('"label"="([^"]*)"')
 
 		if label_match then
-			-- Normalize the label for consistency
-			label_match = label_match:match("^%s*(.-)%s*$") -- Trim whitespace
+			label_match = label_match:match("^%s*(.-)%s*$")
 
-			-- Handle specific label states
 			if
 				label_match == ""
 				or label_match == nil
@@ -42,23 +39,20 @@ telegram:subscribe({ "routine", "workspace_change" }, function()
 			elseif label_match:match("^%d+$") then
 				icon_color = colors.red -- Specific number of unread chats/messages
 				if tonumber(label_match) > 10 then
-					label = "10+" -- Limit display to prevent overflow
+					label = "10+"
 				else
 					label = label_match
 				end
 			else
-				-- Unexpected status
 				print("Unexpected label value: " .. label_match)
 				return
 			end
 		else
-			-- No valid label found, assume no notifications
 			print("No valid status info found")
 			icon_color = colors.green
 			label = ""
 		end
 
-		-- Update the Telegram widget
 		telegram:set({
 			icon = {
 				string = icon,
@@ -72,12 +66,9 @@ telegram:subscribe({ "routine", "workspace_change" }, function()
 end)
 
 telegram:subscribe("mouse.clicked", function(env)
-	-- Optional: Add interaction when clicked
-	-- Bring Telegram to foreground or toggle notification view
 	sbar.exec("open -a Telegram")
 end)
 
--- Add an optional popup with more detailed notification info
 local telegram_popup = sbar.add("item", {
 	position = "popup." .. telegram.name,
 	icon = {

@@ -36,7 +36,6 @@ local function phase_badge()
 	return ""
 end
 
--- Main bar item
 local timer = sbar.add("item", "widgets.pomodoro", {
 	position = "right",
 	icon = {
@@ -90,7 +89,6 @@ local function tick()
 	end
 end
 
--- Resets everything back to idle.
 reset_all = function()
 	phase = "idle"
 	active_preset = nil
@@ -176,7 +174,6 @@ enter_long_break = function()
 	timer:trigger("routine")
 end
 
--- Subscribe to SketchyBar's per-second tick.
 timer:subscribe("routine", tick)
 
 -- Left-click: toggle popup (idle) or advance from awaiting state.

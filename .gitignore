@@ -16,7 +16,7 @@ result-man
 
 docs-c*
 
-# Dawn of Agents
+# Local agent config
 CLAUDE.md
 .claude
 lulu_allowlist

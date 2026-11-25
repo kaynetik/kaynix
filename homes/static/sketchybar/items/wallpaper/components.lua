@@ -11,12 +11,9 @@ components.bgAnchor = sbar.add("item", "widgets.background.bgAnchor", {
 	width = 0,
 	icon = {
 		string = "",
-		-- padding_right = 0,
-		-- string = "",
 		color = colors.with_alpha(colors.bg2, 0),
 		font = {
 			style = settings.font.style_map["Regular"],
-			-- size = 15.0,
 		},
 		drawing = false,
 	},
@@ -33,11 +30,9 @@ components.bg = sbar.add("item", "widgets.background", {
 	position = "center",
 	icon = {
 		padding_right = 0,
-		-- string = "",
 		string = "􀵪",
 		font = {
 			style = settings.font.style_map["Regular"],
-			-- size = 15.0,
 		},
 		drawing = false,
 	},
@@ -46,14 +41,6 @@ components.bg = sbar.add("item", "widgets.background", {
 		align = "left",
 	},
 })
-
--- sbar.add("bracket", "widgets.background.bracket", { components.bg.name }, {
--- 	background = {
--- 		color = colors.with_alpha(colors.bg3, colors.transparency),
--- 		border_color = colors.bg2,
--- 		drawing = false,
--- 	},
--- })
 
 sbar.add("item", "widgets.background.padding", {
 	position = "right",

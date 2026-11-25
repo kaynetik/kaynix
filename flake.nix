@@ -44,7 +44,6 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    # Plain source tree, built by pkgs/zapmenu.
     zapmenu = {
       url = "github:kaynetik/zapmenu";
       flake = false;
@@ -108,20 +107,33 @@
         });
 
         # patchShebangs bakes a /nix/store bash path into installed git hooks,
-        # which breaks after GC. Restore the portable shebang; tests assert the
-        # patched one, so skip them. Drop once nixpkgs stops patching the hook
+        # which breaks after GC. Restore the portable shebang (tests assert the
+        # patched one, so skip them). Drop once nixpkgs stops patching the hook
         # template.
-        pre-commit = prev.pre-commit.overridePythonAttrs (old: {
-          doCheck = false;
-          doInstallCheck = false;
-          dontUsePytestCheck = true;
-          postFixup =
-            (old.postFixup or "")
-            + ''
-              sed -i '1s|^#!.*|#!/usr/bin/env bash|' \
-                "$(find "$out" -path '*pre_commit/resources/hook-tmpl')"
-            '';
-        });
+        #
+        # virtualenv 21.14.12 imports `packaging` without declaring it, which
+        # breaks hook environments. Scoped to pre-commit's python set so other
+        # packages keep their cached builds. Drop the `.override` once nixpkgs
+        # lists packaging in virtualenv's dependencies.
+        pre-commit =
+          (prev.pre-commit.override {
+            python3Packages = prev.python3Packages.overrideScope (pyfinal: pyprev: {
+              virtualenv = pyprev.virtualenv.overridePythonAttrs (old: {
+                dependencies = (old.dependencies or []) ++ [pyfinal.packaging];
+                doCheck = false;
+              });
+            });
+          }).overridePythonAttrs (old: {
+            doCheck = false;
+            doInstallCheck = false;
+            dontUsePytestCheck = true;
+            postFixup =
+              (old.postFixup or "")
+              + ''
+                sed -i '1s|^#!.*|#!/usr/bin/env bash|' \
+                  "$(find "$out" -path '*pre_commit/resources/hook-tmpl')"
+              '';
+          });
 
         # checkov dependency: unidiff rejects test_data/sample.diff because the
         # last git header and its ---/+++ lines disagree. Drop once the fixture
@@ -129,16 +141,6 @@
         pythonPackagesExtensions =
           prev.pythonPackagesExtensions
           ++ [
-            # virtualenv 21.14.12 imports `packaging` without declaring it, so
-            # pre-commit cannot create hook environments ("No module named
-            # 'packaging'"). Drop once nixpkgs lists it in virtualenv's
-            # dependencies. Tests are skipped to keep the CI rebuild short.
-            (pyfinal: pyprev: {
-              virtualenv = pyprev.virtualenv.overridePythonAttrs (old: {
-                dependencies = (old.dependencies or []) ++ [pyfinal.packaging];
-                doCheck = false;
-              });
-            })
             (_pyfinal: pyprev: {
               bc-detect-secrets = pyprev.bc-detect-secrets.overridePythonAttrs (old: {
                 postPatch =

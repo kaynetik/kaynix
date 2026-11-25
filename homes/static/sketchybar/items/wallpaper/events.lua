@@ -6,7 +6,6 @@ local pathguard = require("items.wallpaper.pathguard")
 
 local wallpaper_root = pathguard.normalize_path(settings.wallpaper.path)
 
--- Key events
 sbar.add("event", "request_bg")
 sbar.add("event", "cycle_bg")
 sbar.add("event", "select_bg")
@@ -56,14 +55,12 @@ components.bg:subscribe("select_bg", function(env)
 		components.bgAnchor:set({
 			icon = {
 				string = "􀏆",
-				-- drawing = true,
 			},
 			drawing = true,
 		})
 		components.bg:set({
 			icon = {
 				string = "􀏆",
-				-- drawing = true,
 			},
 			drawing = true,
 		})
@@ -73,21 +70,15 @@ components.bg:subscribe("select_bg", function(env)
 		globals.depth = globals.depth + 1
 		if globals.lockedFilePath then
 			globals.depth = globals.depth - 1 < 1 and 1 or globals.depth - 1
-			-- sbar.exec('skhd -k "ctrl - b"')
 			setWallpaper()
 		end
 	else
 		if globals.depth > 1 then
-			-- Moved out one directory
 			globals.depth = globals.depth - 1
 
-			-- Need the table only
 			local tbl = helpers.getFocusedEntryTbl()
 
-			-- Unset highlight
 			helpers.entryToggle(tbl, false, true)
-			-- else
-			-- sbar.exec('skhd -k "ctrl - b"')
 		end
 	end
 end)

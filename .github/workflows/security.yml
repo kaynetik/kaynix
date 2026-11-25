@@ -1,7 +1,5 @@
-# Security scanning: secrets in git history, static analysis, optional Nix closure CVE hints.
-# Renovate is planned separately.
-# Grype on the formatter closure can be noisy (Nix store paths);
-## tune --fail-on or use continue-on-error below.
+# Security scanning: secrets in git history, static analysis, and CVE hints on the
+# formatter closure. Grype is noisy on Nix store paths, so that step is continue-on-error.
 
 name: Security
 

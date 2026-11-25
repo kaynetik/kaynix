@@ -39,7 +39,7 @@
   systemMonitors = with pkgs; [
     htop
     btop
-    macmon # CPU, memory, frequency and temperatures
+    macmon
   ];
 
   dataTools = with pkgs; [
@@ -60,8 +60,8 @@
   ];
 
   mediaTools = with pkgs; [
-    ffmpeg # audio/video converter
-    sox # sample rate converter for audio files
+    ffmpeg
+    sox
     imagemagick
     audacity
     languagetool
@@ -95,7 +95,7 @@
   ];
 
   nixTools = with pkgs; [
-    nil # Nix LSP
+    nil
     alejandra
     statix
     deadnix
