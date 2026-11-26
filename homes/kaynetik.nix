@@ -59,6 +59,7 @@
     k9s.enable = lib.mkDefault true;
     lazygit.enable = lib.mkDefault true;
     neovim.enable = lib.mkDefault true;
+    podman.enable = lib.mkDefault pkgs.stdenv.hostPlatform.isDarwin;
     sketchybar.enable = lib.mkDefault pkgs.stdenv.hostPlatform.isDarwin;
     ssh.enable = lib.mkDefault true;
     ssh.commandcenter.enable = true;

@@ -15,6 +15,7 @@
     ./programs/k9s
     ./programs/lazygit
     ./programs/neovim
+    ./programs/podman
     ./programs/sketchybar
     ./programs/ssh
     ./programs/terminals

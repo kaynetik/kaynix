@@ -206,12 +206,6 @@ in {
   targets.darwin.copyApps.enable = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin true;
   targets.darwin.linkApps.enable = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin false;
 
-  # Podman / docker CLI (containerTools): SSH tunnel to VM and machine socket path.
-  home.sessionVariables = {
-    DOCKER_HOST = "ssh://root@127.0.0.1:63646";
-    DOCKER_SOCK = "/run/podman/podman.sock";
-  };
-
   home.packages = lib.concatLists [
     [kaynix-scripts]
 

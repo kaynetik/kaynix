@@ -83,10 +83,6 @@
       // {
         svm-rs = final.callPackage ./pkgs/svm-rs {};
 
-        # nixpkgs anomaly-hex is x86_64-linux only. Drop this override once it
-        # supports aarch64-darwin.
-        anomaly-hex = final.callPackage ./pkgs/anomaly-hex {};
-
         fluidaudiocli = final.callPackage ./pkgs/fluidaudiocli {};
 
         zapmenu = final.callPackage ./pkgs/zapmenu {src = zapmenu;};
